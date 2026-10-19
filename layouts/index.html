@@ -1,0 +1,28 @@
+{{ define "main" }}
+<section class="hero glass">
+  <div class="hero-avatar">
+    {{ with .Site.Params.avatar }}<img src="{{ . }}" alt="{{ $.Site.Params.author }}" width="120" height="120">{{ else }}<div class="avatar-fallback">{{ substr $.Site.Params.author 0 1 }}</div>{{ end }}
+  </div>
+  <h1 class="hero-name">{{ .Site.Params.author }}</h1>
+  <p class="hero-sub">{{ .Site.Params.subtitle }}</p>
+  <p class="hero-bio">{{ .Site.Params.bio }}</p>
+  <div class="hero-social">
+    {{ range .Site.Params.social }}
+      <a class="pill" href="{{ .url }}" {{ if ne .url "#" }}target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" .icon }}<span>{{ .name }}</span></a>
+    {{ end }}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head">
+    <h2 class="section-title">最新文章</h2>
+    <a class="more-link" href="/posts/">全部文章 →</a>
+  </div>
+  <div class="card-grid">
+    {{ $pages := where .Site.RegularPages "Section" "posts" }}
+    {{ range first 6 $pages }}
+      {{ partial "post-card.html" . }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}

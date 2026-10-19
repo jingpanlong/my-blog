@@ -1,0 +1,16 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-head">
+    <h1 class="section-title">{{ .Title }}</h1>
+  </div>
+
+  {{ $paginator := .Paginate .Pages }}
+  <div class="card-grid">
+    {{ range $paginator.Pages }}
+      {{ partial "post-card.html" . }}
+    {{ end }}
+  </div>
+
+  {{ template "_internal/pagination.html" . }}
+</section>
+{{ end }}

@@ -1,4 +1,41 @@
 baseURL = 'https://my-blog-jingpanlong.pages.dev/'
 locale = 'zh-cn'
-title = '我的个人博客'
-theme = 'ananke'
+title = '景盼龙 · 个人博客'
+summaryLength = 60
+
+# 使用仓库内自定义模板（layouts/），不再依赖 Ananke 主题
+
+[params]
+  subtitle = '在构建与书写之间，留住思考的痕迹'
+  author = '景盼龙'
+  bio = '全栈开发者，把想法做成产品，把过程写成文字。'
+  description = '景盼龙的个人博客，记录代码、产品与生活的痕迹。'
+  avatar = '/img/avatar.svg'
+  social = [
+    { name = 'GitHub', url = 'https://github.com/jingpanlong', icon = 'github', handle = 'jingpanlong' },
+    { name = '邮箱', url = 'mailto:etrodrigoxqbro435@gmail.com', icon = 'email' },
+    { name = '微信', url = '#', icon = 'wechat', handle = 'JovialPioneerLegen' },
+    { name = '小红书', url = 'https://xhslink.cn/o/91exvN6cZUA', icon = 'xhs' },
+    { name = 'B站', url = 'https://b23.tv/zDegVTB', icon = 'bilibili' },
+  ]
+  # Giscus 评论（仓库开启 Discussions + 安装 Giscus App 后自动生效）
+  giscusRepo = 'jingpanlong/my-blog'
+  giscusRepoId = 'R_kgDOVPJ0TA'
+  giscusCategory = 'General'
+
+[outputs]
+  home = ['HTML', 'JSON']
+
+[outputFormats.JSON]
+  mediaType = 'application/json'
+  baseName = 'search-index'
+
+[pagination]
+  pagerSize = 9
+
+[taxonomies]
+  tag = 'tags'
+  category = 'categories'
+
+[markup.goldmark.renderer]
+  unsafe = true

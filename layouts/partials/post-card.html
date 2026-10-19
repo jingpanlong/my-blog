@@ -1,0 +1,11 @@
+<article class="post-card glass">
+  <div class="post-card-top">
+    <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+    {{ with .Params.tags }}<span class="tags">{{ range first 3 . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
+  </div>
+  <h3 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  <p class="post-summary">{{ .Summary | plainify | truncate 90 }}</p>
+  <div class="post-card-foot">
+    <span class="read-time">{{ .ReadingTime }} 分钟阅读</span>
+  </div>
+</article>

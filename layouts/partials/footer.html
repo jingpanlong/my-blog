@@ -1,0 +1,17 @@
+<footer class="site-footer">
+  <div class="footer-inner glass">
+    <div class="footer-brand">
+      <span class="brand-mark"></span>
+      <div>
+        <div class="footer-title">{{ .Site.Title }}</div>
+        <div class="footer-sub">{{ .Site.Params.subtitle }}</div>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>© {{ now.Year }} {{ .Site.Params.author }}</span>
+      <a href="/index.xml" class="footer-rss">RSS 订阅</a>
+      <a href="https://github.com/jingpanlong/my-blog" target="_blank" rel="noopener">源码</a>
+    </div>
+  </div>
+  <p class="footer-note">由 <strong>Hugo</strong> 构建 · 部署于 <strong>Cloudflare Pages</strong></p>
+</footer>

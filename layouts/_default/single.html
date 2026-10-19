@@ -1,0 +1,24 @@
+{{ define "main" }}
+<article class="single glass">
+  <header class="single-head">
+    {{ if or (eq .Section "posts") (eq .Section "projects") }}
+    <div class="single-meta">
+      <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+      {{ with .Params.tags }}<span class="tags">{{ range . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
+    </div>
+    {{ end }}
+    <h1 class="single-title">{{ .Title }}</h1>
+    {{ with .Params.description }}<p class="single-desc">{{ . }}</p>{{ end }}
+  </header>
+
+  <div class="single-content">
+    {{ .Content }}
+  </div>
+
+  <footer class="single-foot">
+    <a class="pill ghost" href="/posts/">← 返回文章列表</a>
+  </footer>
+
+  {{ if eq .Section "posts" }}{{ partial "giscus.html" . }}{{ end }}
+</article>
+{{ end }}
