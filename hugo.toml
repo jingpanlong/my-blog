@@ -1,4 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://my-blog-em5.pages.dev/'
 locale = 'zh-cn'
 title = '我的个人博客'
 theme = 'ananke'
