@@ -50,6 +50,20 @@ jobs:
       - name: 构建站点
         run: hugo --gc --minify
 
+      # 缺密钥时在这里就明确失败，而不是让 wrangler 抛一串看不懂的用法帮助
+      - name: 预检部署密钥
+        env:
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CF_API_TOKEN" ] || [ -z "$CF_ACCOUNT_ID" ]; then
+            echo "::error::缺少仓库密钥 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID"
+            echo "::error::请到 https://github.com/$GITHUB_REPOSITORY/settings/secrets/actions 添加，然后重新运行本工作流"
+            exit 1
+          fi
+          echo "部署密钥已配置"
+
+      # 注意：wrangler-action 会自动补上 `wrangler` 前缀，这里不要再写
       - name: 部署到 Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
@@ -57,7 +71,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           # main -> 生产环境；其它分支 -> 预览环境（独立 URL，不覆盖线上）
-          command: |
-            wrangler pages deploy public \
-              --project-name=${{ env.PROJECT_NAME }} \
-              --branch=${{ steps.branch.outputs.name }}
+          command: pages deploy public --project-name=${{ env.PROJECT_NAME }} --branch=${{ steps.branch.outputs.name }} --commit-hash=${{ github.sha }}
