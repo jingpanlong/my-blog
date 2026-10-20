@@ -172,17 +172,36 @@
     measure();
     window.addEventListener('resize', measure);
 
-    // 两个沿椭圆运行的卫星
+    // 三颗卫星，分别锁在三条轨道（72%×176 / 46%×104 / 94%×240）上绕行
+    var TAU = Math.PI * 2;
     var sats = [
-      { rx: 0.355, ry: 86, sp: 0.00040, ph: 0, el: null },
-      { rx: 0.465, ry: 118, sp: -0.00028, ph: 2.1, el: null }
+      { rx: 0.36, ry: 88,  dur: 24, ph: 0.8, cls: 'sat-1', el: null },
+      { rx: 0.23, ry: 52,  dur: 15, ph: 3.9, cls: 'sat-2', el: null },
+      { rx: 0.47, ry: 120, dur: 34, ph: 5.3, cls: 'sat-3', el: null }
     ];
-    sats.forEach(function (s, i) {
-      var d = document.createElement('i');
-      d.className = 'orbit-sat sat-' + (i + 1);
-      box.appendChild(d);
-      s.el = d;
+    sats.forEach(function (s) {
+      var el = document.createElement('div');
+      el.className = 'orbit-sat ' + s.cls;
+      el.innerHTML = '<i class="tail"></i><i class="head"></i>';
+      box.appendChild(el);
+      s.el = el;
     });
+
+    function placeSat(s, ts) {
+      var t = (ts / 1000) * (TAU / s.dur) + s.ph;
+      var rxw = W * s.rx;
+      var x = cx + Math.cos(t) * rxw;
+      var y = cy + Math.sin(t) * s.ry;
+      // 切线方向（决定彗尾朝向）
+      var vx = -Math.sin(t) * rxw;
+      var vy = Math.cos(t) * s.ry;
+      var ang = Math.atan2(vy, vx) * 180 / Math.PI;
+      // 下半圈在星球前面，上半圈绕到星球后面
+      var front = Math.sin(t) > 0;
+      s.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + ang.toFixed(1) + 'deg) scale(' + (front ? 1 : 0.72) + ')';
+      s.el.style.zIndex = front ? 3 : 1;
+      s.el.style.opacity = front ? 1 : 0.55;
+    }
 
     function frame(ts) {
       if (!dragging) {
@@ -190,21 +209,12 @@
         vel *= 0.93;             // 惯性衰减
       }
       rings.style.setProperty('--disc', disc.toFixed(2) + 'deg');
-      for (var i = 0; i < sats.length; i++) {
-        var s = sats[i];
-        var t = ts * s.sp + s.ph;
-        var x = cx + Math.cos(t) * (W * s.rx);
-        var y = cy + Math.sin(t) * (s.ry * (H > 200 ? 1 : H / 216));
-        s.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0)';
-      }
+      for (var i = 0; i < sats.length; i++) placeSat(sats[i], ts);
       requestAnimationFrame(frame);
     }
     if (reduceMotion) {
       // 静音模式：只摆好卫星，不跑动画
-      for (var i = 0; i < sats.length; i++) {
-        var s = sats[i];
-        s.el.style.transform = 'translate3d(' + (cx + Math.cos(s.ph) * W * s.rx).toFixed(1) + 'px,' + (cy + Math.sin(s.ph) * s.ry).toFixed(1) + 'px,0)';
-      }
+      for (var j = 0; j < sats.length; j++) placeSat(sats[j], 0);
     } else {
       requestAnimationFrame(frame);
     }
