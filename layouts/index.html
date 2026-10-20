@@ -7,7 +7,7 @@
 {{ $firstYear := 2026 }}
 {{ with index $posts (sub (len $posts) 1) }}{{ $firstYear = .Date.Year }}{{ end }}
 {{ $years := sub now.Year $firstYear }}{{ if lt $years 1 }}{{ $years = 1 }}{{ end }}
-{{ $email := "" }}{{ range .Site.Params.social }}{{ if eq .icon "email" }}{{ $email = strings.TrimPrefix "mailto:" .url }}{{ end }}{{ end }}
+{{ $email := "" }}{{ range hugo.Data.site.social }}{{ if eq .icon "email" }}{{ $email = strings.TrimPrefix "mailto:" .url }}{{ end }}{{ end }}
 
 <!-- ============ HERO ============ -->
 <section class="hero-band">
@@ -16,10 +16,10 @@
 
   <div class="hero-inner">
     <div class="hero-copy">
-      <p class="hero-eyebrow">{{ .Site.Params.role }}</p>
-      <h1 class="hero-title">你好，我是<span class="grad">{{ .Site.Params.author }}</span></h1>
-      <p class="hero-sub">{{ .Site.Params.heroSub }}</p>
-      <p class="hero-desc">{{ .Site.Params.heroDesc }}</p>
+      <p class="hero-eyebrow">{{ hugo.Data.site.role }}</p>
+      <h1 class="hero-title">你好，我是<span class="grad">{{ hugo.Data.site.author }}</span></h1>
+      <p class="hero-sub">{{ hugo.Data.site.heroSub }}</p>
+      <p class="hero-desc">{{ hugo.Data.site.heroDesc }}</p>
 
       <div class="hero-actions">
         <a class="btn btn-primary" href="/posts/">
@@ -43,16 +43,16 @@
     <div class="hero-side">
       <figure class="hero-quote">
         <span class="qmark" aria-hidden="true">“</span>
-        <p>{{ .Site.Params.quote }}</p>
-        <figcaption>—— {{ .Site.Params.author }}</figcaption>
+        <p>{{ hugo.Data.site.quote }}</p>
+        <figcaption>—— {{ hugo.Data.site.author }}</figcaption>
       </figure>
       <ul class="hero-words" aria-hidden="true">
-        {{ range .Site.Params.verticalWords }}<li>/ {{ . }}</li>{{ end }}
+        {{ range hugo.Data.site.verticalWords }}<li>/ {{ . }}</li>{{ end }}
       </ul>
       <p class="hero-motto" aria-hidden="true">A<br>MORE<br>CREATIVE<br>LIFE</p>
     </div>
 
-    <p class="hero-script" aria-hidden="true">Keep Building<br>A Better Me<span>—— {{ .Site.Params.author }}</span></p>
+    <p class="hero-script" aria-hidden="true">Keep Building<br>A Better Me<span>—— {{ hugo.Data.site.author }}</span></p>
   </div>
 </section>
 
@@ -135,7 +135,7 @@
       <div class="orbit">
         <div class="orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div>
         {{ $offsets := slice -12 9 -4 13 -6 }}
-        {{ range $i, $k := .Site.Params.knowledge }}
+        {{ range $i, $k := hugo.Data.site.knowledge }}
           {{ if eq $i 3 }}
           <div class="orbit-core">
             <i class="core-ring r1" aria-hidden="true"></i>
@@ -168,17 +168,17 @@
         <a href="/about/">更多 <span aria-hidden="true">→</span></a>
       </div>
       <div class="about-top">
-        <img class="about-ava" src="{{ .Site.Params.avatar }}" alt="{{ .Site.Params.author }}" width="56" height="56">
+        <img class="about-ava" src="{{ hugo.Data.site.avatar }}" alt="{{ hugo.Data.site.author }}" width="56" height="56">
         <div class="about-id">
-          <div class="about-name">{{ .Site.Params.author }}<span class="verified" title="已认证">✓</span></div>
-          <div class="about-role">{{ .Site.Params.role }}</div>
+          <div class="about-name">{{ hugo.Data.site.author }}<span class="verified" title="已认证">✓</span></div>
+          <div class="about-role">{{ hugo.Data.site.role }}</div>
         </div>
       </div>
-      <p class="about-bio">{{ .Site.Params.bio }}</p>
-      <div class="about-meta">{{ range .Site.Params.meta }}<span>{{ . }}</span>{{ end }}</div>
-      <blockquote class="about-quote">“{{ .Site.Params.quote }}”</blockquote>
+      <p class="about-bio">{{ hugo.Data.site.bio }}</p>
+      <div class="about-meta">{{ range hugo.Data.site.meta }}<span>{{ . }}</span>{{ end }}</div>
+      <blockquote class="about-quote">“{{ hugo.Data.site.quote }}”</blockquote>
       <div class="about-actions">
-        {{ range .Site.Params.social }}
+        {{ range hugo.Data.site.social }}
           {{ if or (eq .icon "github") (eq .icon "email") }}
           <a href="{{ .url }}"{{ if ne .url "#" }} target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" .icon }}<span>{{ .name }}</span></a>
           {{ end }}

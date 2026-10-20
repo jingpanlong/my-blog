@@ -1,10 +1,10 @@
 <footer class="site-footer">
   <div class="foot-inner">
     <div class="foot-brand">
-      <span class="brand-logo">{{ .Site.Params.brandMark }}</span>
+      <span class="brand-logo">{{ hugo.Data.site.brandMark }}</span>
       <div class="foot-id">
-        <b>{{ .Site.Params.author }}</b>
-        <small>{{ .Site.Params.subtitle }}</small>
+        <b>{{ hugo.Data.site.author }}</b>
+        <small>{{ hugo.Data.site.subtitle }}</small>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
 
     <div class="foot-right">
       <div class="foot-social">
-        {{ range .Site.Params.social }}
+        {{ range hugo.Data.site.social }}
           <a class="social-btn" href="{{ .url }}" title="{{ .name }}{{ with .handle }} · {{ . }}{{ end }}" aria-label="{{ .name }}"
              {{ if ne .url "#" }}target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" .icon }}</a>
         {{ end }}
@@ -27,7 +27,7 @@
       </div>
       <div class="foot-copy">
         <span>Stay Curious · Keep Building</span>
-        <span>© {{ now.Year }} {{ .Site.Params.author }}</span>
+        <span>© {{ now.Year }} {{ hugo.Data.site.author }}</span>
       </div>
     </div>
   </div>

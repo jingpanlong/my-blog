@@ -1,10 +1,10 @@
 <header class="site-header">
   <div class="nav-inner">
     <a class="brand" href="/" aria-label="{{ .Site.Title }} 首页">
-      <span class="brand-logo">{{ .Site.Params.brandMark }}</span>
+      <span class="brand-logo">{{ hugo.Data.site.brandMark }}</span>
       <span class="brand-copy">
-        <b>{{ .Site.Params.author }}</b>
-        <small>{{ .Site.Params.brandTagline }}</small>
+        <b>{{ hugo.Data.site.author }}</b>
+        <small>{{ hugo.Data.site.brandTagline }}</small>
       </span>
     </a>
 

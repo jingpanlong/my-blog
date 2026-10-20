@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>博客管理后台 · 景盼龙</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/img/avatar.jpg">
+  <style>
+    /* 后台加载前的过渡画面，避免白屏 */
+    html, body { margin: 0; height: 100%; background: #05070f; }
+    #boot {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #9fb4ff; background: #05070f; z-index: 9999; transition: opacity 0.4s;
+    }
+    #boot .ring {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 2px solid rgba(109, 139, 255, 0.25); border-top-color: #6d8bff;
+      animation: spin 0.9s linear infinite;
+    }
+    #boot p { margin: 0; font-size: 13px; letter-spacing: 1px; }
+    #boot small { color: #5f6a90; font-size: 11px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loaded #boot { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div id="boot">
+    <div class="ring"></div>
+    <p>正在载入管理后台…</p>
+    <small>首次登录将跳转 GitHub 授权</small>
+  </div>
+
+  <!-- Decap CMS -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <script>
+    window.addEventListener('load', function () {
+      document.documentElement.classList.add('loaded');
+    });
+  </script>
+</body>
+</html>

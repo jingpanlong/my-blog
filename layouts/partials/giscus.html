@@ -1,11 +1,11 @@
-{{ if .Site.Params.giscusRepo }}
+{{ if hugo.Data.site.giscusRepo }}
 <section class="comments glass" id="comments">
   <h2 class="comments-title">评论区</h2>
   <p class="comments-hint">使用 GitHub 账号登录即可留言。若评论未显示，请先在仓库开启 Discussions 并安装 Giscus App。</p>
   <script src="https://giscus.app/client.js"
-    data-repo="{{ .Site.Params.giscusRepo }}"
-    data-repo-id="{{ .Site.Params.giscusRepoId }}"
-    data-category="{{ .Site.Params.giscusCategory }}"
+    data-repo="{{ hugo.Data.site.giscusRepo }}"
+    data-repo-id="{{ hugo.Data.site.giscusRepoId }}"
+    data-category="{{ hugo.Data.site.giscusCategory }}"
     data-mapping="pathname"
     data-strict="0"
     data-reactions-enabled="1"

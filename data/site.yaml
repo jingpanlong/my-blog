@@ -1,0 +1,77 @@
+# ============================================================
+# 站点可编辑信息（由后台 /admin/ 维护，请勿手改格式）
+# 构建配置在 hugo.toml，本文件只放「内容 / 个人资料」类信息
+# ============================================================
+subtitle: 在构建与书写之间，留住思考的痕迹
+description: 景盼龙的个人博客，记录代码、产品与生活的痕迹。
+
+# ---- 身份 ----
+author: 景盼龙
+brandMark: JP
+brandTagline: 记录 · 创造 · 让想法成为产品
+role: 全栈开发者 · 独立产品 · 技术博主
+bio: 把想法做成产品，把过程写成文字。
+quote: 把想法做成产品，把过程写成文字。
+avatar: /img/avatar.jpg
+meta:
+  - 中国 · 开发者
+  - 独立产品
+  - 咖啡爱好者
+
+# ---- 首页 Hero ----
+heroSub: 一名热爱创造的全栈开发者 · 技术博主 · 产品探索者
+heroDesc: 用代码构建想象，用文字记录思考，在技术、产品与生活的交汇处，寻找更大的可能。
+verticalWords:
+  - CODE
+  - WRITE
+  - BUILD
+  - EXPLORE
+  - LIVE
+  - BETTER ME
+
+# ---- 社交链接（icon 可选：github / email / wechat / xhs / bilibili / rss）----
+social:
+  - name: GitHub
+    url: https://github.com/jingpanlong
+    icon: github
+    handle: jingpanlong
+  - name: 邮箱
+    url: mailto:etrodrigoxqbro435@gmail.com
+    icon: email
+    handle: ''
+  - name: 微信
+    url: '#'
+    icon: wechat
+    handle: JovialPioneerLegen
+  - name: 小红书
+    url: https://xhslink.cn/o/91exvN6cZUA
+    icon: xhs
+    handle: ''
+  - name: B站
+    url: https://b23.tv/zDegVTB
+    icon: bilibili
+    handle: ''
+
+# ---- 知识地图（首页轨道节点）----
+knowledge:
+  - title: AI 人工智能
+    desc: 探索 AI 与人类协作的未来
+    color: '#8b5cf6'
+  - title: 前端开发
+    desc: 构建更好的用户体验
+    color: '#38bdf8'
+  - title: 设计美学
+    desc: 让技术与美好好融合
+    color: '#f472b6'
+  - title: 产品思考
+    desc: 从 0 到 1 的创造过程
+    color: '#fbbf24'
+  - title: 生活灵感
+    desc: 在日常中发现不平凡
+    color: '#34d399'
+
+# ---- 功能配置（一般不用改）----
+likeApi: https://like-counter.470918507.workers.dev
+giscusRepo: jingpanlong/my-blog
+giscusRepoId: R_kgDOVPJ0TA
+giscusCategory: General

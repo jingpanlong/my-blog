@@ -3,63 +3,11 @@ locale = 'zh-cn'
 title = '景盼龙 · 个人博客'
 summaryLength = 60
 
-# 使用仓库内自定义模板（layouts/），不再依赖 Ananke 主题
-
-[params]
-  subtitle = '在构建与书写之间，留住思考的痕迹'
-  author = '景盼龙'
-  # 头像
-  avatar = '/img/avatar.jpg'
-  # 品牌 Logo 字样（取名字缩写）
-  brandMark = 'JP'
-  # 身份 / 品牌标语
-  role = '全栈开发者 · 独立产品 · 技术博主'
-  brandTagline = '记录 · 创造 · 让想法成为产品'
-  # 首页 Hero 文案
-  heroSub = '一名热爱创造的全栈开发者 · 技术博主 · 产品探索者'
-  heroDesc = '用代码构建想象，用文字记录思考，在技术、产品与生活的交汇处，寻找更大的可能。'
-  bio = '把想法做成产品，把过程写成文字。'
-  quote = '把想法做成产品，把过程写成文字。'
-  # 关于我卡片的标签
-  meta = ['中国 · 开发者', '独立产品', '咖啡爱好者']
-  description = '景盼龙的个人博客，记录代码、产品与生活的痕迹。'
-  # Hero 右侧竖排标语
-  verticalWords = ['CODE', 'WRITE', 'BUILD', 'EXPLORE', 'LIVE', 'BETTER ME']
-  social = [
-    { name = 'GitHub', url = 'https://github.com/jingpanlong', icon = 'github', handle = 'jingpanlong' },
-    { name = '邮箱', url = 'mailto:etrodrigoxqbro435@gmail.com', icon = 'email' },
-    { name = '微信', url = '#', icon = 'wechat', handle = 'JovialPioneerLegen' },
-    { name = '小红书', url = 'https://xhslink.cn/o/91exvN6cZUA', icon = 'xhs' },
-    { name = 'B站', url = 'https://b23.tv/zDegVTB', icon = 'bilibili' },
-  ]
-  # Giscus 评论（仓库开启 Discussions + 安装 Giscus App 后自动生效）
-  giscusRepo = 'jingpanlong/my-blog'
-  giscusRepoId = 'R_kgDOVPJ0TA'
-  giscusCategory = 'General'
-  # 点赞计数后端（Cloudflare Worker + KV）。留空则前端降级为本地点赞标记，不显示全局计数。
-  likeApi = 'https://like-counter.470918507.workers.dev'
-
-  # 知识地图（首页轨道图 / 移动端网格）
-  [[params.knowledge]]
-    title = 'AI 人工智能'
-    desc = '探索 AI 与人类协作的未来'
-    color = '#8b5cf6'
-  [[params.knowledge]]
-    title = '前端开发'
-    desc = '构建更好的用户体验'
-    color = '#38bdf8'
-  [[params.knowledge]]
-    title = '设计美学'
-    desc = '让技术与美好好融合'
-    color = '#f472b6'
-  [[params.knowledge]]
-    title = '产品思考'
-    desc = '从 0 到 1 的创造过程'
-    color = '#fbbf24'
-  [[params.knowledge]]
-    title = '生活灵感'
-    desc = '在日常中发现不平凡'
-    color = '#34d399'
+# ============================================================
+# 构建配置。
+# 站点的「可编辑信息」（作者资料 / 社交 / 知识地图 / Hero 文案…）
+# 全部在 data/site.yaml，由后台 /admin/ 维护，不要在这里改内容。
+# ============================================================
 
 [outputs]
   home = ['HTML', 'RSS', 'JSON']

@@ -1,0 +1,165 @@
+# ============================================================
+# 博客管理后台配置（Decap CMS）
+# 入口：https://my-blog-jingpanlong.pages.dev/admin/
+# 流程：后台写内容 → 提交到 GitHub → Cloudflare 自动构建上线
+# ============================================================
+
+backend:
+  name: github
+  repo: jingpanlong/my-blog
+  branch: main
+  # GitHub OAuth 代理（Cloudflare Worker），需先在 GitHub 创建 OAuth App
+  base_url: https://blog-oauth.470918507.workers.dev
+  auth_endpoint: auth
+  squash_merges: true
+
+# 编辑流程：草稿 → 审核 → 已发布（底层走 GitHub Pull Request）
+publish_mode: editorial_workflow
+
+media_folder: static/img/uploads
+public_folder: /img/uploads
+
+site_url: https://my-blog-jingpanlong.pages.dev
+display_url: https://my-blog-jingpanlong.pages.dev
+logo_url: /img/avatar.jpg
+
+locale: zh
+
+collections:
+  # ---------------- 文章 ----------------
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    folder: content/posts
+    create: true
+    slug: '{{slug}}'
+    extension: md
+    format: yaml-frontmatter
+    editor:
+      preview: false
+    summary: '{{title}} — {{date}}'
+    fields:
+      - { name: title, label: 标题, widget: string, hint: '显示在卡片与文章页顶部' }
+      - { name: description, label: 摘要, widget: text, hint: '首页卡片上的一行简介，建议 40 字内' }
+      - { name: date, label: 发布时间, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - name: kicker
+        label: 专栏（封面角标）
+        widget: select
+        options:
+          - 技术思考
+          - 技术实践
+          - 工程实践
+          - 设计思考
+          - 效率工具
+          - 产品思考
+          - 生活随笔
+        default: 技术实践
+      - { name: tags, label: 标签, widget: list, hint: '回车分隔，如 Hugo / Cloudflare' }
+      - { name: categories, label: 分类, widget: list, default: ['技术'] }
+      - name: cover
+        label: 封面图
+        widget: image
+        required: false
+        hint: '留空则首页文章卡不显示封面'
+      - { name: body, label: 正文, widget: markdown }
+
+  # ---------------- 项目 ----------------
+  - name: projects
+    label: 项目
+    label_singular: 项目
+    folder: content/projects
+    create: true
+    slug: '{{slug}}'
+    extension: md
+    format: yaml-frontmatter
+    editor:
+      preview: false
+    summary: '{{title}} — {{status}}'
+    fields:
+      - { name: title, label: 项目名, widget: string }
+      - { name: summary, label: 一句话简介, widget: text }
+      - { name: date, label: 时间, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false }
+      - { name: tags, label: 技术标签, widget: list, hint: '首页项目卡上显示的三个标签' }
+      - { name: categories, label: 分类, widget: list }
+      - { name: icon, label: '图标（Emoji）', widget: string, default: '🚀' }
+      - { name: accent, label: '主题色', widget: string, default: '#8b5cf6,#c084fc', hint: '两个 HEX 色，逗号分隔' }
+      - name: status
+        label: 状态
+        widget: select
+        options: ['已上线', '开发中', '规划中', '已归档']
+        default: 开发中
+      - { name: link, label: '外部链接', widget: string, required: false, hint: '留空则指向站内详情页' }
+      - { name: body, label: 项目详情, widget: markdown }
+
+  # ---------------- 单页 ----------------
+  - name: pages
+    label: 页面
+    label_singular: 页面
+    files:
+      - name: about
+        label: 关于我
+        file: content/about.md
+        editor:
+          preview: false
+        fields:
+          - { name: title, label: 标题, widget: string }
+          - { name: layout, label: '布局', widget: hidden, default: single }
+          - { name: body, label: 页面内容, widget: markdown }
+
+  # ---------------- 站点设置 ----------------
+  - name: settings
+    label: 站点设置
+    label_singular: 设置
+    files:
+      - name: site
+        label: 个人资料与站点
+        file: data/site.yaml
+        editor:
+          preview: false
+        fields:
+          - { name: author, label: 名字, widget: string }
+          - { name: brandMark, label: 'Logo 字样', widget: string }
+          - { name: brandTagline, label: 'Logo 下方标语', widget: string }
+          - { name: role, label: '身份标签（Hero 顶部小字）', widget: string }
+          - { name: bio, label: 侧栏简介, widget: text }
+          - { name: quote, label: '座右铭 / 引言', widget: text }
+          - { name: avatar, label: '头像路径', widget: string, default: '/img/avatar.jpg' }
+          - name: meta
+            label: 侧栏身份标签
+            widget: list
+            hint: '如：中国 · 开发者'
+          - { name: subtitle, label: '页脚副标题', widget: string }
+          - { name: description, label: 'SEO 描述', widget: text }
+
+          - { name: heroSub, label: 'Hero 副标题', widget: string }
+          - { name: heroDesc, label: 'Hero 正文', widget: text }
+          - name: verticalWords
+            label: 右侧竖排标语
+            widget: list
+
+          - name: social
+            label: '社交链接'
+            widget: list
+            hint: '页头、侧栏、页脚都会用到'
+            fields:
+              - { name: name, label: '名称', widget: string }
+              - { name: url, label: '链接', widget: string, hint: '邮箱请写 mailto:xxx' }
+              - name: icon
+                label: '图标'
+                widget: select
+                options: ['github', 'email', 'wechat', 'xhs', 'bilibili', 'rss']
+              - { name: handle, label: '账号 / 备注', widget: string, required: false }
+
+          - name: knowledge
+            label: '知识地图节点'
+            widget: list
+            hint: '首页「知识地图」绕星球排列的节点，建议 5 个'
+            fields:
+              - { name: title, label: '标题', widget: string }
+              - { name: desc, label: '描述', widget: string }
+              - { name: color, label: '颜色', widget: color }
+
+          - { name: likeApi, label: '点赞计数接口', widget: string, required: false }
+          - { name: giscusRepo, label: '评论仓库', widget: string, required: false }
+          - { name: giscusRepoId, label: '评论仓库 ID', widget: string, required: false }
+          - { name: giscusCategory, label: '评论分类', widget: string, required: false }
