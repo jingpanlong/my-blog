@@ -16,8 +16,16 @@
   </div>
 
   <footer class="single-foot">
-    <a class="pill ghost" href="/posts/">← 返回文章列表</a>
+    {{ if eq .Section "projects" }}
+      <a class="pill ghost" href="/projects/">← 返回项目列表</a>
+    {{ else if eq .Section "posts" }}
+      <a class="pill ghost" href="/posts/">← 返回文章列表</a>
+    {{ else }}
+      <a class="pill ghost" href="/">← 返回首页</a>
+    {{ end }}
   </footer>
+
+  {{ partial "interactions.html" . }}
 
   {{ if eq .Section "posts" }}{{ partial "giscus.html" . }}{{ end }}
 </article>

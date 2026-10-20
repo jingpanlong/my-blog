@@ -1,0 +1,13 @@
+{{ define "main" }}
+<section class="section">
+  <div class="section-head">
+    <h1 class="section-title">{{ .Title }}</h1>
+    <span class="more-link">{{ len .Pages }} 个项目</span>
+  </div>
+  <div class="pcards pcards-wide">
+    {{ range .Pages }}
+      {{ partial "project-card.html" . }}
+    {{ end }}
+  </div>
+</section>
+{{ end }}

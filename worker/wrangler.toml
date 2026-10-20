@@ -1,0 +1,10 @@
+name = "like-counter"
+main = "like-counter.js"
+compatibility_date = "2024-09-23"
+account_id = "5603fe1ec996bc368facda2190cdcfd2"
+workers_dev = true
+
+# KV 命名空间（部署脚本会自动创建并填入 id；手工部署时把 REPLACE 换成实际 id）
+kv_namespaces = [
+  { binding = "LIKES", id = "REPLACE_WITH_KV_ID" }
+]

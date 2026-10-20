@@ -3,9 +3,10 @@ title: 关于我
 layout: single
 ---
 
-<img src="/img/avatar.svg" alt="景盼龙" class="about-avatar">
-
-你好，我是 **景盼龙**，一个喜欢把想法做成产品、再把过程写下来的全栈开发者。
+<div class="about-hero">
+  <img src="/img/avatar.jpg" alt="景盼龙" class="about-avatar">
+  <p>你好，我是 <strong>景盼龙</strong>，一个喜欢把想法做成产品、再把过程写下来的全栈开发者。</p>
+</div>
 
 ## 我做什么
 

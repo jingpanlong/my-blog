@@ -4,6 +4,10 @@ date: 2026-07-20
 summary: Python + HTML 桌面宠物，支持图片上传与右键交互，正在打磨自动抠图与 3D 立体渲染。
 tags: ['Python', '前端']
 categories: ['工具']
+icon: '🐾'
+accent: '#22d3ee,#38bdf8'
+status: '开发中'
+link: ''
 ---
 
 一个跑在桌面上的小宠物工具，用 Python + HTML 实现。

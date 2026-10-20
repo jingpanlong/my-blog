@@ -1,0 +1,16 @@
+{{ $a := "#8b5cf6" }}{{ $b := "#c084fc" }}
+{{ with .Params.accent }}{{ $parts := split . "," }}{{ $a = index $parts 0 }}{{ if gt (len $parts) 1 }}{{ $b = index $parts 1 }}{{ end }}{{ end }}
+<article class="pcard" style="--a:{{ $a }};--b:{{ $b }}">
+  <div class="pcard-top">
+    <span class="pcard-icon">{{ with .Params.icon }}{{ . }}{{ else }}◆{{ end }}</span>
+    <h3 class="pcard-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    <a class="pcard-open" href="{{ with .Params.link }}{{ . }}{{ else }}{{ .RelPermalink }}{{ end }}"{{ with .Params.link }} target="_blank" rel="noopener"{{ end }} aria-label="{{ .Title }}">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+    </a>
+  </div>
+  <p class="pcard-desc">{{ with .Params.summary }}{{ . }}{{ else }}{{ .Summary | plainify | truncate 48 }}{{ end }}</p>
+  <div class="pcard-foot">
+    <div class="pcard-tags">{{ range first 3 .Params.tags }}<span>{{ . }}</span>{{ end }}</div>
+    <span class="pcard-status">{{ with .Params.status }}{{ . }}{{ else }}进行中{{ end }}</span>
+  </div>
+</article>

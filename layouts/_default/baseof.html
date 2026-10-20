@@ -3,21 +3,23 @@
 <head>
   {{ partial "head.html" . }}
 </head>
-<body>
-  <div class="aurora" aria-hidden="true">
+<body{{ if .IsHome }} class="is-home"{{ end }}>
+  <div class="nebula" aria-hidden="true">
     <span class="blob b1"></span>
     <span class="blob b2"></span>
     <span class="blob b3"></span>
   </div>
+  <div class="starfield" aria-hidden="true"></div>
 
   {{ partial "header.html" . }}
 
-  <main id="main" class="container">
+  <main id="main" class="{{ if .IsHome }}home-main{{ else }}container{{ end }}">
     {{ block "main" . }}{{ end }}
   </main>
 
   {{ partial "footer.html" . }}
   {{ partial "search-modal.html" . }}
+  {{ partial "favorites-modal.html" . }}
 
   <button id="to-top" class="to-top" aria-label="回到顶部" title="回到顶部">↑</button>
 

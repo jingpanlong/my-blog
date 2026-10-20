@@ -4,6 +4,8 @@ date: 2026-10-19
 description: 聊聊玻璃拟态（Glassmorphism）的设计要点：背景、模糊、边框、层次与动效。
 tags: ['设计', '前端']
 categories: ['技术']
+kicker: '设计思考'
+cover: '/img/covers/cover-ai.jpg'
 ---
 
 「好看且不简陋」关键在细节。玻璃拟态是这套博客的视觉主线。

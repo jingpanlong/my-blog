@@ -1,0 +1,27 @@
+{{ if or (eq .Section "posts") (eq .Section "projects") }}
+<section class="interactions glass" data-path="{{ .RelPermalink }}" data-title="{{ .Title }}" data-url="{{ .Permalink }}">
+  <button type="button" class="act act-like" id="like-btn" aria-pressed="false">
+    <svg class="ic-heart" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5l-1.5-1.4C5.4 14.6 2.5 11.9 2.5 8.7 2.5 6.1 4.5 4.2 7 4.2c1.6 0 3.1.8 4 2 .9-1.2 2.4-2 4-2 2.5 0 4.5 1.9 4.5 4.5 0 3.2-2.9 5.9-8 10.4z"/></svg>
+    <span class="act-label">点赞</span>
+    <span class="act-count" id="like-count">0</span>
+  </button>
+
+  <button type="button" class="act act-fav" id="fav-btn" aria-pressed="false">
+    <svg class="ic-star" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9 6.8 19l1-5.8L3.6 9.1l5.8-.8z"/></svg>
+    <span class="act-label">收藏</span>
+  </button>
+
+  <div class="share-wrap">
+    <button type="button" class="act act-share" id="share-btn" aria-haspopup="true" aria-expanded="false">
+      <svg class="ic-share" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>
+      <span class="act-label">转发</span>
+    </button>
+    <div class="share-menu glass" id="share-menu" hidden>
+      <button type="button" data-share="copy"><span class="sm-ic">🔗</span>复制链接</button>
+      <button type="button" data-share="weibo"><span class="sm-ic">🌐</span>分享到微博</button>
+      <button type="button" data-share="qq"><span class="sm-ic">🐧</span>分享到 QQ</button>
+      <button type="button" data-share="system"><span class="sm-ic">📤</span>系统分享…</button>
+    </div>
+  </div>
+</section>
+{{ end }}

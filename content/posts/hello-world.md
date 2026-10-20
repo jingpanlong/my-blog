@@ -5,6 +5,8 @@ title = '我的第一篇文章'
 description = '博客开张第一篇，聊聊为什么要写下来，以及接下来的记录计划。'
 tags = ['随笔', '博客']
 categories = ['生活']
+kicker = '生活随笔'
+cover = '/img/covers/cover-life.jpg'
 +++
 
 # 欢迎来到我的博客

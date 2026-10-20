@@ -4,6 +4,8 @@ date: 2026-10-19
 description: 记录我是如何用 Hugo 生成静态站、Cloudflare Pages 免费托管，并把整套流程跑通的。
 tags: ['Hugo', '博客', 'Cloudflare']
 categories: ['技术']
+kicker: '技术实践'
+cover: '/img/covers/cover-efficiency.jpg'
 ---
 
 这次把个人博客搬到了 **Hugo + Cloudflare Pages** 的组合上。
