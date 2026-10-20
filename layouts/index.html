@@ -134,27 +134,22 @@
 
       <div class="orbit">
         <div class="orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div>
-        {{ range first 3 .Site.Params.knowledge }}
-        <div class="orbit-node" style="--c:{{ .color }}">
-          <span class="on-dot" aria-hidden="true"></span>
-          <div class="on-body">
-            <b>{{ .title }}</b>
-            <small>{{ .desc }}</small>
+        {{ $offsets := slice -12 9 -4 13 -6 }}
+        {{ range $i, $k := .Site.Params.knowledge }}
+          {{ if eq $i 3 }}
+          <div class="orbit-core">
+            <b>更好的自己</b>
+            <small>A BETTER ME</small>
           </div>
-        </div>
-        {{ end }}
-        <div class="orbit-core">
-          <b>更好的自己</b>
-          <small>A BETTER ME</small>
-        </div>
-        {{ range after 3 .Site.Params.knowledge }}
-        <div class="orbit-node" style="--c:{{ .color }}">
-          <span class="on-dot" aria-hidden="true"></span>
-          <div class="on-body">
-            <b>{{ .title }}</b>
-            <small>{{ .desc }}</small>
+          {{ end }}
+          {{ $oy := 0 }}{{ if lt $i (len $offsets) }}{{ $oy = index $offsets $i }}{{ end }}
+          <div class="orbit-node" style="--c:{{ $k.color }};--oy:{{ $oy }}px;--delay:{{ mul $i 0.45 }}s">
+            <span class="on-dot" aria-hidden="true"></span>
+            <div class="on-body">
+              <b>{{ $k.title }}</b>
+              <small>{{ $k.desc }}</small>
+            </div>
           </div>
-        </div>
         {{ end }}
       </div>
     </section>
