@@ -21,7 +21,7 @@ public_folder: /img/uploads
 
 site_url: https://my-blog-jingpanlong.pages.dev
 display_url: https://my-blog-jingpanlong.pages.dev
-logo_url: /img/avatar.jpg
+logo_url: /img/logo.png
 
 locale: zh
 

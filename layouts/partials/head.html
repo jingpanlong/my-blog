@@ -13,7 +13,8 @@
 
 <link rel="stylesheet" href="/css/style.css">
 <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="/index.xml">
-{{ with hugo.Data.site.avatar }}<link rel="icon" href="{{ . }}">{{ end }}
+<link rel="icon" type="image/png" href="/img/favicon.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
 {{ with hugo.Data.site.likeApi }}<meta name="like-api" content="{{ . }}">{{ end }}
 
 {{/* 防闪烁：在首屏绘制前确定主题（支持 ?theme=light|dark 覆盖，便于分享与测试） */}}
