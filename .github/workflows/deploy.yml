@@ -1,0 +1,63 @@
+name: 构建并部署到 Cloudflare Pages
+
+# 触发条件：
+#   - push 到 main          -> 生产部署（https://my-blog-jingpanlong.pages.dev）
+#   - pull_request          -> 预览部署（草稿/改动可先在预览链接查看，不影响线上）
+#   - 手动触发              -> 方便重新构建
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# 同一分支只保留一个进行中的工作流，避免并发部署互相覆盖
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    name: Hugo 构建 + Pages 部署
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    env:
+      HUGO_VERSION: "0.168.0"
+      PROJECT_NAME: my-blog-jingpanlong
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Hugo Extended
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
+
+      # Decap 后台的草稿分支名形如 cms/posts/xxx，斜杠不能直接传给 --branch
+      - name: 计算部署分支名
+        id: branch
+        run: |
+          raw="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          safe="${raw//\//-}"
+          echo "name=$safe" >> "$GITHUB_OUTPUT"
+          echo "部署分支: $safe"
+
+      - name: 构建站点
+        run: hugo --gc --minify
+
+      - name: 部署到 Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          # main -> 生产环境；其它分支 -> 预览环境（独立 URL，不覆盖线上）
+          command: |
+            wrangler pages deploy public \
+              --project-name=${{ env.PROJECT_NAME }} \
+              --branch=${{ steps.branch.outputs.name }}
