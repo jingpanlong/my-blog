@@ -63,35 +63,157 @@
   })();
 
   /* ---------------------------------------------
-     3. Hero 鼠标视差 + 拖拽平移
+     3. Hero：Canvas 星空（多层视差 + 闪烁 + 流星）+ 指针/拖拽视差
      --------------------------------------------- */
-  (function heroParallax() {
+  (function heroSky() {
     var hero = document.querySelector('.hero-band');
     if (!hero) return;
     var bg = hero.querySelector('.hero-bg');
     var script = hero.querySelector('.hero-script');
     var quote = hero.querySelector('.hero-quote');
-    if (!bg) return;
+    var sky = document.querySelector('.hero-sky');
+    if (!bg || !sky) return;
 
+    /* ---- 指针状态：目标值 tx/ty，平滑值 cx/cy ---- */
     var tx = 0, ty = 0, cx = 0, cy = 0;
     var dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0;
-    var running = false;
 
-    function render() {
-      cx = lerp(cx, tx, 0.12);
-      cy = lerp(cy, ty, 0.12);
-      bg.style.transform = 'scale(1.07) translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
+    function applyLayers() {
+      bg.style.transform = 'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0)';
       if (script) script.style.transform = 'translate3d(' + (cx * 2.1).toFixed(2) + 'px,' + (cy * 1.6).toFixed(2) + 'px,0) rotate(-7deg)';
       if (quote) quote.style.transform = 'translate3d(' + (cx * -0.7).toFixed(2) + 'px,' + (cy * -0.5).toFixed(2) + 'px,0)';
-      if (Math.abs(cx - tx) > 0.1 || Math.abs(cy - ty) > 0.1 || dragging) {
-        requestAnimationFrame(render);
-      } else {
-        running = false;
+      hero.style.setProperty('--px', cx.toFixed(2));
+      hero.style.setProperty('--py', cy.toFixed(2));
+    }
+
+    /* ---- 星空引擎 ---- */
+    var ctx = null, stars = [], meteors = [], W = 0, H = 0, dpr = 1;
+    var nextMeteorAt = 2000, t0 = 0, lastTs = 0, running = false, inView = true;
+
+    function seed() {
+      stars = [];
+      var n = clamp(Math.round(W * H / 9000), 70, 280);
+      for (var i = 0; i < n; i++) {
+        var depth = Math.random();
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H * 0.72,          // 集中在天空区，避开底部山脊
+          r: 0.4 + depth * 1.6,
+          depth: depth,
+          tw: 0.6 + Math.random() * 1.8,        // 闪烁频率
+          ph: Math.random() * Math.PI * 2,      // 闪烁相位
+          a: 0.22 + depth * 0.6                 // 基础亮度
+        });
       }
     }
-    function kick() { if (!running) { running = true; requestAnimationFrame(render); } }
+    function resize() {
+      var r = hero.getBoundingClientRect();
+      W = r.width; H = r.height;
+      if (!W || !H) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      sky.width = Math.round(W * dpr);
+      sky.height = Math.round(H * dpr);
+      ctx = sky.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+      if (reduceMotion) drawSky(0);
+    }
+    function drawSky(t) {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        var par = 5 + s.depth * 24;                                   // 视差幅度：远小近大
+        var dx = clamp(cx * par * 0.4, -70, 70);
+        var dy = clamp(cy * par * 0.22, -40, 40);
+        var drift = reduceMotion ? 0 : Math.sin(t * 0.00005 + s.ph) * 3.2 * s.depth;
+        var tw = reduceMotion ? 1 : 0.7 + 0.3 * Math.sin(t * 0.001 * s.tw + s.ph);
+        var x = s.x + dx + drift, y = s.y + dy;
+        ctx.globalAlpha = clamp(s.a * tw, 0.04, 1);
+        ctx.fillStyle = s.depth > 0.85 ? '#e2eaff' : '#ffffff';
+        ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.2832); ctx.fill();
+        if (s.depth > 0.9) {                                          // 亮星柔光
+          ctx.globalAlpha = clamp(s.a * tw * 0.22, 0, 0.3);
+          ctx.beginPath(); ctx.arc(x, y, s.r * 3.6, 0, 6.2832); ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    function spawnMeteor() {
+      if (meteors.length >= 2) return;
+      var dir = Math.random() < 0.5 ? 1 : -1;
+      meteors.push({
+        x: dir > 0 ? -50 : W * (0.3 + Math.random() * 0.65),
+        y: -20 + Math.random() * H * 0.32,
+        vx: dir * (430 + Math.random() * 360),
+        vy: 250 + Math.random() * 300,
+        len: 90 + Math.random() * 120,
+        life: 0,
+        ttl: 0.9 + Math.random() * 0.55,
+        w: 1.1 + Math.random() * 0.9
+      });
+    }
+    function drawMeteors(dt, t) {
+      if (!reduceMotion && t > nextMeteorAt) {
+        spawnMeteor();
+        nextMeteorAt = t + 2800 + Math.random() * 5400;
+      }
+      for (var i = meteors.length - 1; i >= 0; i--) {
+        var m = meteors[i];
+        m.life += dt;
+        if (m.life >= m.ttl) { meteors.splice(i, 1); continue; }
+        var p = m.life / m.ttl;
+        var hx = m.x + m.vx * m.life, hy = m.y + m.vy * m.life;
+        var sp = Math.sqrt(m.vx * m.vx + m.vy * m.vy);
+        var k = m.len / sp;
+        var tailX = hx - m.vx * k, tailY = hy - m.vy * k;
+        var fade = Math.min(p * 4, 1) * (1 - p * 0.45);
+        var g = ctx.createLinearGradient(hx, hy, tailX, tailY);
+        g.addColorStop(0, 'rgba(255,255,255,' + (0.85 * fade).toFixed(3) + ')');
+        g.addColorStop(1, 'rgba(160,190,255,0)');
+        ctx.strokeStyle = g; ctx.lineWidth = m.w; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(tailX, tailY); ctx.stroke();
+      }
+    }
 
-    if (reduceMotion) return;
+    function frame(ts) {
+      if (!t0) t0 = ts;
+      var dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
+      lastTs = ts;
+      cx = lerp(cx, tx, 0.1);
+      cy = lerp(cy, ty, 0.1);
+      applyLayers();
+      drawSky(ts - t0);
+      drawMeteors(dt / 1000, ts - t0);
+      if (inView && !document.hidden) {
+        requestAnimationFrame(frame);
+      } else {
+        running = false; lastTs = 0;
+      }
+    }
+    function kick() {
+      if (!running) { running = true; lastTs = 0; requestAnimationFrame(frame); }
+    }
+
+    /* 视口外 / 切后台自动暂停，省 CPU */
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[0].isIntersecting;
+        if (inView) kick();
+      }, { threshold: 0 }).observe(hero);
+    }
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
+
+    if (window.ResizeObserver) {
+      new ResizeObserver(function () { resize(); }).observe(hero);
+    } else {
+      window.addEventListener('resize', resize);
+    }
+    resize();
+
+    if (reduceMotion) return;   // 静态星空已绘制，不跑动画循环
 
     hero.addEventListener('pointermove', function (e) {
       if (dragging) {
@@ -122,6 +244,8 @@
     }
     window.addEventListener('pointerup', endDrag);
     window.addEventListener('pointercancel', endDrag);
+
+    kick();
   })();
 
   /* ---------------------------------------------

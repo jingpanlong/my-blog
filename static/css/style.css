@@ -171,9 +171,11 @@ img { max-width: 100%; }
 .hero-band {
   position: relative; width: 100%; min-height: 506px;
   overflow: hidden; isolation: isolate;
+  --px: 0; --py: 0;
 }
+/* 底图：静态位移由 JS 驱动，缓慢推拉由 scale 独立属性完成（互不冲突） */
 .hero-bg {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 0;
   background-image: url('/img/hero/hero-bg.jpg');
   background-image: image-set(
     url('/img/hero/hero-bg.jpg') 1x,
@@ -182,16 +184,88 @@ img { max-width: 100%; }
   background-position: center 62%;
   background-size: cover;
   background-repeat: no-repeat;
-  transform: scale(1.03);
+  scale: 1.08;
+  animation: kenburns 44s ease-in-out infinite alternate;
+  will-change: transform, scale;
 }
+@keyframes kenburns {
+  from { scale: 1.08; }
+  to   { scale: 1.17; }
+}
+/* 极光星云：三团大型模糊光斑，screen 混合叠加发光 */
+.hero-aurora {
+  position: absolute; inset: 0; z-index: 1;
+  overflow: hidden; pointer-events: none;
+  transform: translate3d(calc(var(--px) * -7px), calc(var(--py) * -5px), 0);
+  will-change: transform;
+}
+.hero-aurora .au {
+  position: absolute; display: block; border-radius: 50%;
+  mix-blend-mode: screen; filter: blur(72px);
+  will-change: transform, opacity;
+}
+.au-1 {
+  width: 46%; height: 80%; left: -7%; top: -20%;
+  background: radial-gradient(closest-side, rgba(99, 102, 241, 0.5), transparent 72%);
+  animation: auDrift1 30s ease-in-out infinite alternate;
+}
+.au-2 {
+  width: 42%; height: 68%; right: -9%; top: 4%;
+  background: radial-gradient(closest-side, rgba(139, 92, 246, 0.44), transparent 72%);
+  animation: auDrift2 38s ease-in-out infinite alternate;
+}
+.au-3 {
+  width: 54%; height: 58%; left: 24%; bottom: -24%;
+  background: radial-gradient(closest-side, rgba(45, 212, 191, 0.3), transparent 72%);
+  animation: auDrift3 47s ease-in-out infinite alternate;
+}
+@keyframes auDrift1 {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: .72; }
+  to   { transform: translate3d(10%, 8%, 0) scale(1.2); opacity: 1; }
+}
+@keyframes auDrift2 {
+  from { transform: translate3d(0, 0, 0) scale(1.12); opacity: .55; }
+  to   { transform: translate3d(-12%, 10%, 0) scale(1); opacity: .9; }
+}
+@keyframes auDrift3 {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: .5; }
+  to   { transform: translate3d(8%, -9%, 0) scale(1.22); opacity: .85; }
+}
+/* 星空画布：JS 绘制（多层视差 + 闪烁 + 流星） */
+.hero-sky {
+  position: absolute; inset: 0; z-index: 2;
+  width: 100%; height: 100%; pointer-events: none;
+}
+/* 暗角 + 文字可读性遮罩 */
 .hero-veil {
-  position: absolute; inset: 0;
+  position: absolute; inset: 0; z-index: 3; pointer-events: none;
   background:
+    radial-gradient(120% 92% at 50% 40%, transparent 42%, rgba(3, 5, 14, 0.52) 100%),
     linear-gradient(90deg, rgba(4, 7, 18, 0.95) 0%, rgba(4, 7, 18, 0.78) 30%, rgba(4, 7, 18, 0.18) 58%, rgba(4, 7, 18, 0.62) 100%),
     linear-gradient(180deg, rgba(4, 7, 18, 0.9) 0%, rgba(4, 7, 18, 0.1) 24%, rgba(4, 7, 18, 0.05) 55%, rgba(5, 7, 15, 0.99) 100%);
 }
+/* 胶片颗粒：SVG 噪声瓦片，steps 跳变模拟胶片颗粒跳动 */
+.hero-grain {
+  position: absolute; inset: 0; z-index: 4;
+  overflow: hidden; pointer-events: none; opacity: 0.055;
+}
+.hero-grain::after {
+  content: ""; position: absolute; inset: -100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 7s steps(8) infinite;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  12.5% { transform: translate(-4%, -6%); }
+  25% { transform: translate(-8%, 4%); }
+  37.5% { transform: translate(4%, -8%); }
+  50% { transform: translate(-4%, 10%); }
+  62.5% { transform: translate(8%, 2%); }
+  75% { transform: translate(-2%, -6%); }
+  87.5% { transform: translate(6%, 6%); }
+}
 .hero-inner {
-  position: relative; z-index: 2;
+  position: relative; z-index: 5;
   max-width: var(--maxw); margin: 0 auto; padding: 108px 24px 28px;
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 32px; align-items: end;
 }
@@ -253,7 +327,7 @@ img { max-width: 100%; }
   text-transform: uppercase; text-align: right; color: rgba(190, 205, 240, 0.3);
 }
 .hero-script {
-  position: absolute; z-index: 3; left: 44%; top: 17%;
+  position: absolute; z-index: 6; left: 44%; top: 17%;
   margin: 0; pointer-events: none; text-align: left;
   font-family: "Segoe Script", "Bradley Hand", "Xingkai SC", "STXingkai", cursive;
   font-size: clamp(14px, 1.5vw, 21px); line-height: 1.5;
@@ -969,6 +1043,8 @@ img { max-width: 100%; }
   .km-node, .km-core, .km-sheen, .km-ring, .km-orbits i, .km-stars, .km-link {
     animation: none !important;
   }
+  .hero-bg, .hero-aurora, .hero-aurora .au, .hero-grain::after { animation: none !important; }
+  .hero-aurora { transform: none !important; }
   .km-node { transition: none; }
   .acard, .pcard, .post-card { transition: none; }
 }
