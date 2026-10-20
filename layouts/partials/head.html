@@ -16,11 +16,12 @@
 {{ with hugo.Data.site.avatar }}<link rel="icon" href="{{ . }}">{{ end }}
 {{ with hugo.Data.site.likeApi }}<meta name="like-api" content="{{ . }}">{{ end }}
 
-{{/* 防闪烁：在首屏绘制前确定主题 */}}
+{{/* 防闪烁：在首屏绘制前确定主题（支持 ?theme=light|dark 覆盖，便于分享与测试） */}}
 <script>
   (function () {
     try {
-      var t = localStorage.getItem('theme') || 'dark';
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'light' || q === 'dark') ? q : (localStorage.getItem('theme') || 'dark');
       document.documentElement.setAttribute('data-theme', t);
     } catch (e) {
       document.documentElement.setAttribute('data-theme', 'dark');

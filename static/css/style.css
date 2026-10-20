@@ -79,18 +79,21 @@ img { max-width: 100%; }
   background-size: 340px 340px;
   opacity: 0.55;
 }
-[data-theme="light"] .starfield { opacity: 0.18; }
+[data-theme="light"] .starfield { opacity: 0.1; }
 
 /* 星云光晕 */
 .nebula {
   position: fixed; inset: -20% -10%; z-index: -3; pointer-events: none;
   filter: blur(90px); opacity: 0.55;
 }
-[data-theme="light"] .nebula { opacity: 0.28; }
+[data-theme="light"] .nebula { opacity: 0.5; }
 .blob { position: absolute; border-radius: 50%; }
 .b1 { width: 40vw; height: 40vw; left: -8vw; top: -6vw; background: radial-gradient(circle, #2a3f8f, transparent 68%); }
 .b2 { width: 38vw; height: 38vw; right: -6vw; top: 18vh; background: radial-gradient(circle, #5b2a8f, transparent 68%); }
 .b3 { width: 34vw; height: 34vw; left: 32vw; bottom: -16vw; background: radial-gradient(circle, #0d5a6b, transparent 68%); }
+[data-theme="light"] .b1 { background: radial-gradient(circle, #ccd8fe, transparent 68%); }
+[data-theme="light"] .b2 { background: radial-gradient(circle, #e8d6fb, transparent 68%); }
+[data-theme="light"] .b3 { background: radial-gradient(circle, #c9ecf0, transparent 68%); }
 
 /* =========================================================
    头部
@@ -337,6 +340,57 @@ img { max-width: 100%; }
 }
 .hero-script span { display: block; margin-top: 4px; font-size: 0.7em; color: rgba(205, 218, 255, 0.6); }
 
+/* ---- Hero 浅色主题：晨曦山景 + 浅色遮罩 + 深色文字 ---- */
+[data-theme="light"] .hero-bg {
+  background-image: url('/img/hero/hero-bg-light.jpg');
+  background-image: image-set(
+    url('/img/hero/hero-bg-light.jpg') 1x,
+    url('/img/hero/hero-bg-light@2x.jpg') 2x
+  );
+}
+[data-theme="light"] .hero-veil {
+  background:
+    radial-gradient(120% 92% at 50% 38%, transparent 48%, rgba(148, 130, 180, 0.14) 100%),
+    linear-gradient(90deg, rgba(250, 248, 253, 0.93) 0%, rgba(248, 246, 252, 0.74) 30%, rgba(248, 246, 252, 0.05) 58%, rgba(246, 244, 250, 0.46) 100%),
+    linear-gradient(180deg, rgba(251, 249, 253, 0.92) 0%, rgba(249, 247, 252, 0.06) 22%, rgba(249, 247, 252, 0.04) 52%, rgba(244, 246, 252, 0.98) 100%);
+}
+[data-theme="light"] .hero-eyebrow { color: #5a68b8; }
+[data-theme="light"] .hero-title { color: #1b2138; }
+[data-theme="light"] .hero-title .grad {
+  background: linear-gradient(100deg, #4f46e5, #9333ea 52%, #0f766e);
+  -webkit-background-clip: text; background-clip: text;
+}
+[data-theme="light"] .hero-sub { color: #3c4560; }
+[data-theme="light"] .hero-desc { color: #5a6480; }
+[data-theme="light"] .btn-ghost {
+  color: #2a3352; border-color: rgba(18, 24, 48, 0.16);
+  background: rgba(255, 255, 255, 0.55);
+}
+[data-theme="light"] .btn-ghost:hover { background: rgba(255, 255, 255, 0.88); border-color: rgba(18, 24, 48, 0.3); }
+[data-theme="light"] .stat b { color: #1b2138; }
+[data-theme="light"] .stat span { color: #6b7490; }
+[data-theme="light"] .hero-quote {
+  background: rgba(255, 255, 255, 0.66);
+  border-color: rgba(18, 24, 48, 0.1);
+  box-shadow: 0 16px 40px rgba(70, 90, 170, 0.14);
+}
+[data-theme="light"] .hero-quote p { color: #333c58; }
+[data-theme="light"] .hero-quote figcaption { color: #6b7490; }
+[data-theme="light"] .hero-words { color: rgba(40, 52, 96, 0.5); }
+[data-theme="light"] .hero-motto { color: rgba(40, 52, 96, 0.42); }
+[data-theme="light"] .hero-script {
+  color: rgba(43, 53, 96, 0.92);
+  text-shadow: 0 2px 18px rgba(255, 255, 255, 0.85), 0 0 12px rgba(255, 214, 170, 0.55);
+}
+[data-theme="light"] .hero-script span { color: rgba(60, 72, 116, 0.66); }
+/* 极光 → 暖色晨曦 haze */
+[data-theme="light"] .hero-aurora { opacity: 0.6; }
+[data-theme="light"] .hero-aurora .au { mix-blend-mode: normal; }
+[data-theme="light"] .au-1 { background: radial-gradient(closest-side, rgba(255, 198, 138, 0.6), transparent 72%); }
+[data-theme="light"] .au-2 { background: radial-gradient(closest-side, rgba(255, 172, 192, 0.5), transparent 72%); }
+[data-theme="light"] .au-3 { background: radial-gradient(closest-side, rgba(255, 228, 172, 0.55), transparent 72%); }
+[data-theme="light"] .hero-grain { opacity: 0.04; }
+
 /* =========================================================
    首页：仪表盘网格
    ========================================================= */
@@ -556,7 +610,29 @@ img { max-width: 100%; }
 [data-theme="light"] .km-body small { text-shadow: none; }
 [data-theme="light"] .km-link { stroke: rgba(96,124,220,.38); }
 [data-theme="light"] .km-orbits i { border-color: rgba(110,130,210,.18); }
-[data-theme="light"] .km-stars { opacity: .28; }
+[data-theme="light"] .km-stars { opacity: .22; }
+[data-theme="light"] .km-node:hover, [data-theme="light"] .km-node.is-hot { box-shadow: 0 10px 30px rgba(70, 90, 170, 0.18); }
+/* 中央星球 → 暖色「晨曦」球体 */
+[data-theme="light"] .km-halo {
+  background: radial-gradient(circle, rgba(255, 190, 120, 0.34) 0%, rgba(255, 170, 90, 0.12) 44%, transparent 70%);
+}
+[data-theme="light"] .km-core {
+  background: radial-gradient(circle at 34% 26%, #fffdf6 0%, #ffe9c9 12%, #ffca8a 30%, #f2a25c 52%, #cf7434 74%, #9c4a1e 100%);
+  border-color: rgba(206, 128, 52, 0.5);
+  animation: kmBreatheLight 6s ease-in-out infinite;
+}
+@keyframes kmBreatheLight {
+  0%, 100% { box-shadow: 0 0 40px rgba(255, 188, 116, 0.42), 0 0 100px rgba(255, 170, 90, 0.2), inset -16px -20px 44px rgba(158, 82, 24, 0.38), inset 12px 14px 30px rgba(255, 240, 214, 0.62); }
+  50%      { box-shadow: 0 0 64px rgba(255, 176, 96, 0.6), 0 0 150px rgba(255, 160, 80, 0.3), inset -16px -20px 44px rgba(158, 82, 24, 0.34), inset 14px 16px 34px rgba(255, 244, 224, 0.72); }
+}
+[data-theme="light"] .km-core-txt b { color: #6b3208; text-shadow: 0 1px 8px rgba(255, 246, 230, 0.8); }
+[data-theme="light"] .km-core-txt small { color: #a05a1c; }
+[data-theme="light"] .km-sheen {
+  mix-blend-mode: normal;
+  background: conic-gradient(from 0deg, transparent 0deg 64%, rgba(255, 255, 255, 0.55) 78%, rgba(255, 214, 160, 0.22) 88%, transparent 96%);
+}
+[data-theme="light"] .km-ring.rA { border-color: rgba(206, 128, 52, 0.55); box-shadow: 0 0 14px rgba(255, 180, 100, 0.45), inset 0 0 10px rgba(255, 180, 100, 0.3); }
+[data-theme="light"] .km-ring.rB { border-color: rgba(206, 128, 52, 0.34); }
 
 /* 侧栏卡片 */
 .scard {

@@ -89,22 +89,28 @@
     /* ---- 星空引擎 ---- */
     var ctx = null, stars = [], meteors = [], W = 0, H = 0, dpr = 1;
     var nextMeteorAt = 2000, t0 = 0, lastTs = 0, running = false, inView = true;
+    var lastLight = null;
+    function isLight() { return document.documentElement.getAttribute('data-theme') === 'light'; }
 
     function seed() {
       stars = [];
-      var n = clamp(Math.round(W * H / 9000), 70, 280);
+      var light = isLight();
+      /* 浅色主题：少量暖色浮尘（阳光尘埃感）；深色主题：密集星点 */
+      var n = light ? clamp(Math.round(W * H / 16000), 30, 90)
+                    : clamp(Math.round(W * H / 9000), 70, 280);
       for (var i = 0; i < n; i++) {
         var depth = Math.random();
         stars.push({
           x: Math.random() * W,
-          y: Math.random() * H * 0.72,          // 集中在天空区，避开底部山脊
-          r: 0.4 + depth * 1.6,
+          y: Math.random() * (light ? H * 0.9 : H * 0.72),
+          r: light ? 0.6 + depth * 1.1 : 0.4 + depth * 1.6,
           depth: depth,
-          tw: 0.6 + Math.random() * 1.8,        // 闪烁频率
-          ph: Math.random() * Math.PI * 2,      // 闪烁相位
-          a: 0.22 + depth * 0.6                 // 基础亮度
+          tw: light ? 0.25 + Math.random() * 0.5 : 0.6 + Math.random() * 1.8,
+          ph: Math.random() * Math.PI * 2,
+          a: light ? 0.08 + depth * 0.2 : 0.22 + depth * 0.6
         });
       }
+      lastLight = light;
     }
     function resize() {
       var r = hero.getBoundingClientRect();
@@ -120,6 +126,7 @@
     }
     function drawSky(t) {
       if (!ctx) return;
+      var light = isLight();
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = 'lighter';
       for (var i = 0; i < stars.length; i++) {
@@ -130,10 +137,11 @@
         var drift = reduceMotion ? 0 : Math.sin(t * 0.00005 + s.ph) * 3.2 * s.depth;
         var tw = reduceMotion ? 1 : 0.7 + 0.3 * Math.sin(t * 0.001 * s.tw + s.ph);
         var x = s.x + dx + drift, y = s.y + dy;
-        ctx.globalAlpha = clamp(s.a * tw, 0.04, 1);
-        ctx.fillStyle = s.depth > 0.85 ? '#e2eaff' : '#ffffff';
+        ctx.globalAlpha = clamp(s.a * tw, 0.02, light ? 0.34 : 1);
+        ctx.fillStyle = light ? (s.depth > 0.7 ? '#f0b47a' : '#e8c9a0')
+                              : (s.depth > 0.85 ? '#e2eaff' : '#ffffff');
         ctx.beginPath(); ctx.arc(x, y, s.r, 0, 6.2832); ctx.fill();
-        if (s.depth > 0.9) {                                          // 亮星柔光
+        if (!light && s.depth > 0.9) {                                // 亮星柔光（仅深色）
           ctx.globalAlpha = clamp(s.a * tw * 0.22, 0, 0.3);
           ctx.beginPath(); ctx.arc(x, y, s.r * 3.6, 0, 6.2832); ctx.fill();
         }
@@ -156,6 +164,7 @@
       });
     }
     function drawMeteors(dt, t) {
+      if (isLight()) return;                                          // 白昼没有流星
       if (!reduceMotion && t > nextMeteorAt) {
         spawnMeteor();
         nextMeteorAt = t + 2800 + Math.random() * 5400;
@@ -185,6 +194,7 @@
       cx = lerp(cx, tx, 0.1);
       cy = lerp(cy, ty, 0.1);
       applyLayers();
+      if (isLight() !== lastLight) { seed(); meteors = []; }   // 主题切换：即时重播种
       drawSky(ts - t0);
       drawMeteors(dt / 1000, ts - t0);
       if (inView && !document.hidden) {
@@ -205,6 +215,13 @@
       }, { threshold: 0 }).observe(hero);
     }
     document.addEventListener('visibilitychange', function () { if (!document.hidden) kick(); });
+
+    /* 主题切换：重启动画循环（静态模式则立即重绘） */
+    if ('MutationObserver' in window) {
+      new MutationObserver(function () {
+        if (reduceMotion) resize(); else kick();
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    }
 
     if (window.ResizeObserver) {
       new ResizeObserver(function () { resize(); }).observe(hero);
