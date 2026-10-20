@@ -154,96 +154,88 @@
   })();
 
   /* ---------------------------------------------
-     5. 知识地图：轨道自转 + 拖拽 + 卫星绕行
+     5. 知识地图：星座视差 + 悬停聚焦
      --------------------------------------------- */
-  (function orbit() {
-    var box = document.querySelector('.orbit');
-    if (!box) return;
-    var rings = box.querySelector('.orbit-rings');
-    if (!rings) return;
+  (function knowledgeMap() {
+    var stage = document.querySelector('[data-km]');
+    if (!stage) return;
+    var nodes = Array.prototype.slice.call(stage.querySelectorAll('.km-node'));
+    var links = Array.prototype.slice.call(stage.querySelectorAll('.km-link'));
+    if (!nodes.length) return;
 
-    var disc = 0, vel = 0, dragging = false, lastX = 0, lastT = 0;
-    var W = 0, H = 0, cx = 0, cy = 0;
-
-    function measure() {
-      W = box.clientWidth; H = box.clientHeight;
-      cx = W / 2; cy = H / 2;
-    }
-    measure();
-    window.addEventListener('resize', measure);
-
-    // 三颗卫星，分别锁在三条轨道（72%×176 / 46%×104 / 94%×240）上绕行
-    var TAU = Math.PI * 2;
-    var sats = [
-      { rx: 0.36, ry: 88,  dur: 24, ph: 0.8, cls: 'sat-1', el: null },
-      { rx: 0.23, ry: 52,  dur: 15, ph: 3.9, cls: 'sat-2', el: null },
-      { rx: 0.47, ry: 120, dur: 34, ph: 5.3, cls: 'sat-3', el: null }
-    ];
-    sats.forEach(function (s) {
-      var el = document.createElement('div');
-      el.className = 'orbit-sat ' + s.cls;
-      el.innerHTML = '<i class="tail"></i><i class="head"></i>';
-      box.appendChild(el);
-      s.el = el;
+    // 悬停聚焦：高亮当前节点与其连线，其余变暗
+    nodes.forEach(function (n, i) {
+      n.addEventListener('pointerenter', function () {
+        stage.classList.add('has-hot');
+        n.classList.add('is-hot');
+        if (links[i]) links[i].classList.add('is-hot');
+      });
+      n.addEventListener('pointerleave', function () {
+        stage.classList.remove('has-hot');
+        n.classList.remove('is-hot');
+        if (links[i]) links[i].classList.remove('is-hot');
+      });
     });
 
-    function placeSat(s, ts) {
-      var t = (ts / 1000) * (TAU / s.dur) + s.ph;
-      var rxw = W * s.rx;
-      var x = cx + Math.cos(t) * rxw;
-      var y = cy + Math.sin(t) * s.ry;
-      // 切线方向（决定彗尾朝向）
-      var vx = -Math.sin(t) * rxw;
-      var vy = Math.cos(t) * s.ry;
-      var ang = Math.atan2(vy, vx) * 180 / Math.PI;
-      // 下半圈在星球前面，上半圈绕到星球后面
-      var front = Math.sin(t) > 0;
-      s.el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + ang.toFixed(1) + 'deg) scale(' + (front ? 1 : 0.72) + ')';
-      s.el.style.zIndex = front ? 3 : 1;
-      s.el.style.opacity = front ? 1 : 0.55;
-    }
+    if (reduceMotion) return;
 
-    function frame(ts) {
-      if (!dragging) {
-        disc += 0.11 + vel;      // 自转 + 惯性
-        vel *= 0.93;             // 惯性衰减
+    var curX = 0, curY = 0;       // 平滑后的视差
+    var aimX = 0, aimY = 0;       // 指针目标
+    var dAimX = 0, dAimY = 0;     // 拖拽附加目标
+    var dCurX = 0, dCurY = 0;     // 拖拽平滑值
+    var lastMove = 0;
+    var dragging = false, sx = 0, sy = 0;
+
+    function pointer(e) {
+      var r = stage.getBoundingClientRect();
+      aimX = clamp(((e.clientX - r.left) / r.width - 0.5) * 2, -1, 1);
+      aimY = clamp(((e.clientY - r.top) / r.height - 0.5) * 2, -1, 1);
+      lastMove = performance.now();
+      if (dragging) {
+        dAimX = clamp((e.clientX - sx) / r.width, -0.8, 0.8);
+        dAimY = clamp((e.clientY - sy) / r.height, -0.8, 0.8);
       }
-      rings.style.setProperty('--disc', disc.toFixed(2) + 'deg');
-      for (var i = 0; i < sats.length; i++) placeSat(sats[i], ts);
-      requestAnimationFrame(frame);
-    }
-    if (reduceMotion) {
-      // 静音模式：只摆好卫星，不跑动画
-      for (var j = 0; j < sats.length; j++) placeSat(sats[j], 0);
-    } else {
-      requestAnimationFrame(frame);
     }
 
-    box.addEventListener('pointerdown', function (e) {
-      if (e.target.closest('a, button')) return;
-      dragging = true;
-      lastX = e.clientX; lastT = performance.now();
-      vel = 0;
-      box.classList.add('is-dragging');
-      try { box.setPointerCapture(e.pointerId); } catch (err) {}
+    stage.addEventListener('pointermove', pointer);
+    stage.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('.km-node')) return;
+      dragging = true; sx = e.clientX; sy = e.clientY;
+      try { stage.setPointerCapture(e.pointerId); } catch (err) {}
     });
-    box.addEventListener('pointermove', function (e) {
+    function endDrag(e) {
       if (!dragging) return;
-      var now = performance.now();
-      var dx = e.clientX - lastX;
-      var dt = Math.max(now - lastT, 16);
-      disc += dx * 0.55;
-      vel = clamp((dx * 0.55) / dt * 16 * 0.55, -7, 7);
-      lastX = e.clientX; lastT = now;
-    });
-    function endOrbitDrag(e) {
-      if (!dragging) return;
-      dragging = false;
-      box.classList.remove('is-dragging');
-      try { box.releasePointerCapture(e.pointerId); } catch (err) {}
+      dragging = false; dAimX = 0; dAimY = 0;
+      try { stage.releasePointerCapture(e.pointerId); } catch (err) {}
     }
-    box.addEventListener('pointerup', endOrbitDrag);
-    box.addEventListener('pointercancel', endOrbitDrag);
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('pointerleave', function () {
+      if (dragging) return;
+      aimX = 0; aimY = 0; lastMove = 0;
+    });
+
+    function tick(t) {
+      var idle = !dragging && (lastMove === 0 || t - lastMove > 2600);
+      if (idle) {
+        // 无指针时缓慢漂移，保持生命感
+        aimX = Math.sin(t / 5200) * 0.3;
+        aimY = Math.cos(t / 6400) * 0.24;
+      }
+      curX = lerp(curX, aimX + dCurX, 0.07);
+      curY = lerp(curY, aimY + dCurY, 0.07);
+      dCurX = lerp(dCurX, dAimX, dragging ? 0.35 : 0.08);
+      dCurY = lerp(dCurY, dAimY, dragging ? 0.35 : 0.08);
+      stage.style.setProperty('--px', curX.toFixed(3));
+      stage.style.setProperty('--py', curY.toFixed(3));
+      for (var i = 0; i < nodes.length; i++) {
+        var d = 11 + (i % 3) * 4;   // 不同深度，形成层次视差
+        nodes[i].style.setProperty('--tx', (curX * d).toFixed(1) + 'px');
+        nodes[i].style.setProperty('--ty', (curY * d).toFixed(1) + 'px');
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   })();
 
   /* ---------------------------------------------

@@ -132,25 +132,33 @@
         </div>
       </div>
 
-      <div class="orbit">
-        <div class="orbit-rings" aria-hidden="true"><i></i><i></i><i></i></div>
-        {{ $offsets := slice -12 9 -4 13 -6 }}
-        {{ range $i, $k := hugo.Data.site.knowledge }}
-          {{ if eq $i 3 }}
-          <div class="orbit-core">
-            <i class="core-ring r1" aria-hidden="true"></i>
-            <i class="core-ring r2" aria-hidden="true"></i>
-            <b>更好的自己</b>
-            <small>A BETTER ME</small>
-          </div>
+      <div class="km" data-km>
+        <div class="km-stars" aria-hidden="true"></div>
+        <div class="km-orbits" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+
+        {{ $nodes := first 5 hugo.Data.site.knowledge }}
+        {{ $pos := slice "50,11,center" "86,38,right" "73,82,right" "27,82,left" "14,38,left" }}
+
+        <svg class="km-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {{ range $i, $k := $nodes }}
+            {{ $s := split (index $pos $i) "," }}
+            <line class="km-link" x1="{{ index $s 0 }}" y1="{{ index $s 1 }}" x2="50" y2="50" vector-effect="non-scaling-stroke" style="--i:{{ $i }}"/>
           {{ end }}
-          {{ $oy := 0 }}{{ if lt $i (len $offsets) }}{{ $oy = index $offsets $i }}{{ end }}
-          <div class="orbit-node" style="--c:{{ $k.color }};--oy:{{ $oy }}px;--delay:{{ mul $i 0.45 }}s">
-            <span class="on-dot" aria-hidden="true"></span>
-            <div class="on-body">
-              <b>{{ $k.title }}</b>
-              <small>{{ $k.desc }}</small>
-            </div>
+        </svg>
+
+        <div class="km-halo" aria-hidden="true"></div>
+        <div class="km-core">
+          <i class="km-sheen" aria-hidden="true"></i>
+          <i class="km-ring rA" aria-hidden="true"></i>
+          <i class="km-ring rB" aria-hidden="true"></i>
+          <span class="km-core-txt"><b>更好的自己</b><small>A BETTER ME</small></span>
+        </div>
+
+        {{ range $i, $k := $nodes }}
+          {{ $s := split (index $pos $i) "," }}
+          <div class="km-node" data-side="{{ index $s 2 }}" style="--c:{{ $k.color }};--x:{{ index $s 0 }}%;--y:{{ index $s 1 }}%;--i:{{ $i }}">
+            <span class="km-dot" aria-hidden="true"></span>
+            <span class="km-body"><b>{{ $k.title }}</b><small>{{ $k.desc }}</small></span>
           </div>
         {{ end }}
       </div>
