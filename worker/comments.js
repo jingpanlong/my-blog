@@ -30,6 +30,51 @@ const AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉',
 
 const enc = new TextEncoder();
 
+// ---------------- 站长统计聚合（owner 保护） ----------------
+async function commentStats(request, cors) {
+  var owner = await isOwner(request);
+  if (!owner) return json({ error: 'unauthorized' }, 401, cors);
+
+  var perPost = {};
+  var total = 0;
+  var keys = [];
+  var cursor = undefined;
+  do {
+    var page = await COMMENTS.list({ prefix: 'comment:', cursor: cursor, limit: 1000 });
+    var ks = page.keys || [];
+    for (var i = 0; i < ks.length; i++) {
+      var p = ks[i].name.slice('comment:'.length).split(':')[0];
+      perPost[p] = (perPost[p] || 0) + 1;
+      total += 1;
+      if (keys.length < 1500) keys.push(ks[i].name);
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+
+  // 取最近评论内容（按 ts 倒序取前 12 条）
+  var recent = [];
+  var vals = await Promise.all(keys.map(function (k) { return COMMENTS.get(k); }));
+  for (var j = 0; j < vals.length; j++) {
+    if (!vals[j]) continue;
+    try {
+      var c = JSON.parse(vals[j]);
+      recent.push(c);
+    } catch (e) { /* 跳过坏数据 */ }
+  }
+  recent.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  recent = recent.slice(0, 12).map(function (c) {
+    return {
+      id: c.id, path: c.path, name: c.name,
+      content: (c.content || '').slice(0, 220), ts: c.ts, avatar: c.avatar
+    };
+  });
+
+  var perPostArr = Object.keys(perPost).map(function (p) { return { path: p, comments: perPost[p] }; });
+  perPostArr.sort(function (a, b) { return b.comments - a.comments; });
+
+  return json({ totals: { comments: total }, perPost: perPostArr, recent: recent }, 200, cors);
+}
+
 // ---------------- 工具 ----------------
 function json(obj, status, cors) {
   return new Response(JSON.stringify(obj), {
@@ -195,6 +240,7 @@ async function handle(request) {
     if (p.endsWith('/auth/logout') && request.method === 'POST') return await logout(request, cors);
     if (p.endsWith('/auth/logout-all') && request.method === 'POST') return await logoutAll(request, cors);
     if (p.endsWith('/auth/owner-check') && request.method === 'POST') return await ownerCheck(request, cors);
+    if (p.endsWith('/stats') && request.method === 'GET') return await commentStats(request, cors);
     if (p.endsWith('/comments')) {
       if (request.method === 'GET') return await getComments(url, cors);
       if (request.method === 'POST') return await postComment(request, cors);

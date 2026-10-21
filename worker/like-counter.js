@@ -29,7 +29,7 @@ async function handle(request) {
   const cors = {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Owner-Key',
     'Vary': 'Origin'
   };
   if (request.method === 'OPTIONS') {
@@ -43,6 +43,10 @@ async function handle(request) {
   // 收藏量子路由
   if (url.pathname === '/favs' || url.pathname.endsWith('/favs')) {
     return handleFavs(request, url, cors);
+  }
+  // 站长统计聚合
+  if (url.pathname === '/stats' || url.pathname.endsWith('/stats')) {
+    return handleStats(request, cors);
   }
   // 默认：点赞
   return handleLikes(request, url, cors);
@@ -154,4 +158,68 @@ function json(obj, status, cors) {
     status: status,
     headers: Object.assign({ 'Content-Type': 'application/json' }, cors)
   });
+}
+
+// ---------------- 站长统计聚合（owner 保护） ----------------
+// 注意：OWNER_KEY 为 secret_text 绑定，未绑定时 typeof 会抛错，故用 try 兜底。
+async function handleStats(request, cors) {
+  if (request.method !== 'GET') return json({ error: 'method not allowed' }, 405, cors);
+
+  var headerKey = request.headers.get('X-Owner-Key') || '';
+  var secretOk = false;
+  try {
+    secretOk = (typeof OWNER_KEY === 'string' && OWNER_KEY !== '' && headerKey === OWNER_KEY);
+  } catch (e) { /* OWNER_KEY 未绑定 */ }
+  if (!secretOk) return json({ error: 'unauthorized' }, 401, cors);
+
+  var perViews = {}, perLikes = {}, perFav = {};
+  var totalViews = 0, totalLikes = 0, totalFav = 0;
+
+  // 浏览量：view:<path> = 数值
+  await eachKey('view:', async function (k) {
+    var v = Number(await LIKES.get(k) || '0');
+    var p = k.slice('view:'.length);
+    perViews[p] = (perViews[p] || 0) + v;
+    totalViews += v;
+  });
+  // 点赞：like:<path>:<ts>:<rand>，按路径聚合条数
+  await eachKey('like:', async function (k) {
+    var p = k.slice('like:'.length).split(':')[0];
+    perLikes[p] = (perLikes[p] || 0) + 1;
+    totalLikes += 1;
+  });
+  // 收藏：favcount:<path> = 数值
+  await eachKey('favcount:', async function (k) {
+    var v = Number(await LIKES.get(k) || '0');
+    var p = k.slice('favcount:'.length);
+    perFav[p] = (perFav[p] || 0) + v;
+    totalFav += v;
+  });
+
+  var seen = {};
+  [perViews, perLikes, perFav].forEach(function (m) {
+    Object.keys(m).forEach(function (p) { seen[p] = true; });
+  });
+  var perPost = Object.keys(seen).map(function (p) {
+    return { path: p, views: perViews[p] || 0, likes: perLikes[p] || 0, favorites: perFav[p] || 0 };
+  });
+  perPost.sort(function (a, b) { return b.views - a.views; });
+
+  return json({
+    totals: { views: totalViews, likes: totalLikes, favorites: totalFav },
+    perPost: perPost
+  }, 200, cors);
+}
+
+// 分页遍历 KV 前缀键
+async function eachKey(prefix, cb) {
+  var cursor = undefined;
+  do {
+    var page = await LIKES.list({ prefix: prefix, cursor: cursor, limit: 1000 });
+    var keys = page.keys || [];
+    for (var i = 0; i < keys.length; i++) {
+      await cb(keys[i].name);
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
 }

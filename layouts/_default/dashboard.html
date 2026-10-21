@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>数据仪表盘 · {{ hugo.Data.site.author }}</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script>
+    (function () {
+      try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    })();
+  </script>
+  <style>
+    .dash { max-width: 1180px; margin: 0 auto; padding: 34px 24px 60px; }
+    .dash-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    .dash-title { margin: 0; font-size: 1.7rem; letter-spacing: .01em; }
+    .dash-sub { margin: 6px 0 0; font-size: 12.5px; color: var(--text-mute); }
+    .dash-head-actions { display: flex; gap: 8px; align-items: center; }
+    .dash-btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 12.5px; cursor: pointer;
+      padding: 9px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--chip); color: var(--text-dim); transition: .2s; }
+    .dash-btn:hover { color: var(--text); border-color: var(--border-strong); transform: translateY(-1px); }
+    .dash-btn-ghost { background: transparent; }
+    .dash-home { font-size: 12.5px; color: var(--text-mute); text-decoration: none; }
+    .dash-home:hover { color: var(--text); }
+
+    /* 门禁 */
+    .dash-gate { display: grid; place-items: center; min-height: 46vh; }
+    .dash-gate-card { width: min(92vw, 420px); padding: 30px 26px; text-align: center;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 18px;
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: var(--shadow); }
+    .dash-gate-ico { font-size: 30px; margin-bottom: 8px; }
+    .dash-gate-card h2 { margin: 0 0 8px; font-size: 17px; }
+    .dash-gate-card p { margin: 0 0 16px; font-size: 13px; line-height: 1.7; color: var(--text-mute); }
+    .dash-gate-form { display: flex; gap: 8px; }
+    .dash-gate-form input { flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--bg); color: var(--text); outline: none; }
+    .dash-gate-form input:focus { border-color: var(--brand); }
+    .dash-gate-form button { font: inherit; font-size: 13px; cursor: pointer; padding: 10px 16px; border-radius: 10px; border: none;
+      background: var(--brand); color: #fff; font-weight: 600; }
+    .dash-gate-msg { margin: 14px 0 0 !important; font-size: 12.5px; color: #f87171; }
+
+    /* KPI */
+    .dash-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+    .dash-kpi { position: relative; padding: 18px 18px 16px; border-radius: 16px; overflow: hidden;
+      background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .dash-kpi::before { content: ""; position: absolute; inset: 0; background:
+      radial-gradient(120px 80px at 100% 0%, var(--brand-glow, rgba(109,139,255,.18)), transparent 70%); pointer-events: none; }
+    .dash-kpi-label { display: block; font-size: 12px; color: var(--text-mute); letter-spacing: .04em; }
+    .dash-kpi-num { display: block; margin-top: 8px; font-size: 2rem; font-weight: 800; line-height: 1;
+      font-variant-numeric: tabular-nums; }
+    .dash-kpi-ico { position: absolute; right: 14px; bottom: 12px; font-size: 22px; opacity: .5; }
+
+    /* 面板网格 */
+    .dash-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 16px; align-items: start; }
+    .dash-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    .dash-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .dash-panel-head h3 { margin: 0; font-size: 13.5px; }
+    .dash-hint { font-size: 11px; color: var(--text-mute); }
+
+    .dash-table-wrap { max-height: 560px; overflow: auto; }
+    .dash-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .dash-table th { text-align: left; font-weight: 600; color: var(--text-mute); font-size: 11.5px;
+      padding: 10px 14px; position: sticky; top: 0; background: var(--panel-solid, var(--bg)); z-index: 1; }
+    .dash-table td { padding: 10px 14px; border-top: 1px solid var(--border); color: var(--text-dim); }
+    .dash-table tr:hover td { background: var(--chip); }
+    .dash-table td.num, .dash-table th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .dash-table a { color: var(--text); text-decoration: none; word-break: break-all; }
+    .dash-table a:hover { color: var(--brand); }
+    .dash-empty { padding: 22px 14px; text-align: center; color: var(--text-mute); }
+
+    .dash-comments { list-style: none; margin: 0; padding: 8px; max-height: 560px; overflow: auto; }
+    .dash-comments li { padding: 11px 12px; border-radius: 11px; }
+    .dash-comments li + li { border-top: 1px solid var(--border); }
+    .dash-c-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .dash-c-name { font-size: 12.5px; font-weight: 700; color: var(--text); }
+    .dash-c-time { font-size: 11px; color: var(--text-mute); white-space: nowrap; }
+    .dash-c-body { margin-top: 4px; font-size: 12.5px; line-height: 1.6; color: var(--text-dim); word-break: break-word; }
+    .dash-c-path { margin-top: 4px; font-size: 11px; color: var(--text-mute); word-break: break-all; }
+
+    .dash-note { margin: 16px 0 0; padding: 12px 14px; border-radius: 12px; font-size: 12.5px; line-height: 1.7;
+      border: 1px solid rgba(248,113,113,.35); background: rgba(248,113,113,.08); color: #fca5a5; }
+    .dash-note.ok { border-color: rgba(52,211,153,.35); background: rgba(52,211,153,.08); color: #6ee7b7; }
+
+    @media (max-width: 880px) {
+      .dash-kpis { grid-template-columns: repeat(2, 1fr); }
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .dash { padding: 24px 16px 48px; }
+      .dash-kpi-num { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="dash">
+  <header class="dash-head">
+    <div>
+      <h1 class="dash-title">数据仪表盘</h1>
+      <p class="dash-sub">博客互动数据总览 · 浏览量 / 点赞 / 收藏 / 评论</p>
+    </div>
+    <div class="dash-head-actions">
+      <a class="dash-home" href="/">← 返回博客</a>
+      <button class="dash-btn" id="dash-refresh" type="button">↻ 刷新</button>
+      <button class="dash-btn dash-btn-ghost" id="dash-exit" type="button">退出</button>
+    </div>
+  </header>
+
+  <section class="dash-gate" id="dash-gate" hidden>
+    <div class="dash-gate-card">
+      <div class="dash-gate-ico">🔒</div>
+      <h2>需要站长密钥</h2>
+      <p>仪表盘数据仅站长可见。请输入站长密钥（与评论区 <code>?owner</code> 入口相同）。</p>
+      <form class="dash-gate-form" id="dash-gate-form">
+        <input id="dash-key" type="password" placeholder="站长密钥" autocomplete="current-password" required>
+        <button type="submit">进入</button>
+      </form>
+      <p class="dash-gate-msg" id="dash-gate-msg" hidden></p>
+    </div>
+  </section>
+
+  <div id="dash-body" hidden>
+    <div class="dash-kpis">
+      <div class="dash-kpi"><span class="dash-kpi-label">浏览量</span><span class="dash-kpi-num" id="kpi-views">…</span><span class="dash-kpi-ico">👁</span></div>
+      <div class="dash-kpi"><span class="dash-kpi-label">点赞量</span><span class="dash-kpi-num" id="kpi-likes">…</span><span class="dash-kpi-ico">👍</span></div>
+      <div class="dash-kpi"><span class="dash-kpi-label">收藏量</span><span class="dash-kpi-num" id="kpi-favorites">…</span><span class="dash-kpi-ico">⭐</span></div>
+      <div class="dash-kpi"><span class="dash-kpi-label">评论量</span><span class="dash-kpi-num" id="kpi-comments">…</span><span class="dash-kpi-ico">💬</span></div>
+    </div>
+
+    <div class="dash-grid">
+      <section class="dash-panel">
+        <div class="dash-panel-head"><h3>各文章明细</h3><span class="dash-hint" id="dash-updated"></span></div>
+        <div class="dash-table-wrap">
+          <table class="dash-table">
+            <thead><tr><th>文章路径</th><th class="num">浏览</th><th class="num">点赞</th><th class="num">收藏</th><th class="num">评论</th></tr></thead>
+            <tbody id="dash-rows"><tr><td colspan="5" class="dash-empty">加载中…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="dash-panel">
+        <div class="dash-panel-head"><h3>最新评论</h3></div>
+        <ul class="dash-comments" id="dash-recent"><li class="dash-empty">加载中…</li></ul>
+      </section>
+    </div>
+
+    <p class="dash-note" id="dash-note" hidden></p>
+  </div>
+</div>
+
+<script>
+(function () {
+  var LIKE_API = "{{ hugo.Data.site.likeApi }}";
+  var COMMENT_API = "{{ hugo.Data.site.commentApi }}".replace(/\/comments\/?$/, "");
+  var OWNER_STORE = 'blog_owner_key';
+
+  var elGate = document.getElementById('dash-gate');
+  var elBody = document.getElementById('dash-body');
+  var elGateForm = document.getElementById('dash-gate-form');
+  var elKey = document.getElementById('dash-key');
+  var elGateMsg = document.getElementById('dash-gate-msg');
+  var elRows = document.getElementById('dash-rows');
+  var elRecent = document.getElementById('dash-recent');
+  var elNote = document.getElementById('dash-note');
+  var elUpdated = document.getElementById('dash-updated');
+  var elKpi = {
+    views: document.getElementById('kpi-views'),
+    likes: document.getElementById('kpi-likes'),
+    favorites: document.getElementById('kpi-favorites'),
+    comments: document.getElementById('kpi-comments')
+  };
+
+  function getKey() { try { return localStorage.getItem(OWNER_STORE) || ''; } catch (e) { return ''; } }
+  function setKey(k) { try { k ? localStorage.setItem(OWNER_STORE, k) : localStorage.removeItem(OWNER_STORE); } catch (e) {} }
+
+  function showGate(msg) {
+    elBody.hidden = true;
+    elGate.hidden = false;
+    if (msg) { elGateMsg.textContent = msg; elGateMsg.hidden = false; } else { elGateMsg.hidden = true; }
+  }
+  function showBody() { elGate.hidden = true; elBody.hidden = false; }
+
+  function fmt(n) { return (typeof n === 'number' ? n : 0).toLocaleString('zh-CN'); }
+  function fmtTime(ts) {
+    if (!ts) return '';
+    var d = new Date(ts);
+    function p(x) { return x < 10 ? '0' + x : '' + x; }
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function note(msg, ok) {
+    if (!msg) { elNote.hidden = true; return; }
+    elNote.hidden = false;
+    elNote.className = 'dash-note' + (ok ? ' ok' : '');
+    elNote.textContent = msg;
+  }
+
+  function fetchStats(url, key) {
+    return fetch(url + '/stats', { headers: { 'X-Owner-Key': key }, cache: 'no-store' })
+      .then(function (r) {
+        if (r.status === 401) { var e = new Error('unauthorized'); e.code = 401; throw e; }
+        if (!r.ok) { throw new Error('HTTP ' + r.status); }
+        return r.json();
+      });
+  }
+
+  function render(like, comment) {
+    // 总览
+    var t = (like && like.totals) || {};
+    var tc = (comment && comment.totals) || {};
+    elKpi.views.textContent = fmt(t.views);
+    elKpi.likes.textContent = fmt(t.likes);
+    elKpi.favorites.textContent = fmt(t.favorites);
+    elKpi.comments.textContent = fmt(tc.comments);
+
+    // 合并各文章明细
+    var map = {};
+    function ensure(p) { if (!map[p]) map[p] = { path: p, views: 0, likes: 0, favorites: 0, comments: 0 }; return map[p]; }
+    ((like && like.perPost) || []).forEach(function (r) {
+      var o = ensure(r.path); o.views = r.views || 0; o.likes = r.likes || 0; o.favorites = r.favorites || 0;
+    });
+    ((comment && comment.perPost) || []).forEach(function (r) {
+      ensure(r.path).comments = r.comments || 0;
+    });
+    var rows = Object.keys(map).map(function (k) { return map[k]; })
+      .sort(function (a, b) { return (b.views - a.views) || (b.comments - a.comments); });
+
+    if (!rows.length) {
+      elRows.innerHTML = '<tr><td colspan="5" class="dash-empty">暂无数据</td></tr>';
+    } else {
+      elRows.innerHTML = rows.map(function (r) {
+        var p = esc(r.path);
+        return '<tr>' +
+          '<td><a href="' + p + '">' + p + '</a></td>' +
+          '<td class="num">' + fmt(r.views) + '</td>' +
+          '<td class="num">' + fmt(r.likes) + '</td>' +
+          '<td class="num">' + fmt(r.favorites) + '</td>' +
+          '<td class="num">' + fmt(r.comments) + '</td>' +
+          '</tr>';
+      }).join('');
+    }
+
+    // 最新评论
+    var recent = (comment && comment.recent) || [];
+    if (!recent.length) {
+      elRecent.innerHTML = '<li class="dash-empty">暂无评论</li>';
+    } else {
+      elRecent.innerHTML = recent.map(function (c) {
+        return '<li>' +
+          '<div class="dash-c-head"><span class="dash-c-name">' + esc(c.name || '匿名') + '</span><span class="dash-c-time">' + esc(fmtTime(c.ts)) + '</span></div>' +
+          '<div class="dash-c-body">' + esc(c.content || '') + '</div>' +
+          '<div class="dash-c-path">' + esc(c.path || '') + '</div>' +
+          '</li>';
+      }).join('');
+    }
+
+    elUpdated.textContent = '更新于 ' + fmtTime(Date.now());
+  }
+
+  function load() {
+    var key = getKey();
+    if (!key) { showGate(); return; }
+    showBody();
+    note('');
+    elUpdated.textContent = '加载中…';
+    Promise.all([fetchStats(LIKE_API, key), fetchStats(COMMENT_API, key)])
+      .then(function (arr) { render(arr[0], arr[1]); })
+      .catch(function (e) {
+        if (e && e.code === 401) {
+          setKey('');
+          showGate('密钥无效，请重新输入');
+          return;
+        }
+        note('无法连接统计服务：' + (e && e.message ? e.message : e) +
+          '。若在中国大陆网络下，workers.dev 常被拦截——请开启 VPN，或按计划迁移到自定义域名后再使用。');
+        elRows.innerHTML = '<tr><td colspan="5" class="dash-empty">加载失败</td></tr>';
+        elRecent.innerHTML = '<li class="dash-empty">加载失败</li>';
+      });
+  }
+
+  elGateForm.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var k = (elKey.value || '').trim();
+    if (!k) return;
+    setKey(k);
+    load();
+  });
+
+  document.getElementById('dash-refresh').addEventListener('click', load);
+  document.getElementById('dash-exit').addEventListener('click', function () {
+    setKey('');
+    showGate();
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

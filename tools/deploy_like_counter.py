@@ -21,6 +21,9 @@ JS_PATH = os.path.normpath(os.path.join(HERE, "..", "worker", "like-counter.js")
 # 已有 blog-likes KV 命名空间 id（从 wrangler.toml / 历史部署获得）
 LIKES_ID = "b2ca0e377242436b8e79f3d2ecf2131d"
 
+# 站长统计接口 /stats 需要的密钥（与 comments Worker 保持一致）
+OWNER_KEY = os.environ.get("OWNER_KEY", "o+h2a2MliUpTzuUTkBh3O5JCw6HVRhUd")
+
 CF_TOKEN = os.environ["CF_API_TOKEN"]
 ACCOUNT_ID = os.environ["CF_ACCOUNT_ID"]
 API = "https://api.cloudflare.com/client/v4"
@@ -56,6 +59,7 @@ def multipart_upload(script_js):
         "body_part": "script",
         "bindings": [
             {"name": "LIKES", "type": "kv_namespace", "namespace_id": LIKES_ID},
+            {"name": "OWNER_KEY", "type": "secret_text", "text": OWNER_KEY},
         ],
     }
     parts = []
