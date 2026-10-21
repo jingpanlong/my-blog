@@ -286,4 +286,42 @@
       }, 6000);
     });
   })();
+
+  // ---- 文章浏览量计数 ----
+  (function () {
+    var meta = document.querySelector('meta[name="view-api"]');
+    if (!meta || !meta.content) return;
+    var api = meta.content;
+    var nodes = document.querySelectorAll('[data-view-path]');
+    if (!nodes.length) return;
+    function fmt(n) {
+      n = Number(n) || 0;
+      return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n);
+    }
+    Array.prototype.forEach.call(nodes, function (node) {
+      var path = node.getAttribute('data-view-path');
+      if (!path) return;
+      var out = node.querySelector('.view-n') || node;
+      var inc = node.getAttribute('data-increment') === '1';
+      function setN(n) { out.textContent = fmt(n); }
+      if (inc) {
+        var key = 'viewed:' + path;
+        var seen = false;
+        try { seen = sessionStorage.getItem(key) === '1'; } catch (e) {}
+        if (seen) {
+          fetch(api + '?path=' + encodeURIComponent(path)).then(function (r) { return r.json(); })
+            .then(function (d) { setN(d.count); }).catch(function () { setN('—'); });
+        } else {
+          try { sessionStorage.setItem(key, '1'); } catch (e) {}
+          fetch(api, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: path })
+            .then(function (r) { return r.json(); })
+            .then(function (d) { setN(d.count); })
+            .catch(function () { setN('—'); try { sessionStorage.removeItem(key); } catch (e) {} });
+        }
+      } else {
+        fetch(api + '?path=' + encodeURIComponent(path)).then(function (r) { return r.json(); })
+          .then(function (d) { setN(d.count); }).catch(function () { setN('—'); });
+      }
+    });
+  })();
 })();

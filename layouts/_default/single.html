@@ -5,6 +5,12 @@
     <div class="single-meta">
       <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
       {{ with .Params.tags }}<span class="tags">{{ range . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
+      {{ if or (eq .Section "posts") (eq .Section "projects") }}
+      <span class="post-views" data-view-path="{{ .RelPermalink }}" data-increment="1" title="浏览量">
+        <svg class="ic-eye" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="view-n">—</span> 次浏览
+      </span>
+      {{ end }}
     </div>
     {{ end }}
     <h1 class="single-title">{{ .Title }}</h1>

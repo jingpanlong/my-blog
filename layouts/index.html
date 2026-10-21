@@ -97,6 +97,10 @@
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
               {{ .ReadingTime }} 分钟阅读
             </span>
+            <span class="mi pc-views" data-view-path="{{ .RelPermalink }}" title="浏览量">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="view-n">—</span>
+            </span>
           </div>
         </article>
         {{ end }}

@@ -853,6 +853,31 @@ img { max-width: 100%; }
 .comments-title { margin: 0 0 8px; font-size: 1.2rem; }
 .comments-hint { margin: 0 0 16px; font-size: 12.5px; color: var(--text-mute); }
 
+/* 浏览量徽标 */
+.post-views, .pc-views {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--text-mute); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.post-views .ic-eye, .pc-views .ic-eye { opacity: .7; flex: none; }
+.post-views .view-n, .pc-views .view-n { font-weight: 600; color: var(--text); }
+.post-card-foot { display: flex; align-items: center; gap: 10px; }
+.pc-views { margin-left: auto; }
+
+/* Giscus 评论区错误兜底（网络/GitHub 限流等偶发失败） */
+.giscus-error {
+  margin: 14px 0 0; padding: 14px 16px; border-radius: var(--radius);
+  background: rgba(255, 92, 138, 0.10); border: 1px solid rgba(255, 92, 138, 0.35);
+  color: var(--text); font-size: 13px; line-height: 1.6;
+}
+.giscus-error[hidden] { display: none; }
+.giscus-error .ge-msg { color: var(--text-mute); word-break: break-word; }
+.giscus-retry {
+  margin-top: 10px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--panel-solid);
+  color: var(--text); font: inherit; font-size: 13px; transition: .15s;
+}
+.giscus-retry:hover { border-color: var(--accent); color: var(--accent); }
+
 /* =========================================================
    搜索弹窗
    ========================================================= */

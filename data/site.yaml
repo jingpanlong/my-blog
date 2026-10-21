@@ -74,6 +74,7 @@ knowledge:
 
 # ---- 功能配置（一般不用改）----
 likeApi: https://like-counter.470918507.workers.dev
+viewApi: https://like-counter.470918507.workers.dev/views
 giscusRepo: jingpanlong/my-blog
 giscusRepoId: R_kgDOVPJ0TA
 giscusCategory: General
