@@ -313,7 +313,7 @@
     var apiMeta = document.querySelector('meta[name="comment-api"]');
     var api = (apiMeta && apiMeta.content) ? apiMeta.content : '';
     var AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉', '🐧', '🦄', '🌟', '🍎'];
-    var state = { token: '', user: null };
+    var state = { token: '', user: null, owner: null, ownerKey: '' };
     var listeners = [];
 
     function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
@@ -323,6 +323,11 @@
     }
     function clearToken() { state.token = ''; state.user = null; try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
     state.token = getToken();
+
+    var OWNER_STORE = 'blog_owner_key';
+    function getOwnerKey() { try { return localStorage.getItem(OWNER_STORE) || ''; } catch (e) { return ''; } }
+    function setOwnerKey(k) { try { k ? localStorage.setItem(OWNER_STORE, k) : localStorage.removeItem(OWNER_STORE); } catch (e) {} }
+    state.ownerKey = getOwnerKey();
 
     var modalEl = document.getElementById('auth-modal');
     var formEl = document.getElementById('auth-form');
@@ -517,6 +522,23 @@
         return false;
       });
     }
+    // ---- 站长模式（免登录评论）----
+    function checkOwner() {
+      if (!state.ownerKey) { state.owner = null; emit(); return Promise.resolve(); }
+      return fetch(api + '/auth/owner-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Owner-Key': state.ownerKey },
+        body: '{}'
+      })
+        .then(function (r) {
+          if (r.status !== 200) { state.owner = null; if (r.status === 401) { setOwnerKey(''); state.ownerKey = ''; } emit(); return null; }
+          return r.json();
+        })
+        .then(function (d) { if (d && d.ok) { state.owner = d.user; emit(); } })
+        .catch(function () {});
+    }
+    function enterOwner(k) { state.ownerKey = k || ''; setOwnerKey(state.ownerKey); return checkOwner(); }
+    function exitOwner() { state.ownerKey = ''; setOwnerKey(''); state.owner = null; emit(); }
     function resendVerify() {
       if (!state.token) { open('login'); return; }
       return apiCall('/auth/resend-verify', {}, true).then(function (res) {
@@ -534,11 +556,12 @@
     if (toForgotEl) toForgotEl.addEventListener('click', function (e) { e.preventDefault(); setMode('forgot'); });
     if (toLoginEl) toLoginEl.addEventListener('click', function (e) { e.preventDefault(); setMode('login'); });
 
-    // URL 中的 ?verify= / ?reset= 处理（邮件链接跳转）
+    // URL 中的 ?verify= / ?reset= / ?owner 处理（邮件链接与站长入口）
     (function () {
       try {
         var q = new URLSearchParams(location.search);
         var v = q.get('verify'), r = q.get('reset');
+        var isOwnerEntry = q.has('owner') || location.hash === '#owner';
         if (v) {
           verifyToken(v).then(function (ok) { open('login'); setMsg(ok ? '邮箱验证成功，请登录。' : '验证链接无效或已过期', !ok); });
           history.replaceState(null, '', location.pathname + location.hash);
@@ -546,17 +569,26 @@
           resetToken = r; open('reset'); setMode('reset');
           history.replaceState(null, '', location.pathname + location.hash);
         }
+        if (isOwnerEntry) {
+          var k = prompt('站长模式：请输入站长密钥');
+          if (k) enterOwner(k);
+          history.replaceState(null, '', location.pathname);
+        }
       } catch (e) {}
     })();
 
     if (state.token) refresh();
+    if (state.ownerKey) checkOwner();
 
     return {
       state: state,
       token: function () { return state.token; },
       user: function () { return state.user; },
+      owner: function () { return state.owner; },
+      ownerKey: function () { return state.ownerKey; },
       open: open, close: close, setMode: setMode, on: on, emit: emit, refresh: refresh,
       logout: logout, logoutAll: logoutAll, resendVerify: resendVerify, verifyToken: verifyToken,
+      enterOwner: enterOwner, exitOwner: exitOwner, checkOwner: checkOwner,
       setMsg: setMsg, showDevLinks: showDevLinks
     };
   })();
@@ -568,6 +600,7 @@
     if (!wrap) return;
     function render() {
       var u = BlogAuth.user();
+      var o = BlogAuth.owner();
       wrap.innerHTML = '';
       if (u) {
         var box = document.createElement('div');
@@ -598,6 +631,26 @@
           menu.classList.toggle('open');
         });
         wrap.appendChild(box);
+      } else if (o) {
+        var obox = document.createElement('div');
+        obox.className = 'ac-user';
+        var oav = document.createElement('span');
+        oav.className = 'ac-avatar'; oav.textContent = o.avatar || '🌟';
+        var onm = document.createElement('span');
+        onm.className = 'ac-name'; onm.textContent = o.name + ' · 站长';
+        obox.appendChild(oav); obox.appendChild(onm);
+        var omenu = document.createElement('div');
+        omenu.className = 'ac-menu';
+        var ob = document.createElement('button');
+        ob.type = 'button'; ob.className = 'ac-item'; ob.textContent = '退出站长模式';
+        ob.addEventListener('click', function (e) { e.stopPropagation(); BlogAuth.exitOwner(); });
+        omenu.appendChild(ob);
+        obox.appendChild(omenu);
+        obox.addEventListener('click', function (e) {
+          if (e.target.closest('.ac-item')) return;
+          omenu.classList.toggle('open');
+        });
+        wrap.appendChild(obox);
       } else {
         var btn = document.createElement('button');
         btn.type = 'button'; btn.className = 'ac-login';
@@ -749,7 +802,9 @@
     }
     if (replyCancel) replyCancel.addEventListener('click', cancelReply);
 
-    function applyAuthUI(u) {
+    function applyAuthUI(st) {
+      var u = st && st.user;
+      var o = st && st.owner;
       if (u) {
         if (authOut) authOut.hidden = true;
         if (authIn) {
@@ -762,6 +817,17 @@
         if (submitEl) submitEl.disabled = !u.verified;
         if (verifyBar) verifyBar.hidden = !!u.verified;
         if (!u.verified) setMsg('请先验证邮箱后再评论', true);
+      } else if (o) {
+        if (authOut) authOut.hidden = true;
+        if (authIn) {
+          authIn.hidden = false;
+          if (authDisplay) authDisplay.textContent = o.name + '（站长模式）';
+          if (authAvatar) authAvatar.textContent = o.avatar || '🌟';
+        }
+        if (formAvatar) { formAvatar.textContent = o.avatar || '🌟'; formAvatar.hidden = false; }
+        if (contentEl) contentEl.disabled = false;
+        if (submitEl) submitEl.disabled = false;
+        if (verifyBar) verifyBar.hidden = true;
       } else {
         if (authIn) authIn.hidden = true;
         if (authOut) authOut.hidden = false;
@@ -771,32 +837,44 @@
         if (verifyBar) verifyBar.hidden = true;
       }
     }
-    BlogAuth.on(function (st) { applyAuthUI(st.user); });
-    applyAuthUI(BlogAuth.user());
+    BlogAuth.on(function (st) { applyAuthUI(st); });
+    applyAuthUI(BlogAuth.state);
 
     if (authOpenBtn) authOpenBtn.addEventListener('click', function () { BlogAuth.open('login'); });
-    if (logoutBtn) logoutBtn.addEventListener('click', function () { BlogAuth.logout(); setMsg(''); });
+    if (logoutBtn) logoutBtn.addEventListener('click', function () {
+      if (!BlogAuth.user() && BlogAuth.owner()) BlogAuth.exitOwner();
+      else BlogAuth.logout();
+      setMsg('');
+    });
     if (verifyBtn) verifyBtn.addEventListener('click', function () { BlogAuth.resendVerify(); });
 
     if (form) form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var token = BlogAuth.token();
-      if (!token) { BlogAuth.open('login'); return; }
       var u = BlogAuth.user();
+      var o = BlogAuth.owner();
+      if (!u && !o) { BlogAuth.open('login'); return; }
       if (u && !u.verified) { setMsg('请先验证邮箱后再评论', true); return; }
       var content = (contentEl && contentEl.value || '').trim();
       if (!content) { setMsg('评论内容不能为空', true); if (contentEl) contentEl.focus(); return; }
       setMsg('发送中…', false);
       if (submitEl) submitEl.disabled = true;
+      var headers = { 'Content-Type': 'application/json' };
+      if (u) headers['Authorization'] = 'Bearer ' + BlogAuth.token();
+      else headers['X-Owner-Key'] = BlogAuth.ownerKey();
       fetch(api, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        headers: headers,
         body: JSON.stringify({ path: path, content: content, replyTo: replyTo || '' })
       })
         .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
         .then(function (res) {
           var d = res.d;
-          if (res.s === 401) { BlogAuth.logout(); BlogAuth.open('login'); setMsg('登录已失效，请重新登录', true); return; }
+          if (res.s === 401) {
+            if (u) { BlogAuth.logout(); BlogAuth.open('login'); }
+            else BlogAuth.exitOwner();
+            setMsg('登录已失效，请重新登录', true);
+            return;
+          }
           if (res.s === 403) { setMsg((d && d.error) || '请先验证邮箱', true); if (verifyBar) verifyBar.hidden = false; return; }
           if (!d || d.ok !== true) throw new Error((d && d.error) || '提交失败');
           if (d.comment) {
@@ -817,7 +895,8 @@
         })
         .then(function () {
           var u2 = BlogAuth.user();
-          if (submitEl) submitEl.disabled = !(u2 && u2.verified);
+          var o2 = BlogAuth.owner();
+          if (submitEl) submitEl.disabled = !((u2 && u2.verified) || o2);
         });
     });
 

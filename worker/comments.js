@@ -126,6 +126,20 @@ async function authUser(request) {
   return await readSession(m[1]);
 }
 
+// ---------------- 站长（免登录评论）----------------
+// X-Owner-Key 与 secret_text 绑定 OWNER_KEY 匹配即视为站长：
+// 可直接发表/回复评论，无需登录、无需验证邮箱、不受评论频率限制。
+async function isOwner(request) {
+  var k = request.headers.get('X-Owner-Key') || '';
+  if (!k) return null;
+  if (typeof OWNER_KEY !== 'string' || OWNER_KEY.length === 0) return null;
+  if (k !== OWNER_KEY) return null;
+  return {
+    name: (typeof OWNER_NAME === 'string' && OWNER_NAME) || '博主',
+    avatar: (typeof OWNER_AVATAR === 'string' && AVATARS.indexOf(OWNER_AVATAR) !== -1) ? OWNER_AVATAR : '🌟'
+  };
+}
+
 // ---------------- 频率限制 ----------------
 async function rateLimited(prefix, ip, max) {
   var hour = new Date().toISOString().slice(0, 13);
@@ -161,7 +175,7 @@ async function handle(request) {
   var cors = {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Owner-Key',
     'Vary': 'Origin'
   };
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
@@ -177,6 +191,7 @@ async function handle(request) {
     if (p.endsWith('/auth/reset') && request.method === 'POST') return await resetPw(request, cors);
     if (p.endsWith('/auth/logout') && request.method === 'POST') return await logout(request, cors);
     if (p.endsWith('/auth/logout-all') && request.method === 'POST') return await logoutAll(request, cors);
+    if (p.endsWith('/auth/owner-check') && request.method === 'POST') return await ownerCheck(request, cors);
     if (p.endsWith('/comments')) {
       if (request.method === 'GET') return await getComments(url, cors);
       if (request.method === 'POST') return await postComment(request, cors);
@@ -350,6 +365,13 @@ async function resetPw(request, cors) {
   return json({ ok: true }, 200, cors);
 }
 
+// ---------------- 站长身份校验 ----------------
+async function ownerCheck(request, cors) {
+  var o = await isOwner(request);
+  if (!o) return json({ error: '站长密钥无效' }, 401, cors);
+  return json({ ok: true, user: { uid: 'owner', name: o.name, avatar: o.avatar, owner: true } }, 200, cors);
+}
+
 // ---------------- 退出（吊销当前会话）----------------
 async function logout(request, cors) {
   var ah = request.headers.get('Authorization') || '';
@@ -387,13 +409,19 @@ async function getComments(url, cors) {
   return json({ comments: list }, 200, cors);
 }
 
-// ---------------- 发表评论（需登录且已验证邮箱）----------------
+// ---------------- 发表评论（需登录且已验证邮箱；站长凭密钥免登录）----------------
 async function postComment(request, cors) {
-  var p = await authUser(request);
-  if (!p) return json({ error: '请先登录后再评论' }, 401, cors);
-  if (!p.verified) return json({ error: '请先验证邮箱后再评论' }, 403, cors);
-  var ip = clientIp(request);
-  if (await rateLimited('cmt:', ip, MAX_CMT_PER_HOUR)) return json({ error: '评论过于频繁，请稍后再试' }, 429, cors);
+  var owner = await isOwner(request);
+  var p;
+  if (owner) {
+    p = { uid: 'owner', name: owner.name, avatar: owner.avatar };
+  } else {
+    p = await authUser(request);
+    if (!p) return json({ error: '请先登录后再评论' }, 401, cors);
+    if (!p.verified) return json({ error: '请先验证邮箱后再评论' }, 403, cors);
+    var ip0 = clientIp(request);
+    if (await rateLimited('cmt:', ip0, MAX_CMT_PER_HOUR)) return json({ error: '评论过于频繁，请稍后再试' }, 429, cors);
+  }
 
   var body;
   try { body = await request.json(); } catch (e) { return json({ error: 'invalid json' }, 400, cors); }

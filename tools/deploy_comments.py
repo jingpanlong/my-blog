@@ -27,6 +27,11 @@ AUTH_SECRET = "kwPTO07F9N4QiRgDevtvbb04NaKZIl36q1ElroRE3TM="
 # Resend 发信密钥（可选）。留空则走 dev 模式：验证/重置链接直接随 API 响应返回，便于本地测试。
 # 填入真实 key 后，验证邮件与找回密码邮件将通过 Resend 真实发送到用户邮箱。
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+# 站长免登录评论：浏览器以 X-Owner-Key 头携带此密钥即可评论/回复（无需注册登录）。
+# 密钥只存在站长本机 localStorage，不进前端代码；换密钥重新部署即可。
+OWNER_KEY = os.environ.get("OWNER_KEY", "o+h2a2MliUpTzuUTkBh3O5JCw6HVRhUd")
+OWNER_NAME = os.environ.get("OWNER_NAME", "景盼龙")
+OWNER_AVATAR = os.environ.get("OWNER_AVATAR", "🌟")
 
 CF_TOKEN = os.environ["CF_API_TOKEN"]
 ACCOUNT_ID = os.environ["CF_ACCOUNT_ID"]
@@ -64,6 +69,9 @@ def multipart_upload(script_js):
             {"name": "COMMENTS", "type": "kv_namespace", "namespace_id": COMMENTS_ID},
             {"name": "AUTH_SECRET", "type": "secret_text", "text": AUTH_SECRET},
             {"name": "RESEND_API_KEY", "type": "secret_text", "text": RESEND_API_KEY},
+            {"name": "OWNER_KEY", "type": "secret_text", "text": OWNER_KEY},
+            {"name": "OWNER_NAME", "type": "secret_text", "text": OWNER_NAME},
+            {"name": "OWNER_AVATAR", "type": "secret_text", "text": OWNER_AVATAR},
         ],
     }
     parts = []

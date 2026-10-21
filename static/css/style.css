@@ -1318,3 +1318,6 @@ img { max-width: 100%; }
   .km-node { transition: none; }
   .acard, .pcard, .post-card { transition: none; }
 }
+
+/* hidden 属性优先于任何 display 声明（修复 登录/未登录 状态条同时显示的问题） */
+[hidden] { display: none !important; }
