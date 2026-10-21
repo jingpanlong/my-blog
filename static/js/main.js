@@ -147,19 +147,61 @@
         }
       });
 
-      // 收藏
+      // 收藏（服务端计数：匿名 uid 去重，未登录也可看到数量）
+      var FAV_UID_KEY = 'blog_fav_uid';
+      function getFavUid() {
+        var u = '';
+        try { u = localStorage.getItem(FAV_UID_KEY) || ''; } catch (e) {}
+        if (!u || !/^[A-Za-z0-9_-]{6,40}$/.test(u)) {
+          u = 'f_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+          try { localStorage.setItem(FAV_UID_KEY, u); } catch (e) {}
+        }
+        return u;
+      }
       var favBtn = document.getElementById('fav-btn');
-      function renderFavBtn() {
-        var on = getFavs().some(function (f) { return f.path === path; });
+      var favCount = document.getElementById('fav-count');
+      function setFavUI(n, on) {
+        if (favCount) favCount.textContent = (typeof n === 'number') ? n : (favCount.textContent || '0');
         if (favBtn) { favBtn.classList.toggle('on', on); favBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
       }
-      renderFavBtn();
+      function favToggle() {
+        if (!api) return Promise.resolve(null);
+        return fetch(api + '/favs', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: path, uid: getFavUid() })
+        }).then(function (r) { return r.json(); }).catch(function () { return null; });
+      }
+      function localFavOn() { return getFavs().some(function (f) { return f.path === path; }); }
+      if (api) {
+        fetch(api + '/favs?path=' + encodeURIComponent(path) + '&uid=' + encodeURIComponent(getFavUid()))
+          .then(function (r) { return r.json(); })
+          .then(function (d) { setFavUI((d && d.count) || 0, !!(d && d.mine)); })
+          .catch(function () { setFavUI(localFavOn() ? 1 : 0, localFavOn()); });
+      } else {
+        setFavUI(localFavOn() ? 1 : 0, localFavOn());
+      }
       if (favBtn) favBtn.addEventListener('click', function () {
-        var favs = getFavs();
-        var i = -1;
-        for (var k = 0; k < favs.length; k++) { if (favs[k].path === path) { i = k; break; } }
-        if (i !== -1) favs.splice(i, 1); else favs.unshift({ path: path, title: title, url: url });
-        setFavs(favs); renderFavBtn(); updateFavBadge();
+        var wasOn = favBtn.classList.contains('on');
+        // 乐观更新，失败回滚
+        if (favCount) favCount.textContent = String(Math.max(0, (+favCount.textContent || 0) + (wasOn ? -1 : 1)));
+        favBtn.classList.toggle('on', !wasOn);
+        favBtn.setAttribute('aria-pressed', !wasOn ? 'true' : 'false');
+        favToggle().then(function (d) {
+          if (d && typeof d.count === 'number') setFavUI(d.count, !!d.mine);
+          else { // 接口不可用：回滚 UI，仍保留本机收藏夹
+            if (favCount) favCount.textContent = String(Math.max(0, (+favCount.textContent || 0) + (wasOn ? 1 : -1)));
+            favBtn.classList.toggle('on', wasOn);
+            favBtn.setAttribute('aria-pressed', wasOn ? 'true' : 'false');
+          }
+          // 同步本机收藏夹（「我的收藏」弹窗）
+          var favs = getFavs();
+          var i = -1;
+          for (var k = 0; k < favs.length; k++) { if (favs[k].path === path) { i = k; break; } }
+          var nowOn = favBtn.classList.contains('on');
+          if (nowOn && i === -1) favs.unshift({ path: path, title: title, url: url });
+          if (!nowOn && i !== -1) favs.splice(i, 1);
+          setFavs(favs); updateFavBadge();
+        });
       });
 
       // 转发菜单

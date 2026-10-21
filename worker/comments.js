@@ -14,7 +14,7 @@ addEventListener('fetch', function (event) {
 });
 
 const MAX_CMT_PER_HOUR = 30;
-const MAX_REG_PER_HOUR = 5;
+const MAX_REG_PER_HOUR = 10;
 const MAX_LOGIN_PER_HR = 20;
 const MAX_FORGOT_PER_HR = 5;
 const MAX_RESET_PER_HR = 10;

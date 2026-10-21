@@ -9,6 +9,11 @@
 //   GET  /views?path=/posts/xxx/  -> { "count": N }
 //   POST /views  body=/posts/xxx/ -> { "count": N+1 }
 //   键：view:<path>（与点赞的 like:<path>: 前缀隔离，互不干扰）
+//
+// 收藏（匿名 uid 去重，可取消，无需登录即可计数）：
+//   GET  /favs?path=/posts/xxx/&uid=xxx   -> { "count": N, "mine": bool }
+//   POST /favs  body={"path":"...","uid":"..."} -> { "count": N, "mine": bool }（切换：已收藏则取消）
+//   键：fav:<path>:<uid>
 
 addEventListener('fetch', function (event) {
   event.respondWith(handle(event.request));
@@ -34,6 +39,10 @@ async function handle(request) {
   // 浏览量子路由
   if (url.pathname === '/views' || url.pathname.endsWith('/views')) {
     return handleViews(request, url, cors);
+  }
+  // 收藏量子路由
+  if (url.pathname === '/favs' || url.pathname.endsWith('/favs')) {
+    return handleFavs(request, url, cors);
   }
   // 默认：点赞
   return handleLikes(request, url, cors);
@@ -92,6 +101,52 @@ async function handleViews(request, url, cors) {
   }
   const n = Number(await LIKES.get(key) || '0');
   return json({ count: n }, 200, cors);
+}
+
+// ---------------- 收藏 ----------------
+// 说明：KV 的 list 是最终一致的，put 后短时间内可能查不到新键，
+// 因此计数不用 list 统计，而用数值计数器 favcount:<path>（与浏览量同方案）；
+// fav:<path>:<uid> 仅用于判断「我是否已收藏」与取消去重。
+async function handleFavs(request, url, cors) {
+  var path = (url.searchParams.get('path') || '').trim();
+  var uid = (url.searchParams.get('uid') || '').trim();
+  if (request.method === 'POST') {
+    try {
+      var body = JSON.parse((await request.text()) || '{}');
+      if (body.path) path = String(body.path).trim();
+      if (body.uid) uid = String(body.uid).trim();
+    } catch (e) {}
+  }
+  if (!path) return json({ error: 'missing path' }, 400, cors);
+
+  var mine = false;
+  if (uid && /^[A-Za-z0-9_-]{6,40}$/.test(uid)) {
+    var key = 'fav:' + path + ':' + uid;
+    var exists = await LIKES.get(key);
+    if (request.method === 'POST') {
+      if (exists) {
+        await LIKES.delete(key);
+        await bumpFav(path, -1);
+        mine = false;
+      } else {
+        await LIKES.put(key, '1');
+        await bumpFav(path, 1);
+        mine = true;
+      }
+    } else {
+      mine = !!exists;
+    }
+  }
+  var n = Number(await LIKES.get('favcount:' + path) || '0');
+  return json({ count: n, mine: mine }, 200, cors);
+}
+
+async function bumpFav(path, delta) {
+  var key = 'favcount:' + path;
+  var cur = Number(await LIKES.get(key) || '0');
+  var next = Math.max(0, cur + delta);
+  await LIKES.put(key, String(next));
+  return next;
 }
 
 function json(obj, status, cors) {
