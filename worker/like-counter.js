@@ -172,8 +172,9 @@ async function handleStats(request, cors) {
   } catch (e) { /* OWNER_KEY 未绑定 */ }
   if (!secretOk) return json({ error: 'unauthorized' }, 401, cors);
 
-  var perViews = {}, perLikes = {}, perFav = {};
-  var totalViews = 0, totalLikes = 0, totalFav = 0;
+  var perViews = {}, perLikes = {}, perFav = {}, perComments = {};
+  var totalViews = 0, totalLikes = 0, totalFav = 0, totalComments = 0;
+  var commentKeys = [];
 
   // 浏览量：view:<path> = 数值
   await eachKey('view:', async function (k) {
@@ -195,19 +196,45 @@ async function handleStats(request, cors) {
     perFav[p] = (perFav[p] || 0) + v;
     totalFav += v;
   });
+  // 评论：comment:<path>:<ts>:<rand>（与 comments Worker 共用同一 KV 命名空间，直接读）
+  await eachKey('comment:', async function (k) {
+    var p = k.slice('comment:'.length).split(':')[0];
+    perComments[p] = (perComments[p] || 0) + 1;
+    totalComments += 1;
+    if (commentKeys.length < 1500) commentKeys.push(k);
+  });
+
+  // 最近评论（按 ts 倒序取前 12 条）
+  var recent = [];
+  var vals = await Promise.all(commentKeys.map(function (k) { return LIKES.get(k); }));
+  for (var ci = 0; ci < vals.length; ci++) {
+    if (!vals[ci]) continue;
+    try { recent.push(JSON.parse(vals[ci])); } catch (e) { /* 跳过坏数据 */ }
+  }
+  recent.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+  recent = recent.slice(0, 12).map(function (c) {
+    return { id: c.id, path: c.path, name: c.name, content: (c.content || '').slice(0, 220), ts: c.ts, avatar: c.avatar };
+  });
 
   var seen = {};
-  [perViews, perLikes, perFav].forEach(function (m) {
+  [perViews, perLikes, perFav, perComments].forEach(function (m) {
     Object.keys(m).forEach(function (p) { seen[p] = true; });
   });
   var perPost = Object.keys(seen).map(function (p) {
-    return { path: p, views: perViews[p] || 0, likes: perLikes[p] || 0, favorites: perFav[p] || 0 };
+    return {
+      path: p,
+      views: perViews[p] || 0,
+      likes: perLikes[p] || 0,
+      favorites: perFav[p] || 0,
+      comments: perComments[p] || 0
+    };
   });
-  perPost.sort(function (a, b) { return b.views - a.views; });
+  perPost.sort(function (a, b) { return (b.views - a.views) || (b.comments - a.comments); });
 
   return json({
-    totals: { views: totalViews, likes: totalLikes, favorites: totalFav },
-    perPost: perPost
+    totals: { views: totalViews, likes: totalLikes, favorites: totalFav, comments: totalComments },
+    perPost: perPost,
+    recent: recent
   }, 200, cors);
 }
 

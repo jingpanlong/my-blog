@@ -177,7 +177,6 @@
 <script>
 (function () {
   var LIKE_API = "{{ hugo.Data.site.likeApi }}";
-  var COMMENT_API = "{{ hugo.Data.site.commentApi }}".replace(/\/comments\/?$/, "");
   var OWNER_STORE = 'blog_owner_key';
 
   var elGate = document.getElementById('dash-gate');
@@ -253,27 +252,16 @@
       });
   }
 
-  function render(like, comment) {
-    // 总览
-    var t = (like && like.totals) || {};
-    var tc = (comment && comment.totals) || {};
+  function render(d) {
+    var t = (d && d.totals) || {};
     elKpi.views.textContent = fmt(t.views);
     elKpi.likes.textContent = fmt(t.likes);
     elKpi.favorites.textContent = fmt(t.favorites);
-    elKpi.comments.textContent = fmt(tc.comments);
+    elKpi.comments.textContent = fmt(t.comments);
 
-    // 合并各文章明细
-    var map = {};
-    function ensure(p) { if (!map[p]) map[p] = { path: p, views: 0, likes: 0, favorites: 0, comments: 0 }; return map[p]; }
-    ((like && like.perPost) || []).forEach(function (r) {
-      var o = ensure(r.path); o.views = r.views || 0; o.likes = r.likes || 0; o.favorites = r.favorites || 0;
+    var rows = ((d && d.perPost) || []).slice().sort(function (a, b) {
+      return (b.views - a.views) || (b.comments - a.comments);
     });
-    ((comment && comment.perPost) || []).forEach(function (r) {
-      ensure(r.path).comments = r.comments || 0;
-    });
-    var rows = Object.keys(map).map(function (k) { return map[k]; })
-      .sort(function (a, b) { return (b.views - a.views) || (b.comments - a.comments); });
-
     if (!rows.length) {
       elRows.innerHTML = '<tr><td colspan="5" class="dash-empty">暂无数据</td></tr>';
     } else {
@@ -289,8 +277,7 @@
       }).join('');
     }
 
-    // 最新评论
-    var recent = (comment && comment.recent) || [];
+    var recent = (d && d.recent) || [];
     if (!recent.length) {
       elRecent.innerHTML = '<li class="dash-empty">暂无评论</li>';
     } else {
@@ -311,8 +298,8 @@
     if (!key) { showGate(); return; }
     showBody();
     if (!silent) { note(''); elUpdated.textContent = '加载中…'; }
-    Promise.all([fetchStats(LIKE_API, key), fetchStats(COMMENT_API, key)])
-      .then(function (arr) { render(arr[0], arr[1]); if (silent) note(''); })
+    fetchStats(LIKE_API, key)
+      .then(function (s) { render(s); if (silent) note(''); })
       .catch(function (e) {
         if (e && e.code === 401) {
           setKey('');
