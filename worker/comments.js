@@ -19,6 +19,9 @@ const MAX_LOGIN_PER_HR = 20;
 const MAX_FORGOT_PER_HR = 5;
 const MAX_RESET_PER_HR = 10;
 const SESSION_TTL = 30 * 24 * 3600; // 秒
+const MAX_IMAGES = 4;                 // 单条评论最多图片数
+const MAX_MEDIA_BYTES = 1572864;      // 单张图片 base64 解码后上限 1.5MB
+const IMG_RE = /^data:image\/(png|jpeg|gif|webp);base64,([A-Za-z0-9+/=]+)$/;
 const TOKEN_TTL = 24 * 3600; // 验证/重置 token 有效期（秒）
 const PBKDF2_ITERS = 100000;
 const SITE_ORIGIN = 'https://my-blog-jingpanlong.pages.dev';
@@ -429,13 +432,33 @@ async function postComment(request, cors) {
   var path = (body.path || '').trim();
   var content = (body.content || '').trim();
   var replyTo = (body.replyTo || '').trim();
+
+  /* 图片附件：base64 data URL 直存进评论记录（无需对象存储）。
+     仅接受白名单格式 + 单张大小上限，超量/非法项直接丢弃，不影响文字评论。 */
+  var images = [];
+  if (Array.isArray(body.images)) {
+    for (var i = 0; i < body.images.length && images.length < MAX_IMAGES; i++) {
+      var im = body.images[i];
+      if (typeof im !== 'string') continue;
+      var m = IMG_RE.exec(im);
+      if (!m) continue;
+      var b64 = m[2];
+      var pad = b64.slice(-2) === '==' ? 2 : (b64.slice(-1) === '=' ? 1 : 0);
+      var bytes = Math.floor(b64.length * 3 / 4) - pad;
+      if (bytes > MAX_MEDIA_BYTES) continue;
+      images.push(im);
+    }
+  }
+
   if (!path) return json({ error: 'missing path' }, 400, cors);
-  if (content.length < 1 || content.length > 800) return json({ error: '评论需 1-800 字' }, 400, cors);
+  if (content.length < 1 && images.length === 0) return json({ error: '评论不能为空' }, 400, cors);
+  if (content.length > 800) return json({ error: '评论需 1-800 字' }, 400, cors);
 
   var id = 'comment:' + path + ':' + Date.now() + ':' + Math.random().toString(36).slice(2, 10);
   var comment = {
     id: id, path: path, uid: p.uid, name: p.name, avatar: p.avatar,
-    content: content, createdAt: Date.now(), replyTo: replyTo || null
+    content: content, createdAt: Date.now(), replyTo: replyTo || null,
+    images: images
   };
   await COMMENTS.put(id, JSON.stringify(comment));
   return json({ ok: true, comment: comment }, 200, cors);

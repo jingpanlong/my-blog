@@ -897,6 +897,36 @@ img { max-width: 100%; }
 .cf-reply { font-size: 12.5px; color: var(--text-mute); }
 .cf-reply b { color: var(--accent); }
 .cf-cancel { margin-left: 6px; background: none; border: 0; color: var(--text-mute); cursor: pointer; text-decoration: underline; font: inherit; font-size: 12.5px; }
+
+/* 评论图片：上传按钮、预览缩略图、已发布评论的图片网格 */
+.cf-icon-btn {
+  flex: none; padding: 7px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--panel); color: var(--text-mute);
+  font: inherit; font-size: 13px; transition: .15s;
+}
+.cf-icon-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.cf-icon-btn:disabled { opacity: .5; cursor: not-allowed; }
+.cf-img-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.cf-img-preview[hidden] { display: none; }
+.img-cell { position: relative; width: 74px; height: 74px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+.img-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-rm {
+  position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border: 0; border-radius: 50%;
+  background: rgba(0, 0, 0, .55); color: #fff; cursor: pointer; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; padding: 0; transition: background .15s;
+}
+.img-rm:hover { background: rgba(0, 0, 0, .8); }
+.c-imgs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.c-imgs a {
+  width: 92px; height: 92px; border-radius: 10px; overflow: hidden; display: block;
+  border: 1px solid var(--border); transition: border-color .15s, transform .15s;
+}
+.c-imgs a:hover { border-color: var(--accent); transform: translateY(-1px); }
+.c-imgs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+@media (max-width: 620px) {
+  .img-cell { width: 60px; height: 60px; }
+  .c-imgs a { width: 76px; height: 76px; }
+}
 .cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 
 /* 评论列表：根评论为卡片；回复嵌在父评论内部、无卡片，仅缩进+左侧细线 */

@@ -37,7 +37,10 @@
       <span class="c-avatar c-form-avatar" id="c-form-avatar" hidden>🙂</span>
       <textarea id="c-content" class="cf-input cf-textarea" maxlength="800" placeholder="登录后说点什么吧～" aria-label="评论内容"></textarea>
     </div>
+    <div class="cf-img-preview" id="c-img-preview" hidden></div>
     <div class="cf-row">
+      <button type="button" class="cf-icon-btn" id="c-img-btn" title="添加图片（最多 4 张，单张 ≤1.5MB）">🖼 图片</button>
+      <input type="file" id="c-img-input" accept="image/*" multiple hidden>
       <span class="cf-msg" id="c-msg" role="status"></span>
       <button type="submit" class="cf-submit" id="c-submit">发表评论</button>
     </div>

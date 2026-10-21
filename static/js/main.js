@@ -731,6 +731,13 @@
     var replyCancel = document.getElementById('c-reply-cancel');
     var replyTo = null;
 
+    var imgBtn = document.getElementById('c-img-btn');
+    var imgInput = document.getElementById('c-img-input');
+    var previewEl = document.getElementById('c-img-preview');
+    var pendingImages = [];
+    var MAX_IMAGES = 4;
+    var MAX_MEDIA_BYTES = 1572864; // 单张图片上限 1.5MB（base64 解码后）
+
     var authOut = document.getElementById('c-auth-out');
     var authIn = document.getElementById('c-auth-in');
     var authAvatar = document.getElementById('c-auth-avatar');
@@ -846,6 +853,22 @@
 
       li.appendChild(head);
       li.appendChild(body);
+
+      /* 图片附件：仅渲染白名单 data URL，杜绝任意外链/XSS */
+      if (c.images && c.images.length) {
+        var grid = document.createElement('div');
+        grid.className = 'c-imgs';
+        c.images.forEach(function (src) {
+          if (typeof src !== 'string' || !IMG_RE.test(src)) return;
+          var a = document.createElement('a');
+          a.href = src; a.target = '_blank'; a.rel = 'noopener';
+          var im = document.createElement('img');
+          im.src = src; im.alt = '评论图片'; im.loading = 'lazy';
+          a.appendChild(im);
+          grid.appendChild(a);
+        });
+        if (grid.children.length) li.appendChild(grid);
+      }
       return li;
     }
 
@@ -934,6 +957,78 @@
       if (replyWrap) replyWrap.hidden = true;
     }
     if (replyCancel) replyCancel.addEventListener('click', cancelReply);
+
+    /* ---------- 图片附件：选图 → 校验/压缩 → base64 → 预览 ---------- */
+    var IMG_RE = /^data:image\/(png|jpeg|gif|webp);base64,/;
+    function fileToDataURL(file, cb) {
+      if (!/^image\/(png|jpeg|gif|webp)$/.test(file.type)) { cb(null, 'type'); return; }
+      if (file.size > MAX_MEDIA_BYTES) { cb(null, 'size'); return; }
+      if (file.type === 'image/gif') { // 动画 GIF 经 canvas 会丢动画，保留原图
+        var r = new FileReader();
+        r.onload = function () { cb(r.result); };
+        r.onerror = function () { cb(null, 'err'); };
+        r.readAsDataURL(file);
+        return;
+      }
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        var max = 1200, w = img.width, h = img.height;
+        if (w > max || h > max) {
+          if (w >= h) { h = Math.round(h * max / w); w = max; }
+          else { w = Math.round(w * max / h); h = max; }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        try { cb(canvas.toDataURL('image/jpeg', 0.85)); }
+        catch (e) { cb(null, 'err'); }
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); cb(null, 'err'); };
+      img.src = url;
+    }
+    function renderPreview() {
+      if (!previewEl) return;
+      previewEl.innerHTML = '';
+      if (!pendingImages.length) { previewEl.hidden = true; return; }
+      previewEl.hidden = false;
+      pendingImages.forEach(function (src, idx) {
+        var cell = document.createElement('div');
+        cell.className = 'img-cell';
+        var im = document.createElement('img'); im.src = src; im.alt = '图片预览';
+        var rm = document.createElement('button');
+        rm.type = 'button'; rm.className = 'img-rm'; rm.textContent = '×'; rm.setAttribute('aria-label', '移除图片');
+        rm.addEventListener('click', function () { pendingImages.splice(idx, 1); renderPreview(); updateImgBtn(); });
+        cell.appendChild(im); cell.appendChild(rm);
+        previewEl.appendChild(cell);
+      });
+    }
+    function updateImgBtn() {
+      if (imgBtn) imgBtn.disabled = !isAuthed() || pendingImages.length >= MAX_IMAGES;
+    }
+    if (imgBtn) imgBtn.addEventListener('click', function () {
+      if (!isAuthed()) { BlogAuth.open('login'); return; }
+      if (imgInput) imgInput.click();
+    });
+    if (imgInput) imgInput.addEventListener('change', function () {
+      var files = Array.prototype.slice.call(imgInput.files || []);
+      imgInput.value = '';
+      var room = MAX_IMAGES - pendingImages.length;
+      if (room <= 0) { setMsg('最多添加 ' + MAX_IMAGES + ' 张图片', true); return; }
+      files = files.slice(0, room);
+      var remaining = files.length;
+      if (!remaining) return;
+      setMsg('图片处理中…', false);
+      files.forEach(function (f) {
+        fileToDataURL(f, function (res, err) {
+          remaining--;
+          if (res) pendingImages.push(res);
+          else setMsg(err === 'size' ? '有图片超过 1.5MB，请压缩后重试' : '请选择图片文件', true);
+          if (remaining === 0) { renderPreview(); updateImgBtn(); setMsg(''); }
+        });
+      });
+    });
 
     /* 折叠 / 展开：未登录点击时引导登录，已登录正常切换 */
     if (moreBtn) moreBtn.addEventListener('click', function () {
@@ -1036,9 +1131,11 @@
       pendingExpand = false;
       wasAuthed = nowAuthed;
       applyAuthUI(st);
+      updateImgBtn();
       renderList(allComments);
     });
     applyAuthUI(BlogAuth.state);
+    updateImgBtn();
 
     /* 未登录时点击输入框 → 直接弹登录 */
     function lockHint() {
@@ -1064,7 +1161,7 @@
       if (!u && !o) { BlogAuth.open('login'); return; }
       if (u && !u.verified) { setMsg('请先验证邮箱后再评论', true); return; }
       var content = (contentEl && contentEl.value || '').trim();
-      if (!content) { setMsg('评论内容不能为空', true); if (contentEl) contentEl.focus(); return; }
+      if (!content && pendingImages.length === 0) { setMsg('评论内容不能为空', true); if (contentEl) contentEl.focus(); return; }
       setMsg('发送中…', false);
       if (submitEl) submitEl.disabled = true;
       var headers = { 'Content-Type': 'application/json' };
@@ -1073,7 +1170,7 @@
       fetch(api, {
         method: 'POST',
         headers: headers,
-        body: JSON.stringify({ path: path, content: content, replyTo: replyTo || '' })
+        body: JSON.stringify({ path: path, content: content, replyTo: replyTo || '', images: pendingImages.slice() })
       })
         .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
         .then(function (res) {
@@ -1092,6 +1189,9 @@
             renderList(allComments);
           }
           if (contentEl) contentEl.value = '';
+          pendingImages = [];
+          renderPreview();
+          updateImgBtn();
           cancelReply();
           setMsg('评论已发布，感谢参与！', false);
         })
