@@ -791,9 +791,13 @@
       return li;
     }
 
+    function isAuthed() { return !!(BlogAuth.user() || BlogAuth.owner()); }
+
     function renderList(comments) {
       if (!listEl) return;
       allComments = comments || [];
+      var authed = isAuthed();
+      if (!authed) expanded = false; // 未登录一律折叠，退出登录时也要收回
       listEl.innerHTML = '';
       if (!allComments.length) {
         var emptyLi = document.createElement('li');
@@ -814,7 +818,9 @@
       if (moreBtn) {
         if (allComments.length > PAGE_SIZE) {
           moreBtn.hidden = false;
-          moreBtn.textContent = expanded ? '收起评论' : ('查看更多评论（' + allComments.length + '）');
+          moreBtn.textContent = !authed
+            ? ('登录后查看全部评论（' + allComments.length + '）')
+            : (expanded ? '收起评论' : ('查看更多评论（' + allComments.length + '）'));
         } else {
           moreBtn.hidden = true;
         }
@@ -835,8 +841,20 @@
     }
     if (replyCancel) replyCancel.addEventListener('click', cancelReply);
 
-    /* 折叠 / 展开 */
+    /* 折叠 / 展开：未登录点击时引导登录，已登录正常切换 */
     if (moreBtn) moreBtn.addEventListener('click', function () {
+      if (!isAuthed()) {
+        pendingExpand = true; // 登录成功后自动展开
+        BlogAuth.open('login');
+        setMsg('登录后即可查看全部评论', true);
+        moreBtn.textContent = '请先登录后再查看全部评论';
+        setTimeout(function () {
+          if (!isAuthed() && allComments.length > PAGE_SIZE) {
+            moreBtn.textContent = '登录后查看全部评论（' + allComments.length + '）';
+          }
+        }, 2000);
+        return;
+      }
       expanded = !expanded;
       renderList(allComments);
     });
@@ -915,7 +933,17 @@
         if (verifyBar) verifyBar.hidden = true;
       }
     }
-    BlogAuth.on(function (st) { applyAuthUI(st); renderList(allComments); });
+    /* 仅在「点更多被引导去登录、随后登录成功」时自动展开；退出登录时自动收起 */
+    var wasAuthed = isAuthed();
+    var pendingExpand = false;
+    BlogAuth.on(function (st) {
+      var nowAuthed = isAuthed();
+      if (nowAuthed && !wasAuthed && pendingExpand && allComments.length > PAGE_SIZE) expanded = true;
+      pendingExpand = false;
+      wasAuthed = nowAuthed;
+      applyAuthUI(st);
+      renderList(allComments);
+    });
     applyAuthUI(BlogAuth.state);
 
     /* 未登录时点击输入框 → 直接弹登录 */
