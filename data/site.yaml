@@ -42,9 +42,9 @@ social:
     icon: email
     handle: ''
   - name: 微信
-    url: '#'
+    url: https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkzODkyNTk1Nw==
     icon: wechat
-    handle: JovialPioneerLegen
+    handle: 景同志
     qr: /img/wechat-qr.jpg
   - name: 小红书
     url: https://xhslink.cn/o/91exvN6cZUA

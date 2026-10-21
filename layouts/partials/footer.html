@@ -21,7 +21,7 @@
       <div class="foot-social">
         {{ range hugo.Data.site.social }}
           {{ $item := . }}
-          <a class="social-btn{{ with $item.qr }} has-qr{{ end }}" href="{{ $item.url }}" title="{{ $item.name }}{{ with $item.handle }} · {{ . }}{{ end }}" aria-label="{{ $item.name }}"
+          <a class="social-btn{{ with $item.qr }} has-qr{{ end }}" href="{{ $item.url }}" title="{{ $item.name }}{{ if $item.qr }} · 扫码关注{{ else }}{{ with $item.handle }} · {{ . }}{{ end }}{{ end }}" aria-label="{{ $item.name }}"
              {{ if ne $item.url "#" }}target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" $item.icon }}{{ with $item.qr }}<span class="qr-pop" role="tooltip"><img src="{{ . }}" alt="{{ $item.name }} 二维码"><span class="qr-cap">扫码关注 · {{ $item.handle }}</span></span>{{ end }}</a>
         {{ end }}
         <a class="social-btn" href="/index.xml" title="RSS 订阅" aria-label="RSS 订阅" target="_blank" rel="noopener">{{ partial "icon.html" "rss" }}</a>
