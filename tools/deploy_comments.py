@@ -24,6 +24,9 @@ JS_PATH = os.path.normpath(os.path.join(HERE, "..", "worker", "comments.js"))
 COMMENTS_ID = "b2ca0e377242436b8e79f3d2ecf2131d"
 # 会话 token 签名密钥（HMAC-SHA256）。固定值，请勿随意更改，否则所有用户需重新登录。
 AUTH_SECRET = "kwPTO07F9N4QiRgDevtvbb04NaKZIl36q1ElroRE3TM="
+# Resend 发信密钥（可选）。留空则走 dev 模式：验证/重置链接直接随 API 响应返回，便于本地测试。
+# 填入真实 key 后，验证邮件与找回密码邮件将通过 Resend 真实发送到用户邮箱。
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 
 CF_TOKEN = os.environ["CF_API_TOKEN"]
 ACCOUNT_ID = os.environ["CF_ACCOUNT_ID"]
@@ -60,6 +63,7 @@ def multipart_upload(script_js):
         "bindings": [
             {"name": "COMMENTS", "type": "kv_namespace", "namespace_id": COMMENTS_ID},
             {"name": "AUTH_SECRET", "type": "secret_text", "text": AUTH_SECRET},
+            {"name": "RESEND_API_KEY", "type": "secret_text", "text": RESEND_API_KEY},
         ],
     }
     parts = []

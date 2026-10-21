@@ -924,16 +924,66 @@ img { max-width: 100%; }
 .c-reply-btn:hover { color: var(--accent); }
 .c-empty { text-align: center; color: var(--text-mute); font-size: 13px; padding: 8px 0; }
 
+/* 头部右上角登录控件 */
+.auth-control { display: flex; align-items: center; }
+.ac-login {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--border-strong); background: var(--panel);
+  color: var(--text); font: inherit; font-size: 13px; font-weight: 600;
+  transition: .15s; white-space: nowrap;
+}
+.ac-login:hover { border-color: var(--accent); color: var(--accent); }
+.ac-user {
+  position: relative; display: inline-flex; align-items: center; gap: 8px;
+  cursor: pointer; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid transparent; transition: .15s;
+}
+.ac-user:hover { border-color: var(--border-strong); background: var(--panel); }
+.ac-avatar {
+  width: 30px; height: 30px; flex: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 17px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #8b5cf6));
+}
+.ac-name { font-size: 13px; font-weight: 600; color: var(--text); max-width: 92px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-menu {
+  position: absolute; top: calc(100% + 8px); right: 0; min-width: 150px; padding: 6px;
+  border-radius: 12px; background: var(--panel-solid); border: 1px solid var(--border-strong);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .35); display: none; z-index: 60;
+}
+.ac-menu.open { display: block; }
+.ac-item {
+  display: block; width: 100%; text-align: left; padding: 8px 10px; border: 0; background: none;
+  color: var(--text); font: inherit; font-size: 13px; border-radius: 8px; cursor: pointer;
+}
+.ac-item:hover { background: var(--panel); color: var(--accent); }
+.ac-item.warn { color: #f59e0b; }
+
 /* 登录态提示条 */
 .c-authbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .c-auth-out, .c-auth-in { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: space-between; }
 .c-auth-tip { font-size: 13px; color: var(--text-mute); }
 .c-auth-open { flex: none; padding: 9px 18px; }
+.c-auth-who { display: inline-flex; align-items: center; gap: 8px; }
 .c-auth-name { font-size: 13.5px; color: var(--text-mute); }
 .c-auth-name b { color: var(--accent); font-weight: 600; }
 .c-auth-link { background: none; border: 0; cursor: pointer; color: var(--text-mute); font: inherit; font-size: 13px; text-decoration: underline; padding: 0; }
 .c-auth-link:hover { color: var(--accent); }
 .cf-textarea:disabled { opacity: .55; cursor: not-allowed; }
+
+/* 未验证邮箱提示条 */
+.c-verify-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 12px; padding: 9px 12px; border-radius: 10px; font-size: 12.5px;
+  color: #f59e0b; background: rgba(245, 158, 11, .10); border: 1px solid rgba(245, 158, 11, .35);
+}
+.c-verify-bar[hidden] { display: none; }
+
+/* 评论头像（emoji）与编辑区 */
+.c-avatar { font-size: 17px; line-height: 1; }
+.c-avatar-sm { width: 28px; height: 28px; font-size: 15px; }
+.cf-editor { display: flex; gap: 10px; align-items: flex-start; }
+.c-form-avatar { width: 36px; height: 36px; font-size: 19px; }
 
 /* 登录 / 注册弹窗 */
 .auth-modal {
@@ -944,10 +994,11 @@ img { max-width: 100%; }
 }
 .auth-modal[hidden] { display: none; }
 .auth-card {
-  position: relative; width: 100%; max-width: 380px;
+  position: relative; width: 100%; max-width: 400px;
   padding: 28px 26px 24px; border-radius: var(--radius-lg);
   background: var(--panel-solid); border: 1px solid var(--border-strong);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  max-height: 92vh; overflow-y: auto;
 }
 .auth-close {
   position: absolute; top: 12px; right: 14px; width: 30px; height: 30px;
@@ -955,7 +1006,9 @@ img { max-width: 100%; }
   color: var(--text-mute); font-size: 20px; line-height: 1; cursor: pointer; transition: .15s;
 }
 .auth-close:hover { color: var(--text); border-color: var(--accent); }
+.auth-title { margin: 0 0 14px; font-size: 18px; font-weight: 700; color: var(--text); }
 .auth-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.auth-tabs[hidden] { display: none; }
 .auth-tab {
   flex: 1; padding: 9px 0; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600;
   border: 1px solid var(--border-strong); background: var(--panel); color: var(--text-mute); transition: .15s;
@@ -963,8 +1016,33 @@ img { max-width: 100%; }
 .auth-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .auth-form { display: flex; flex-direction: column; gap: 12px; }
 .auth-field[hidden] { display: none; }
+.af-label { display: block; font-size: 12.5px; color: var(--text-mute); margin-bottom: 8px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.avatar-opt {
+  aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--border-strong); background: var(--panel);
+  font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .15s;
+}
+.avatar-opt:hover { border-color: var(--accent); transform: translateY(-1px); }
+.avatar-opt.active {
+  border-color: var(--accent); background: color-mix(in srgb, var(--accent) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.auth-reset-field { display: flex; flex-direction: column; gap: 10px; }
+.auth-reset-field[hidden] { display: none; }
 .auth-msg { min-height: 18px; font-size: 12.5px; }
-.auth-submit { margin-top: 4px; padding: 11px; width: 100%; }
+.auth-devlinks {
+  display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;
+  background: rgba(245, 158, 11, .10); border: 1px solid rgba(245, 158, 11, .35);
+}
+.auth-devlinks[hidden] { display: none; }
+.auth-devlinks a { font-size: 12.5px; color: var(--accent); text-decoration: underline; word-break: break-all; }
+.auth-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.auth-forgot { font-size: 12.5px; color: var(--text-mute); text-decoration: underline; }
+.auth-forgot:hover { color: var(--accent); }
+.auth-submit { margin-top: 0; padding: 11px 22px; }
+.auth-back { align-self: center; font-size: 12.5px; color: var(--text-mute); text-decoration: none; }
+.auth-back[hidden] { display: none; }
+.auth-back:hover { color: var(--accent); }
 
 /* =========================================================
    搜索弹窗

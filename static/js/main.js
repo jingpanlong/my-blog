@@ -307,28 +307,323 @@
     });
   })();
 
-  // ---- 注册/登录 + 评论（需登录）----
+  // ============ 全局账号（注册 / 登录 / 邮箱验证 / 找回密码 / 会话吊销）============
+  var BlogAuth = (function () {
+    var TOKEN_KEY = 'blog_token';
+    var apiMeta = document.querySelector('meta[name="comment-api"]');
+    var api = (apiMeta && apiMeta.content) ? apiMeta.content : '';
+    var AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉', '🐧', '🦄', '🌟', '🍎'];
+    var state = { token: '', user: null };
+    var listeners = [];
+
+    function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
+    function persist(t) {
+      state.token = t || '';
+      try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch (e) {}
+    }
+    function clearToken() { state.token = ''; state.user = null; try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
+    state.token = getToken();
+
+    var modalEl = document.getElementById('auth-modal');
+    var formEl = document.getElementById('auth-form');
+    var msgEl = document.getElementById('auth-msg');
+    var submitEl = document.getElementById('auth-submit');
+    var closeEl = document.getElementById('auth-close');
+    var titleEl = document.getElementById('auth-title');
+    var tabsEl = document.getElementById('auth-tabs');
+    var tabs = document.querySelectorAll('.auth-tab');
+    var toForgotEl = document.getElementById('auth-to-forgot');
+    var toLoginEl = document.getElementById('auth-to-login');
+    var fieldAvatar = document.getElementById('auth-avatar-field');
+    var avatarGrid = document.getElementById('auth-avatar-grid');
+    var fieldName = document.getElementById('auth-name-field');
+    var nameInput = document.getElementById('auth-name');
+    var emailInput = document.getElementById('auth-email');
+    var pwInput = document.getElementById('auth-pw');
+    var pw2Field = document.getElementById('auth-pw2-field');
+    var pw2Input = document.getElementById('auth-pw2');
+    var resetField = document.getElementById('auth-reset-field');
+    var resetPw = document.getElementById('auth-reset-pw');
+    var resetPw2 = document.getElementById('auth-reset-pw2');
+    var devBox = document.getElementById('auth-devlinks');
+
+    var mode = 'login';
+    var selectedAvatar = AVATARS[0];
+    var resetToken = '';
+
+    function on(fn) { listeners.push(fn); }
+    function emit() { listeners.forEach(function (fn) { try { fn(state); } catch (e) {} }); }
+    function setMsg(t, isErr) {
+      if (!msgEl) return;
+      msgEl.textContent = t || '';
+      msgEl.className = 'cf-msg auth-msg' + (isErr ? ' err' : '');
+    }
+    function showDevLinks(links) {
+      if (!devBox) return;
+      if (!links || !links.length) { devBox.innerHTML = ''; devBox.hidden = true; return; }
+      devBox.hidden = false; devBox.innerHTML = '';
+      links.forEach(function (l) {
+        var a = document.createElement('a');
+        a.href = l.link; a.target = '_blank'; a.rel = 'noopener';
+        a.textContent = l.type === 'verify' ? '开发模式：点此验证邮箱' : '开发模式：点此重置密码';
+        devBox.appendChild(a);
+      });
+    }
+    function buildAvatarGrid() {
+      if (!avatarGrid) return;
+      avatarGrid.innerHTML = '';
+      AVATARS.forEach(function (emo) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'avatar-opt' + (emo === selectedAvatar ? ' active' : '');
+        b.textContent = emo; b.setAttribute('data-emoji', emo);
+        b.addEventListener('click', function () {
+          selectedAvatar = emo;
+          Array.prototype.forEach.call(avatarGrid.children, function (c) {
+            c.classList.toggle('active', c.getAttribute('data-emoji') === emo);
+          });
+        });
+        avatarGrid.appendChild(b);
+      });
+    }
+    function setMode(m) {
+      mode = m;
+      if (titleEl) titleEl.textContent = m === 'register' ? '注册账号' : (m === 'forgot' ? '找回密码' : (m === 'reset' ? '重置密码' : '登录'));
+      Array.prototype.forEach.call(tabs, function (t) {
+        t.classList.toggle('active', t.getAttribute('data-tab') === m);
+      });
+      if (tabsEl) tabsEl.hidden = (m === 'forgot' || m === 'reset');
+      if (fieldAvatar) fieldAvatar.hidden = (m !== 'register');
+      if (fieldName) fieldName.hidden = (m !== 'register');
+      if (emailInput) { emailInput.hidden = (m === 'reset'); emailInput.placeholder = (m === 'register') ? '邮箱' : '邮箱 / 昵称'; }
+      if (pwInput) pwInput.hidden = (m === 'forgot' || m === 'reset');
+      if (pw2Field) pw2Field.hidden = (m !== 'register');
+      if (resetField) resetField.hidden = (m !== 'reset');
+      if (toForgotEl) toForgotEl.style.display = (m === 'login') ? '' : 'none';
+      if (toLoginEl) toLoginEl.hidden = !(m === 'forgot' || m === 'reset');
+      if (submitEl) submitEl.textContent = m === 'register' ? '注册' : (m === 'forgot' ? '发送重置链接' : (m === 'reset' ? '重置密码' : '登录'));
+      if (m === 'register') buildAvatarGrid();
+      setMsg(''); showDevLinks(null);
+      var f = (m === 'register') ? nameInput : emailInput;
+      if (f) setTimeout(function () { try { f.focus(); } catch (e) {} }, 30);
+    }
+    function open(m) {
+      if (!modalEl) return;
+      setMode(m || 'login');
+      modalEl.hidden = false;
+    }
+    function close() { if (modalEl) modalEl.hidden = true; }
+
+    function apiCall(path, body, withAuth) {
+      var headers = { 'Content-Type': 'application/json' };
+      if (withAuth && state.token) headers['Authorization'] = 'Bearer ' + state.token;
+      return fetch(api + path, { method: 'POST', headers: headers, body: JSON.stringify(body || {}) })
+        .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); });
+    }
+    function applyAuth(res) {
+      if (res.s === 200 && res.d && res.d.token) {
+        persist(res.d.token);
+        state.user = res.d.user || null;
+        emit();
+        return true;
+      }
+      return false;
+    }
+    function submit(e) {
+      e.preventDefault();
+      if (mode === 'register') return doRegister();
+      if (mode === 'forgot') return doForgot();
+      if (mode === 'reset') return doReset();
+      return doLogin();
+    }
+    function doLogin() {
+      var ident = (emailInput && emailInput.value || '').trim();
+      var pw = (pwInput && pwInput.value) || '';
+      if (!ident) { setMsg('请输入邮箱或昵称', true); return; }
+      if (!pw) { setMsg('请输入密码', true); return; }
+      setMsg('登录中…'); if (submitEl) submitEl.disabled = true;
+      apiCall('/auth/login', { email: ident, password: pw }).then(function (res) {
+        if (applyAuth(res)) { close(); if (formEl) formEl.reset(); setMsg(''); }
+        else setMsg((res.d && res.d.error) || '登录失败', true);
+      }).catch(function () { setMsg('网络错误，请稍后重试', true); })
+        .then(function () { if (submitEl) submitEl.disabled = false; });
+    }
+    function doRegister() {
+      var name = (nameInput && nameInput.value || '').trim();
+      var email = (emailInput && emailInput.value || '').trim().toLowerCase();
+      var pw = (pwInput && pwInput.value) || '';
+      var pw2 = (pw2Input && pw2Input.value) || '';
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setMsg('请输入有效邮箱', true); return; }
+      if (name.length < 1 || name.length > 24) { setMsg('昵称需 1-24 字', true); return; }
+      if (pw.length < 8) { setMsg('密码至少 8 位', true); return; }
+      if (pw !== pw2) { setMsg('两次输入的密码不一致', true); return; }
+      setMsg('注册中…'); if (submitEl) submitEl.disabled = true;
+      apiCall('/auth/register', { name: name, email: email, avatar: selectedAvatar, password: pw, confirmPassword: pw2 })
+        .then(function (res) {
+          if (applyAuth(res)) {
+            var u = res.d.user || {};
+            setMsg('注册成功！' + (u.verified ? '' : '请验证邮箱后即可评论。'));
+            showDevLinks(res.d.devLinks);
+            if (!res.d.devLinks || !res.d.devLinks.length) { close(); if (formEl) formEl.reset(); }
+          } else setMsg((res.d && res.d.error) || '注册失败', true);
+        }).catch(function () { setMsg('网络错误，请稍后重试', true); })
+        .then(function () { if (submitEl) submitEl.disabled = false; });
+    }
+    function doForgot() {
+      var ident = (emailInput && emailInput.value || '').trim();
+      if (!ident) { setMsg('请输入邮箱或昵称', true); return; }
+      setMsg('发送中…'); if (submitEl) submitEl.disabled = true;
+      apiCall('/auth/forgot', { email: ident }).then(function (res) {
+        if (res.d && res.d.ok) { setMsg('如果账号存在，重置链接已发送。'); showDevLinks(res.d.devLinks); }
+        else setMsg((res.d && res.d.error) || '操作失败', true);
+      }).catch(function () { setMsg('网络错误，请稍后重试', true); })
+        .then(function () { if (submitEl) submitEl.disabled = false; });
+    }
+    function doReset() {
+      var pw = (resetPw && resetPw.value) || '';
+      var pw2 = (resetPw2 && resetPw2.value) || '';
+      if (pw.length < 8) { setMsg('密码至少 8 位', true); return; }
+      if (pw !== pw2) { setMsg('两次输入的密码不一致', true); return; }
+      setMsg('重置中…'); if (submitEl) submitEl.disabled = true;
+      apiCall('/auth/reset', { token: resetToken, password: pw, confirmPassword: pw2 }).then(function (res) {
+        if (res.d && res.d.ok) { setMsg('密码已重置，请用新密码登录。'); setTimeout(function () { setMode('login'); }, 900); }
+        else setMsg((res.d && res.d.error) || '重置失败', true);
+      }).catch(function () { setMsg('网络错误，请稍后重试', true); })
+        .then(function () { if (submitEl) submitEl.disabled = false; });
+    }
+    function logout() {
+      if (state.token) apiCall('/auth/logout', {}, true).catch(function () {});
+      clearToken(); emit();
+    }
+    function logoutAll() {
+      if (!state.token) { clearToken(); emit(); return; }
+      apiCall('/auth/logout-all', {}, true)
+        .then(function () { clearToken(); emit(); })
+        .catch(function () { clearToken(); emit(); });
+    }
+    function refresh() {
+      if (!state.token) { state.user = null; emit(); return Promise.resolve(); }
+      return fetch(api + '/auth/me', { headers: { 'Authorization': 'Bearer ' + state.token } })
+        .then(function (r) {
+          if (r.status === 401) { clearToken(); emit(); return null; }
+          return r.json();
+        })
+        .then(function (d) { if (d && d.user) { state.user = d.user; emit(); } })
+        .catch(function () {});
+    }
+    function verifyToken(tok) {
+      return apiCall('/auth/verify', { token: tok }).then(function (res) {
+        if (res.d && res.d.ok) { if (state.token) refresh(); return true; }
+        return false;
+      });
+    }
+    function resendVerify() {
+      if (!state.token) { open('login'); return; }
+      return apiCall('/auth/resend-verify', {}, true).then(function (res) {
+        if (res.d && res.d.ok) { setMsg('验证邮件已发送。'); showDevLinks(res.d.devLinks); open('login'); }
+      });
+    }
+
+    if (formEl) formEl.addEventListener('submit', submit);
+    if (closeEl) closeEl.addEventListener('click', close);
+    if (modalEl) modalEl.addEventListener('click', function (e) { if (e.target === modalEl) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modalEl && !modalEl.hidden) close(); });
+    Array.prototype.forEach.call(tabs, function (t) {
+      t.addEventListener('click', function () { setMode(t.getAttribute('data-tab')); });
+    });
+    if (toForgotEl) toForgotEl.addEventListener('click', function (e) { e.preventDefault(); setMode('forgot'); });
+    if (toLoginEl) toLoginEl.addEventListener('click', function (e) { e.preventDefault(); setMode('login'); });
+
+    // URL 中的 ?verify= / ?reset= 处理（邮件链接跳转）
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search);
+        var v = q.get('verify'), r = q.get('reset');
+        if (v) {
+          verifyToken(v).then(function (ok) { open('login'); setMsg(ok ? '邮箱验证成功，请登录。' : '验证链接无效或已过期', !ok); });
+          history.replaceState(null, '', location.pathname + location.hash);
+        } else if (r) {
+          resetToken = r; open('reset'); setMode('reset');
+          history.replaceState(null, '', location.pathname + location.hash);
+        }
+      } catch (e) {}
+    })();
+
+    if (state.token) refresh();
+
+    return {
+      state: state,
+      token: function () { return state.token; },
+      user: function () { return state.user; },
+      open: open, close: close, setMode: setMode, on: on, emit: emit, refresh: refresh,
+      logout: logout, logoutAll: logoutAll, resendVerify: resendVerify, verifyToken: verifyToken,
+      setMsg: setMsg, showDevLinks: showDevLinks
+    };
+  })();
+  try { window.BlogAuth = BlogAuth; } catch (e) {}
+
+  // ---- 头部右上角登录控件 ----
+  (function () {
+    var wrap = document.getElementById('auth-control');
+    if (!wrap) return;
+    function render() {
+      var u = BlogAuth.user();
+      wrap.innerHTML = '';
+      if (u) {
+        var box = document.createElement('div');
+        box.className = 'ac-user';
+        var av = document.createElement('span');
+        av.className = 'ac-avatar'; av.textContent = u.avatar || '🙂';
+        var nm = document.createElement('span');
+        nm.className = 'ac-name'; nm.textContent = u.name;
+        box.appendChild(av); box.appendChild(nm);
+        var menu = document.createElement('div');
+        menu.className = 'ac-menu';
+        if (!u.verified) {
+          var bv = document.createElement('button');
+          bv.type = 'button'; bv.className = 'ac-item warn'; bv.textContent = '验证邮箱';
+          bv.addEventListener('click', function (e) { e.stopPropagation(); BlogAuth.resendVerify(); menu.classList.remove('open'); });
+          menu.appendChild(bv);
+        }
+        var b1 = document.createElement('button');
+        b1.type = 'button'; b1.className = 'ac-item'; b1.textContent = '退出登录';
+        b1.addEventListener('click', function (e) { e.stopPropagation(); BlogAuth.logout(); menu.classList.remove('open'); });
+        var b2 = document.createElement('button');
+        b2.type = 'button'; b2.className = 'ac-item'; b2.textContent = '退出所有设备';
+        b2.addEventListener('click', function (e) { e.stopPropagation(); BlogAuth.logoutAll(); menu.classList.remove('open'); });
+        menu.appendChild(b1); menu.appendChild(b2);
+        box.appendChild(menu);
+        box.addEventListener('click', function (e) {
+          if (e.target.closest('.ac-item')) return;
+          menu.classList.toggle('open');
+        });
+        wrap.appendChild(box);
+      } else {
+        var btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'ac-login';
+        btn.setAttribute('aria-label', '登录或注册');
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>登录 / 注册</span>';
+        btn.addEventListener('click', function () { BlogAuth.open('login'); });
+        wrap.appendChild(btn);
+      }
+    }
+    BlogAuth.on(render);
+    render();
+    document.addEventListener('click', function (e) {
+      var m = wrap.querySelector('.ac-menu.open');
+      if (m && !e.target.closest('.ac-user')) m.classList.remove('open');
+    });
+  })();
+
+  // ---- 文章评论（需登录，显示头像）----
   (function () {
     var section = document.getElementById('comments');
     if (!section) return;
-    var meta = document.querySelector('meta[name="comment-api"]');
-    if (!meta || !meta.content) return;
-    var api = meta.content;
+    var apiMeta = document.querySelector('meta[name="comment-api"]');
+    if (!apiMeta || !apiMeta.content) return;
+    var api = apiMeta.content;
     var path = section.getAttribute('data-path');
     if (!path) return;
-
-    var TOKEN_KEY = 'blog_token';
-    function getToken() { try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; } }
-    function setToken(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch (e) {} }
-    function clearToken() { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} }
-    function decodeToken(t) {
-      try {
-        var p = (t || '').split('.')[1]; if (!p) return null;
-        p = p.replace(/-/g, '+').replace(/_/g, '/');
-        while (p.length % 4) p += '=';
-        return JSON.parse(decodeURIComponent(escape(atob(p))));
-      } catch (e) { return null; }
-    }
 
     var listEl = document.getElementById('c-list');
     var form = document.getElementById('comment-form');
@@ -343,21 +638,13 @@
 
     var authOut = document.getElementById('c-auth-out');
     var authIn = document.getElementById('c-auth-in');
+    var authAvatar = document.getElementById('c-auth-avatar');
     var authDisplay = document.getElementById('c-auth-display');
     var authOpenBtn = document.getElementById('c-auth-open');
     var logoutBtn = document.getElementById('c-logout');
-    var modal = document.getElementById('auth-modal');
-    var authForm = document.getElementById('auth-form');
-    var authEmail = document.getElementById('auth-email');
-    var authPw = document.getElementById('auth-pw');
-    var authName = document.getElementById('auth-name');
-    var authNameField = document.getElementById('auth-name-field');
-    var authMsg = document.getElementById('auth-msg');
-    var authSubmit = document.getElementById('auth-submit');
-    var authClose = document.getElementById('auth-close');
-    var tabLogin = document.getElementById('tab-login');
-    var tabRegister = document.getElementById('tab-register');
-    var mode = 'login';
+    var verifyBar = document.getElementById('c-verify-bar');
+    var verifyBtn = document.getElementById('c-verify-resend');
+    var formAvatar = document.getElementById('c-form-avatar');
 
     function timeAgo(ts) {
       var s = Math.floor((Date.now() - ts) / 1000);
@@ -385,7 +672,7 @@
       head.className = 'c-head';
       var av = document.createElement('span');
       av.className = 'c-avatar';
-      av.textContent = (c.name || '?').slice(0, 1).toUpperCase();
+      av.textContent = c.avatar || (c.name || '?').slice(0, 1).toUpperCase();
       var metaWrap = document.createElement('div');
       metaWrap.className = 'c-meta';
       var nm = document.createElement('span');
@@ -436,10 +723,10 @@
       var map = {};
       comments.forEach(function (c) { map[c.id] = c; });
       if (!comments.length) {
-        var empty = document.createElement('li');
-        empty.className = 'c-empty';
-        empty.textContent = '还没有评论，来抢沙发吧～';
-        listEl.appendChild(empty);
+        var emptyLi = document.createElement('li');
+        emptyLi.className = 'c-empty';
+        emptyLi.textContent = '还没有评论，来抢沙发吧～';
+        listEl.appendChild(emptyLi);
         setCount(0);
         return;
       }
@@ -462,10 +749,41 @@
     }
     if (replyCancel) replyCancel.addEventListener('click', cancelReply);
 
+    function applyAuthUI(u) {
+      if (u) {
+        if (authOut) authOut.hidden = true;
+        if (authIn) {
+          authIn.hidden = false;
+          if (authDisplay) authDisplay.textContent = u.name;
+          if (authAvatar) authAvatar.textContent = u.avatar || '🙂';
+        }
+        if (formAvatar) { formAvatar.textContent = u.avatar || '🙂'; formAvatar.hidden = false; }
+        if (contentEl) contentEl.disabled = false;
+        if (submitEl) submitEl.disabled = !u.verified;
+        if (verifyBar) verifyBar.hidden = !!u.verified;
+        if (!u.verified) setMsg('请先验证邮箱后再评论', true);
+      } else {
+        if (authIn) authIn.hidden = true;
+        if (authOut) authOut.hidden = false;
+        if (formAvatar) formAvatar.hidden = true;
+        if (contentEl) contentEl.disabled = true;
+        if (submitEl) submitEl.disabled = true;
+        if (verifyBar) verifyBar.hidden = true;
+      }
+    }
+    BlogAuth.on(function (st) { applyAuthUI(st.user); });
+    applyAuthUI(BlogAuth.user());
+
+    if (authOpenBtn) authOpenBtn.addEventListener('click', function () { BlogAuth.open('login'); });
+    if (logoutBtn) logoutBtn.addEventListener('click', function () { BlogAuth.logout(); setMsg(''); });
+    if (verifyBtn) verifyBtn.addEventListener('click', function () { BlogAuth.resendVerify(); });
+
     if (form) form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var token = getToken();
-      if (!token) { openAuth('login'); return; }
+      var token = BlogAuth.token();
+      if (!token) { BlogAuth.open('login'); return; }
+      var u = BlogAuth.user();
+      if (u && !u.verified) { setMsg('请先验证邮箱后再评论', true); return; }
       var content = (contentEl && contentEl.value || '').trim();
       if (!content) { setMsg('评论内容不能为空', true); if (contentEl) contentEl.focus(); return; }
       setMsg('发送中…', false);
@@ -478,7 +796,8 @@
         .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
         .then(function (res) {
           var d = res.d;
-          if (res.s === 401) { clearToken(); setLoggedOut(); openAuth('login'); setMsg('登录已失效，请重新登录', true); return; }
+          if (res.s === 401) { BlogAuth.logout(); BlogAuth.open('login'); setMsg('登录已失效，请重新登录', true); return; }
+          if (res.s === 403) { setMsg((d && d.error) || '请先验证邮箱', true); if (verifyBar) verifyBar.hidden = false; return; }
           if (!d || d.ok !== true) throw new Error((d && d.error) || '提交失败');
           if (d.comment) {
             if (listEl.querySelector('.c-empty')) listEl.innerHTML = '';
@@ -496,93 +815,12 @@
         .catch(function (err) {
           setMsg((err && err.message) || '网络错误，请稍后重试', true);
         })
-        .then(function () { if (submitEl) submitEl.disabled = false; });
+        .then(function () {
+          var u2 = BlogAuth.user();
+          if (submitEl) submitEl.disabled = !(u2 && u2.verified);
+        });
     });
 
-    // ---- 登录态 UI ----
-    function setAuthMsg(t, isErr) {
-      if (!authMsg) return;
-      authMsg.textContent = t || '';
-      authMsg.className = 'cf-msg auth-msg' + (isErr ? ' err' : '');
-    }
-    function setLoggedIn(user) {
-      if (authOut) authOut.hidden = true;
-      if (authIn) { authIn.hidden = false; if (authDisplay) authDisplay.textContent = (user && user.name) || ''; }
-      if (contentEl) contentEl.disabled = false;
-      if (submitEl) submitEl.disabled = false;
-    }
-    function setLoggedOut() {
-      if (authIn) authIn.hidden = true;
-      if (authOut) authOut.hidden = false;
-      if (contentEl) contentEl.disabled = true;
-      if (submitEl) submitEl.disabled = true;
-    }
-    function refreshAuthUI() {
-      var t = getToken();
-      var p = t ? decodeToken(t) : null;
-      if (p && p.exp && p.exp > Date.now()) setLoggedIn({ name: p.name, email: p.email });
-      else { clearToken(); setLoggedOut(); }
-    }
-    function switchTab(m) {
-      mode = m;
-      if (tabLogin) tabLogin.classList.toggle('active', m === 'login');
-      if (tabRegister) tabRegister.classList.toggle('active', m === 'register');
-      if (authNameField) authNameField.hidden = (m !== 'register');
-      if (authSubmit) authSubmit.textContent = (m === 'register') ? '注册并登录' : '登录';
-      if (authEmail) authEmail.focus();
-    }
-    function openAuth(m) {
-      if (!modal) return;
-      switchTab(m || 'login');
-      modal.hidden = false;
-      setAuthMsg('', false);
-    }
-    function closeAuth() { if (modal) modal.hidden = true; }
-    function doAuth(e) {
-      e.preventDefault();
-      var email = (authEmail && authEmail.value || '').trim().toLowerCase();
-      var pw = (authPw && authPw.value) || '';
-      var name = (authName && authName.value || '').trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setAuthMsg('请输入有效邮箱', true); if (authEmail) authEmail.focus(); return; }
-      if (pw.length < 8) { setAuthMsg('密码至少 8 位', true); if (authPw) authPw.focus(); return; }
-      if (mode === 'register' && (name.length < 1 || name.length > 24)) { setAuthMsg('昵称需 1-24 字', true); if (authName) authName.focus(); return; }
-      setAuthMsg('处理中…', false);
-      if (authSubmit) authSubmit.disabled = true;
-      var payload = { email: email, password: pw };
-      if (mode === 'register') payload.name = name;
-      fetch(api + '/auth/' + mode, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-        .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
-        .then(function (res) {
-          var d = res.d;
-          if (res.s === 200 && d && d.ok && d.token) {
-            setToken(d.token);
-            closeAuth();
-            if (authForm) authForm.reset();
-            refreshAuthUI();
-            setMsg('已登录，欢迎 ' + ((d.user && d.user.name) || ''), false);
-          } else {
-            setAuthMsg((d && d.error) || '操作失败，请重试', true);
-          }
-        })
-        .catch(function () { setAuthMsg('网络错误，请稍后重试', true); })
-        .then(function () { if (authSubmit) authSubmit.disabled = false; });
-    }
-    function logout() { clearToken(); setLoggedOut(); setMsg('', false); }
-
-    if (authOpenBtn) authOpenBtn.addEventListener('click', function () { openAuth('login'); });
-    if (logoutBtn) logoutBtn.addEventListener('click', logout);
-    if (authClose) authClose.addEventListener('click', closeAuth);
-    if (authForm) authForm.addEventListener('submit', doAuth);
-    if (tabLogin) tabLogin.addEventListener('click', function () { switchTab('login'); });
-    if (tabRegister) tabRegister.addEventListener('click', function () { switchTab('register'); });
-    if (modal) modal.addEventListener('click', function (e) { if (e.target === modal) closeAuth(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.hidden) closeAuth(); });
-
-    refreshAuthUI();
     load();
   })();
 })();
