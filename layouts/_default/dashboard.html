@@ -28,6 +28,16 @@
     .dash-btn-ghost { background: transparent; }
     .dash-home { font-size: 12.5px; color: var(--text-mute); text-decoration: none; }
     .dash-home:hover { color: var(--text); }
+    .dash-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 600;
+      padding: 6px 11px; border-radius: 999px; color: #6ee7b7; background: rgba(52,211,153,.1);
+      border: 1px solid rgba(52,211,153,.3); white-space: nowrap; }
+    .dash-auto { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-mute); }
+    .dash-auto select { font: inherit; font-size: 12px; padding: 6px 8px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--chip); color: var(--text-dim); cursor: pointer; outline: none; }
+    .dash-auto select:focus { border-color: var(--brand); }
+    .dash-remember { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px;
+      font-size: 12px; color: var(--text-mute); cursor: pointer; user-select: none; }
+    .dash-remember input { accent-color: var(--brand); }
 
     /* 门禁 */
     .dash-gate { display: grid; place-items: center; min-height: 46vh; }
@@ -106,7 +116,16 @@
       <p class="dash-sub">博客互动数据总览 · 浏览量 / 点赞 / 收藏 / 评论</p>
     </div>
     <div class="dash-head-actions">
+      <span class="dash-badge" id="dash-badge" hidden>● 站长模式</span>
       <a class="dash-home" href="/">← 返回博客</a>
+      <label class="dash-auto">自动刷新
+        <select id="dash-interval" title="自动刷新间隔">
+          <option value="0">关</option>
+          <option value="30">30 秒</option>
+          <option value="60">60 秒</option>
+          <option value="300">5 分钟</option>
+        </select>
+      </label>
       <button class="dash-btn" id="dash-refresh" type="button">↻ 刷新</button>
       <button class="dash-btn dash-btn-ghost" id="dash-exit" type="button">退出</button>
     </div>
@@ -121,6 +140,7 @@
         <input id="dash-key" type="password" placeholder="站长密钥" autocomplete="current-password" required>
         <button type="submit">进入</button>
       </form>
+      <label class="dash-remember"><input type="checkbox" id="dash-remember" checked> 记住此设备（下次免输入）</label>
       <p class="dash-gate-msg" id="dash-gate-msg" hidden></p>
     </div>
   </section>
@@ -175,16 +195,36 @@
     favorites: document.getElementById('kpi-favorites'),
     comments: document.getElementById('kpi-comments')
   };
+  var elBadge = document.getElementById('dash-badge');
+  var elInterval = document.getElementById('dash-interval');
+  var elRemember = document.getElementById('dash-remember');
+  var INTERVAL_STORE = 'dash_refresh_interval';
+  var timer = null;
 
-  function getKey() { try { return localStorage.getItem(OWNER_STORE) || ''; } catch (e) { return ''; } }
-  function setKey(k) { try { k ? localStorage.setItem(OWNER_STORE, k) : localStorage.removeItem(OWNER_STORE); } catch (e) {} }
+  // 密钥存储：勾选「记住此设备」→ localStorage（长期）；否则 sessionStorage（关标签即忘）
+  function getKey() {
+    try { return localStorage.getItem(OWNER_STORE) || sessionStorage.getItem(OWNER_STORE) || ''; }
+    catch (e) { return ''; }
+  }
+  function setKey(k, remember) {
+    try {
+      localStorage.removeItem(OWNER_STORE);
+      sessionStorage.removeItem(OWNER_STORE);
+      if (k) { (remember === false ? sessionStorage : localStorage).setItem(OWNER_STORE, k); }
+    } catch (e) {}
+  }
 
   function showGate(msg) {
     elBody.hidden = true;
     elGate.hidden = false;
+    if (elBadge) elBadge.hidden = true;
     if (msg) { elGateMsg.textContent = msg; elGateMsg.hidden = false; } else { elGateMsg.hidden = true; }
   }
-  function showBody() { elGate.hidden = true; elBody.hidden = false; }
+  function showBody() {
+    elGate.hidden = true;
+    elBody.hidden = false;
+    if (elBadge) elBadge.hidden = false;
+  }
 
   function fmt(n) { return (typeof n === 'number' ? n : 0).toLocaleString('zh-CN'); }
   function fmtTime(ts) {
@@ -266,14 +306,13 @@
     elUpdated.textContent = '更新于 ' + fmtTime(Date.now());
   }
 
-  function load() {
+  function load(silent) {
     var key = getKey();
     if (!key) { showGate(); return; }
     showBody();
-    note('');
-    elUpdated.textContent = '加载中…';
+    if (!silent) { note(''); elUpdated.textContent = '加载中…'; }
     Promise.all([fetchStats(LIKE_API, key), fetchStats(COMMENT_API, key)])
-      .then(function (arr) { render(arr[0], arr[1]); })
+      .then(function (arr) { render(arr[0], arr[1]); if (silent) note(''); })
       .catch(function (e) {
         if (e && e.code === 401) {
           setKey('');
@@ -282,8 +321,10 @@
         }
         note('无法连接统计服务：' + (e && e.message ? e.message : e) +
           '。若在中国大陆网络下，workers.dev 常被拦截——请开启 VPN，或按计划迁移到自定义域名后再使用。');
-        elRows.innerHTML = '<tr><td colspan="5" class="dash-empty">加载失败</td></tr>';
-        elRecent.innerHTML = '<li class="dash-empty">加载失败</li>';
+        if (!silent) {
+          elRows.innerHTML = '<tr><td colspan="5" class="dash-empty">加载失败</td></tr>';
+          elRecent.innerHTML = '<li class="dash-empty">加载失败</li>';
+        }
       });
   }
 
@@ -291,16 +332,46 @@
     ev.preventDefault();
     var k = (elKey.value || '').trim();
     if (!k) return;
-    setKey(k);
+    var remember = !(elRemember && !elRemember.checked);
+    setKey(k, remember);
+    elKey.value = '';
     load();
   });
 
-  document.getElementById('dash-refresh').addEventListener('click', load);
+  // 自动刷新：间隔可选，默认 60 秒；切到后台暂停，回到前台立即刷新
+  function getInterval() {
+    try { var v = Number(localStorage.getItem(INTERVAL_STORE)); return isNaN(v) ? 60 : v; }
+    catch (e) { return 60; }
+  }
+  function schedule() {
+    if (timer) { clearInterval(timer); timer = null; }
+    var s = getInterval();
+    if (s > 0) {
+      timer = setInterval(function () {
+        if (document.visibilityState === 'visible' && getKey()) load(true);
+      }, s * 1000);
+    }
+  }
+  if (elInterval) {
+    elInterval.value = String(getInterval());
+    elInterval.addEventListener('change', function () {
+      var s = Number(elInterval.value) || 0;
+      try { localStorage.setItem(INTERVAL_STORE, String(s)); } catch (e) {}
+      schedule();
+      if (s > 0 && getKey()) load(true);
+    });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && getKey() && getInterval() > 0) load(true);
+  });
+
+  document.getElementById('dash-refresh').addEventListener('click', function () { load(); });
   document.getElementById('dash-exit').addEventListener('click', function () {
     setKey('');
     showGate();
   });
 
+  schedule();
   load();
 })();
 </script>
