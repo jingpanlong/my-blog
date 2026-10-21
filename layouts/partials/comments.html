@@ -23,6 +23,14 @@
     </div>
   </div>
 
+  <!-- 评论列表（置于编辑器上方，默认折叠，点击「查看更多」展开全部） -->
+  <div class="c-list-wrap" id="c-list-wrap">
+    <ul class="comment-list" id="c-list" aria-live="polite"></ul>
+    <div class="c-list-more">
+      <button type="button" class="c-more-btn" id="c-more" hidden></button>
+    </div>
+  </div>
+
   <!-- 评论表单 -->
   <form class="comment-form" id="comment-form" novalidate>
     <div class="cf-editor">
@@ -37,8 +45,5 @@
       <span class="cf-reply" id="c-reply" hidden>回复 <b id="c-reply-name"></b> <button type="button" id="c-reply-cancel" class="cf-cancel">取消</button></span>
     </div>
   </form>
-
-  <!-- 评论列表 -->
-  <ul class="comment-list" id="c-list" aria-live="polite"></ul>
 </section>
 {{ end }}

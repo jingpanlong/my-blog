@@ -698,6 +698,11 @@
     var verifyBar = document.getElementById('c-verify-bar');
     var verifyBtn = document.getElementById('c-verify-resend');
     var formAvatar = document.getElementById('c-form-avatar');
+    var moreBtn = document.getElementById('c-more');
+
+    var PAGE_SIZE = 5;          // 默认展示条数，超出折叠
+    var allComments = [];       // 当前文章全部评论（服务端顺序）
+    var expanded = false;       // 是否已展开
 
     function timeAgo(ts) {
       var s = Math.floor((Date.now() - ts) / 1000);
@@ -766,30 +771,58 @@
         if (replyWrap) replyWrap.hidden = false;
         if (contentEl) contentEl.focus();
       });
-      li.appendChild(act);
+      /* 操作行：回复 + 删除（站长可删任意，普通用户仅能删自己的） */
+      var actWrap = document.createElement('div');
+      actWrap.className = 'c-actions';
+      actWrap.appendChild(act);
+
+      var me = BlogAuth.user();
+      var own = BlogAuth.owner();
+      var canDelete = !!own || (!!me && !!c.uid && c.uid === me.uid);
+      if (canDelete) {
+        var del = document.createElement('button');
+        del.type = 'button';
+        del.className = 'c-del-btn';
+        del.textContent = '删除';
+        del.setAttribute('data-del', c.id);
+        actWrap.appendChild(del);
+      }
+      li.appendChild(actWrap);
       return li;
     }
 
     function renderList(comments) {
       if (!listEl) return;
+      allComments = comments || [];
       listEl.innerHTML = '';
-      var map = {};
-      comments.forEach(function (c) { map[c.id] = c; });
-      if (!comments.length) {
+      if (!allComments.length) {
         var emptyLi = document.createElement('li');
         emptyLi.className = 'c-empty';
         emptyLi.textContent = '还没有评论，来抢沙发吧～';
         listEl.appendChild(emptyLi);
         setCount(0);
+        if (moreBtn) moreBtn.hidden = true;
         return;
       }
-      comments.forEach(function (c) {
+      var map = {};
+      allComments.forEach(function (c) { map[c.id] = c; });
+      var shown = expanded ? allComments : allComments.slice(0, PAGE_SIZE);
+      shown.forEach(function (c) {
         listEl.appendChild(renderComment(c, map));
       });
-      setCount(comments.length);
+      setCount(allComments.length);
+      if (moreBtn) {
+        if (allComments.length > PAGE_SIZE) {
+          moreBtn.hidden = false;
+          moreBtn.textContent = expanded ? '收起评论' : ('查看更多评论（' + allComments.length + '）');
+        } else {
+          moreBtn.hidden = true;
+        }
+      }
     }
 
     function load() {
+      expanded = false;
       fetch(api + '?path=' + encodeURIComponent(path))
         .then(function (r) { return r.json(); })
         .then(function (d) { renderList((d && d.comments) || []); })
@@ -801,6 +834,50 @@
       if (replyWrap) replyWrap.hidden = true;
     }
     if (replyCancel) replyCancel.addEventListener('click', cancelReply);
+
+    /* 折叠 / 展开 */
+    if (moreBtn) moreBtn.addEventListener('click', function () {
+      expanded = !expanded;
+      renderList(allComments);
+    });
+
+    /* 删除评论（事件委托） */
+    if (listEl) listEl.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('.c-del-btn') : null;
+      if (!btn) return;
+      var li = btn.closest ? btn.closest('.comment-item') : null;
+      var c = li && li._c;
+      if (!c) return;
+      if (!window.confirm('确定删除这条评论吗？删除后不可恢复。')) return;
+
+      var me = BlogAuth.user();
+      var own = BlogAuth.owner();
+      var headers = {};
+      if (me) headers['Authorization'] = 'Bearer ' + BlogAuth.token();
+      else if (own) headers['X-Owner-Key'] = BlogAuth.ownerKey();
+      else { BlogAuth.open('login'); return; }
+
+      btn.disabled = true;
+      fetch(api + '?id=' + encodeURIComponent(c.id), { method: 'DELETE', headers: headers })
+        .then(function (r) { return r.json().then(function (d) { return { s: r.status, d: d }; }); })
+        .then(function (res) {
+          if (res.s === 401) {
+            if (me) BlogAuth.logout();
+            else BlogAuth.exitOwner();
+            setMsg('登录已失效，请重新登录', true);
+            return;
+          }
+          if (res.s === 403) { setMsg('只能删除自己的评论', true); return; }
+          if (res.s === 404) { setMsg('评论不存在或已删除', true); return; }
+          if (!res.d || res.d.ok !== true) throw new Error((res.d && res.d.error) || '删除失败');
+          allComments = allComments.filter(function (x) { return x.id !== c.id; });
+          if (replyTo === c.id) cancelReply();
+          renderList(allComments);
+          setMsg('评论已删除', false);
+        })
+        .catch(function (err) { setMsg((err && err.message) || '网络错误，请稍后重试', true); })
+        .then(function () { btn.disabled = false; });
+    });
 
     function applyAuthUI(st) {
       var u = st && st.user;
@@ -838,7 +915,7 @@
         if (verifyBar) verifyBar.hidden = true;
       }
     }
-    BlogAuth.on(function (st) { applyAuthUI(st); });
+    BlogAuth.on(function (st) { applyAuthUI(st); renderList(allComments); });
     applyAuthUI(BlogAuth.state);
 
     /* 未登录时点击输入框 → 直接弹登录 */
@@ -888,13 +965,9 @@
           if (res.s === 403) { setMsg((d && d.error) || '请先验证邮箱', true); if (verifyBar) verifyBar.hidden = false; return; }
           if (!d || d.ok !== true) throw new Error((d && d.error) || '提交失败');
           if (d.comment) {
-            if (listEl.querySelector('.c-empty')) listEl.innerHTML = '';
-            var map = {};
-            Array.prototype.forEach.call(listEl.querySelectorAll('.comment-item'), function (li) {
-              if (li._c) map[li._c.id] = li._c;
-            });
-            listEl.appendChild(renderComment(d.comment, map));
-            setCount(listEl.querySelectorAll('.comment-item').length);
+            expanded = true; // 新评论追加在末尾，自动展开确保作者能看到
+            allComments.push(d.comment);
+            renderList(allComments);
           }
           if (contentEl) contentEl.value = '';
           cancelReply();

@@ -925,7 +925,25 @@ img { max-width: 100%; }
   transition: color .15s;
 }
 .c-reply-btn:hover { color: var(--accent); }
+.c-actions { display: flex; align-items: center; gap: 14px; margin-top: 2px; }
+.c-del-btn {
+  background: none; border: 0; cursor: pointer; padding: 0;
+  color: var(--text-mute); font: inherit; font-size: 12.5px; transition: color .15s;
+}
+.c-del-btn:hover { color: #ff5c8a; }
+.c-del-btn:disabled { opacity: .5; cursor: not-allowed; }
 .c-empty { text-align: center; color: var(--text-mute); font-size: 13px; padding: 8px 0; }
+
+/* 评论列表折叠 */
+.c-list-more { display: flex; justify-content: center; margin-top: 12px; }
+.c-more-btn {
+  padding: 7px 18px; border-radius: 999px; cursor: pointer;
+  border: 1px dashed var(--border-strong); background: var(--panel);
+  color: var(--accent); font: inherit; font-size: 12.5px; font-weight: 600;
+  transition: .15s;
+}
+.c-more-btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.c-more-btn[hidden] { display: none; }
 
 /* 头部右上角登录控件 */
 .auth-control { display: flex; align-items: center; }
