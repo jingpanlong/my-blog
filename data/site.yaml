@@ -50,10 +50,14 @@ social:
     url: https://xhslink.cn/o/91exvN6cZUA
     icon: xhs
     handle: ''
+    qrCap: 扫码关注 · 小红书
+    qr: /img/xhs-qr.png
   - name: B站
     url: https://b23.tv/zDegVTB
     icon: bilibili
     handle: ''
+    qrCap: 扫码关注 · B站
+    qr: /img/bilibili-qr.png
   - name: WhatsApp
     url: https://wa.me/jingdraco
     icon: whatsapp

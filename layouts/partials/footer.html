@@ -19,11 +19,7 @@
 
     <div class="foot-right">
       <div class="foot-social">
-        {{ range hugo.Data.site.social }}
-          {{ $item := . }}
-          <a class="social-btn{{ with $item.qr }} has-qr{{ end }}" href="{{ $item.url }}" title="{{ $item.name }}{{ if $item.qr }} · 扫码{{ else }}{{ with $item.handle }} · {{ . }}{{ end }}{{ end }}" aria-label="{{ $item.name }}"
-             {{ if ne $item.url "#" }}target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" $item.icon }}{{ with $item.qr }}<span class="qr-pop" role="tooltip"><img src="{{ . }}" alt="{{ $item.name }} 二维码"><span class="qr-cap">{{ $item.qrCap | default (printf "扫码关注 · %s" $item.handle) }}</span></span>{{ end }}</a>
-        {{ end }}
+        {{ partial "social-links.html" }}
       </div>
       <div class="foot-copy">
         <span>Stay Curious · Keep Building</span>

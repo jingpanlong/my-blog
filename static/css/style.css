@@ -708,6 +708,7 @@ img { max-width: 100%; }
 .about-actions a:hover { color: var(--text); border-color: var(--border-strong); }
 .about-actions svg { width: 14px; height: 14px; }
 .about-actions .mono { font-size: 11px; }
+.about-social { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 
 .activity { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .activity li { display: flex; gap: 10px; }
