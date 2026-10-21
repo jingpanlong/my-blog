@@ -54,6 +54,12 @@ social:
     url: https://b23.tv/zDegVTB
     icon: bilibili
     handle: ''
+  - name: WhatsApp
+    url: https://wa.me/jingdraco
+    icon: whatsapp
+    handle: jingdraco
+    qrCap: 扫码加我 · jingdraco
+    qr: /img/whatsapp-qr.png
 
 # ---- 知识地图（首页轨道节点）----
 knowledge:
