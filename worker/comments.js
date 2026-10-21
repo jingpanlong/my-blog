@@ -174,7 +174,7 @@ async function handle(request) {
   var allowOrigin = (origin === SITE || isLocal) ? origin : SITE;
   var cors = {
     'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Owner-Key',
     'Vary': 'Origin'
   };
@@ -195,6 +195,7 @@ async function handle(request) {
     if (p.endsWith('/comments')) {
       if (request.method === 'GET') return await getComments(url, cors);
       if (request.method === 'POST') return await postComment(request, cors);
+      if (request.method === 'DELETE') return await deleteComment(request, url, cors);
     }
     return json({ error: 'not found' }, 404, cors);
   } catch (e) {
@@ -438,4 +439,26 @@ async function postComment(request, cors) {
   };
   await COMMENTS.put(id, JSON.stringify(comment));
   return json({ ok: true, comment: comment }, 200, cors);
+}
+
+// ---------------- 删除评论（站长可删任意；普通用户仅能删自己的）----------------
+async function deleteComment(request, url, cors) {
+  var id = (url.searchParams.get('id') || '').trim();
+  if (id.indexOf('comment:') !== 0) return json({ error: 'invalid id' }, 400, cors);
+
+  /* 先鉴权：未登录一律 401，无论评论是否存在 */
+  var owner = await isOwner(request);
+  var p = owner ? null : await authUser(request);
+  if (!owner && !p) return json({ error: '请先登录后再操作' }, 401, cors);
+
+  var raw = await COMMENTS.get(id);
+  if (!raw) return json({ error: '评论不存在或已删除' }, 404, cors);
+  var c;
+  try { c = JSON.parse(raw); } catch (e) { return json({ error: '评论不存在或已删除' }, 404, cors); }
+
+  var isMine = p && c.uid && c.uid === p.uid;
+  if (!owner && !isMine) return json({ error: '只能删除自己的评论' }, 403, cors);
+
+  await COMMENTS.delete(id);
+  return json({ ok: true, id: id }, 200, cors);
 }
