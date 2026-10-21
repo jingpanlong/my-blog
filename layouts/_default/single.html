@@ -33,6 +33,6 @@
 
   {{ partial "interactions.html" . }}
 
-  {{ if eq .Section "posts" }}{{ partial "giscus.html" . }}{{ end }}
+  {{ if eq .Section "posts" }}{{ partial "comments.html" . }}{{ end }}
 </article>
 {{ end }}

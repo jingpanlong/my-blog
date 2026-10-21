@@ -13,7 +13,6 @@
     themeToggle.addEventListener('click', function () {
       var cur = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
       applyTheme(cur);
-      postGiscus(cur);
     });
   }
 
@@ -100,23 +99,6 @@
       e.preventDefault(); openSearch();
     }
   });
-
-  // ---- Giscus 主题同步 ----
-  function postGiscus(theme) {
-    var f = document.querySelector('iframe.giscus-frame');
-    if (f && f.contentWindow) {
-      f.contentWindow.postMessage({ giscus: { setConfig: { theme: theme } } }, 'https://giscus.app');
-    }
-  }
-  // 初始若处于浅色，等 Giscus 加载后告知
-  if (root.getAttribute('data-theme') === 'light') {
-    var tries = 0;
-    var t = setInterval(function () {
-      var f = document.querySelector('iframe.giscus-frame');
-      if (f) { postGiscus('light'); clearInterval(t); }
-      if (++tries > 20) clearInterval(t);
-    }, 500);
-  }
 
   // ---- 文章互动：点赞 / 收藏 / 转发 ----
   (function () {
@@ -323,5 +305,176 @@
           .then(function (d) { setN(d.count); }).catch(function () { setN('—'); });
       }
     });
+  })();
+
+  // ---- 文章评论（免登录，匿名 + 昵称）----
+  (function () {
+    var section = document.getElementById('comments');
+    if (!section) return;
+    var meta = document.querySelector('meta[name="comment-api"]');
+    if (!meta || !meta.content) return;
+    var api = meta.content;
+    var path = section.getAttribute('data-path');
+    if (!path) return;
+
+    var listEl = document.getElementById('c-list');
+    var form = document.getElementById('comment-form');
+    var nameEl = document.getElementById('c-name');
+    var contentEl = document.getElementById('c-content');
+    var submitEl = document.getElementById('c-submit');
+    var msgEl = document.getElementById('c-msg');
+    var countEl = document.getElementById('c-count');
+    var hpEl = document.getElementById('c-website');
+    var replyWrap = document.getElementById('c-reply');
+    var replyNameEl = document.getElementById('c-reply-name');
+    var replyCancel = document.getElementById('c-reply-cancel');
+    var replyTo = null;
+
+    function timeAgo(ts) {
+      var s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 60) return '刚刚';
+      if (s < 3600) return Math.floor(s / 60) + ' 分钟前';
+      if (s < 86400) return Math.floor(s / 3600) + ' 小时前';
+      if (s < 2592000) return Math.floor(s / 86400) + ' 天前';
+      var d = new Date(ts);
+      return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+    }
+    function setMsg(t, isErr) {
+      if (!msgEl) return;
+      msgEl.textContent = t || '';
+      msgEl.className = 'cf-msg' + (isErr ? ' err' : '');
+    }
+    function setCount(n) { if (countEl) countEl.textContent = n; }
+
+    function renderComment(c, all) {
+      var li = document.createElement('li');
+      li.className = 'comment-item' + (c.replyTo ? ' is-reply' : '');
+      li.setAttribute('data-id', c.id);
+      li._c = c;
+
+      var head = document.createElement('div');
+      head.className = 'c-head';
+      var av = document.createElement('span');
+      av.className = 'c-avatar';
+      av.textContent = (c.name || '?').slice(0, 1).toUpperCase();
+      var metaWrap = document.createElement('div');
+      metaWrap.className = 'c-meta';
+      var nm = document.createElement('span');
+      nm.className = 'c-name';
+      nm.textContent = c.name;
+      var tm = document.createElement('time');
+      tm.className = 'c-time';
+      tm.textContent = timeAgo(c.createdAt);
+      metaWrap.appendChild(nm);
+      metaWrap.appendChild(tm);
+      head.appendChild(av);
+      head.appendChild(metaWrap);
+
+      var body = document.createElement('div');
+      body.className = 'c-body';
+      body.textContent = c.content; // textContent：杜绝 XSS
+
+      li.appendChild(head);
+      li.appendChild(body);
+
+      if (c.replyTo && all) {
+        var parent = all[c.replyTo];
+        if (parent) {
+          var rep = document.createElement('div');
+          rep.className = 'c-reply-ref';
+          rep.textContent = '↩ 回复 @' + parent.name;
+          li.insertBefore(rep, body);
+        }
+      }
+
+      var act = document.createElement('button');
+      act.type = 'button';
+      act.className = 'c-reply-btn';
+      act.textContent = '回复';
+      act.addEventListener('click', function () {
+        replyTo = c.id;
+        if (replyNameEl) replyNameEl.textContent = c.name;
+        if (replyWrap) replyWrap.hidden = false;
+        if (contentEl) contentEl.focus();
+      });
+      li.appendChild(act);
+      return li;
+    }
+
+    function renderList(comments) {
+      if (!listEl) return;
+      listEl.innerHTML = '';
+      var map = {};
+      comments.forEach(function (c) { map[c.id] = c; });
+      if (!comments.length) {
+        var empty = document.createElement('li');
+        empty.className = 'c-empty';
+        empty.textContent = '还没有评论，来抢沙发吧～';
+        listEl.appendChild(empty);
+        setCount(0);
+        return;
+      }
+      comments.forEach(function (c) {
+        listEl.appendChild(renderComment(c, map));
+      });
+      setCount(comments.length);
+    }
+
+    function load() {
+      fetch(api + '?path=' + encodeURIComponent(path))
+        .then(function (r) { return r.json(); })
+        .then(function (d) { renderList((d && d.comments) || []); })
+        .catch(function () { renderList([]); });
+    }
+
+    function cancelReply() {
+      replyTo = null;
+      if (replyWrap) replyWrap.hidden = true;
+    }
+    if (replyCancel) replyCancel.addEventListener('click', cancelReply);
+
+    if (form) form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = (nameEl && nameEl.value || '').trim();
+      var content = (contentEl && contentEl.value || '').trim();
+      if (!name) { setMsg('请填写昵称', true); if (nameEl) nameEl.focus(); return; }
+      if (!content) { setMsg('评论内容不能为空', true); if (contentEl) contentEl.focus(); return; }
+      setMsg('发送中…', false);
+      if (submitEl) submitEl.disabled = true;
+      var payload = {
+        path: path,
+        name: name,
+        content: content,
+        replyTo: replyTo || '',
+        website: (hpEl && hpEl.value) || ''
+      };
+      fetch(api, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (!d || d.ok !== true) throw new Error((d && d.error) || '提交失败');
+          if (d.comment) {
+            if (listEl.querySelector('.c-empty')) listEl.innerHTML = '';
+            var map = {};
+            Array.prototype.forEach.call(listEl.querySelectorAll('.comment-item'), function (li) {
+              if (li._c) map[li._c.id] = li._c;
+            });
+            listEl.appendChild(renderComment(d.comment, map));
+            setCount(listEl.querySelectorAll('.comment-item').length);
+          }
+          if (contentEl) contentEl.value = '';
+          cancelReply();
+          setMsg('评论已发布，感谢参与！', false);
+        })
+        .catch(function (err) {
+          setMsg((err && err.message) || '网络错误，请稍后重试', true);
+        })
+        .then(function () { if (submitEl) submitEl.disabled = false; });
+    });
+
+    load();
   })();
 })();

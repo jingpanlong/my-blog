@@ -1,0 +1,24 @@
+{{ if hugo.Data.site.commentApi }}
+<section class="comments glass" id="comments" data-path="{{ .RelPermalink }}">
+  <h2 class="comments-title">评论 <span class="c-count" id="c-count">0</span></h2>
+  <p class="comments-hint">无需登录，填个昵称即可留言。理性发言，友好交流。</p>
+
+  <!-- 评论表单 -->
+  <form class="comment-form" id="comment-form" novalidate>
+    <div class="cf-row">
+      <input id="c-name" class="cf-input" type="text" maxlength="24" placeholder="昵称（必填）" autocomplete="name" aria-label="昵称">
+      <button type="submit" class="cf-submit" id="c-submit">发表评论</button>
+    </div>
+    <textarea id="c-content" class="cf-input cf-textarea" maxlength="800" placeholder="说点什么吧～" aria-label="评论内容"></textarea>
+    <div class="cf-foot">
+      <span class="cf-msg" id="c-msg" role="status"></span>
+      <span class="cf-reply" id="c-reply" hidden>回复 <b id="c-reply-name"></b> <button type="button" id="c-reply-cancel" class="cf-cancel">取消</button></span>
+    </div>
+    <!-- 蜜罐：真人不会填，机器人常自动填充 -->
+    <input type="text" id="c-website" class="cf-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+  </form>
+
+  <!-- 评论列表 -->
+  <ul class="comment-list" id="c-list" aria-live="polite"></ul>
+</section>
+{{ end }}

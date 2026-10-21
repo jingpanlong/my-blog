@@ -160,6 +160,5 @@ collections:
               - { name: color, label: '颜色', widget: color }
 
           - { name: likeApi, label: '点赞计数接口', widget: string, required: false }
-          - { name: giscusRepo, label: '评论仓库', widget: string, required: false }
-          - { name: giscusRepoId, label: '评论仓库 ID', widget: string, required: false }
-          - { name: giscusCategory, label: '评论分类', widget: string, required: false }
+          - { name: viewApi, label: '浏览量计数接口', widget: string, required: false }
+          - { name: commentApi, label: '评论接口', widget: string, required: false }

@@ -863,20 +863,66 @@ img { max-width: 100%; }
 .post-card-foot { display: flex; align-items: center; gap: 10px; }
 .pc-views { margin-left: auto; }
 
-/* Giscus 评论区错误兜底（网络/GitHub 限流等偶发失败） */
-.giscus-error {
-  margin: 14px 0 0; padding: 14px 16px; border-radius: var(--radius);
-  background: rgba(255, 92, 138, 0.10); border: 1px solid rgba(255, 92, 138, 0.35);
-  color: var(--text); font-size: 13px; line-height: 1.6;
+/* 评论数徽标 */
+.c-count { color: var(--accent); font-weight: 700; font-size: .85em; margin-left: 4px; }
+
+/* 评论表单 */
+.comment-form {
+  margin: 14px 0 18px; padding: 14px; border-radius: var(--radius);
+  background: var(--panel-solid); border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 10px;
 }
-.giscus-error[hidden] { display: none; }
-.giscus-error .ge-msg { color: var(--text-mute); word-break: break-word; }
-.giscus-retry {
-  margin-top: 10px; padding: 7px 14px; border-radius: 999px; cursor: pointer;
-  border: 1px solid var(--border-strong); background: var(--panel-solid);
-  color: var(--text); font: inherit; font-size: 13px; transition: .15s;
+.cf-row { display: flex; gap: 10px; align-items: center; }
+.cf-input {
+  width: 100%; padding: 10px 12px; border-radius: 10px;
+  background: var(--panel); border: 1px solid var(--border-strong);
+  color: var(--text); font: inherit; outline: none; transition: border-color .15s, box-shadow .15s;
 }
-.giscus-retry:hover { border-color: var(--accent); color: var(--accent); }
+.cf-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.cf-textarea { min-height: 84px; resize: vertical; line-height: 1.6; }
+.cf-row .cf-input { flex: 1; }
+.cf-submit {
+  flex: none; padding: 10px 20px; border-radius: 999px; cursor: pointer;
+  border: 1px solid transparent; background: var(--accent); color: #fff;
+  font: inherit; font-weight: 600; transition: filter .15s, opacity .15s;
+}
+.cf-submit:hover { filter: brightness(1.08); }
+.cf-submit:disabled { opacity: .55; cursor: not-allowed; }
+.cf-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 20px; }
+.cf-msg { font-size: 12.5px; color: var(--text-mute); }
+.cf-msg.err { color: #ff5c8a; }
+.cf-reply { font-size: 12.5px; color: var(--text-mute); }
+.cf-reply b { color: var(--accent); }
+.cf-cancel { margin-left: 6px; background: none; border: 0; color: var(--text-mute); cursor: pointer; text-decoration: underline; font: inherit; font-size: 12.5px; }
+.cf-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+/* 评论列表 */
+.comment-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.comment-item {
+  padding: 14px 16px; border-radius: var(--radius);
+  background: var(--panel); border: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.comment-item.is-reply { margin-left: 28px; border-left: 3px solid var(--accent); }
+.c-head { display: flex; align-items: center; gap: 10px; }
+.c-avatar {
+  width: 34px; height: 34px; flex: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #8b5cf6));
+}
+.c-meta { display: flex; flex-direction: column; line-height: 1.3; }
+.c-name { font-weight: 600; color: var(--text); }
+.c-time { font-size: 11.5px; color: var(--text-mute); }
+.c-reply-ref { font-size: 12px; color: var(--text-mute); }
+.c-body { color: var(--text); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+.c-reply-btn {
+  align-self: flex-start; background: none; border: 0; cursor: pointer;
+  color: var(--text-mute); font: inherit; font-size: 12.5px; padding: 0;
+  transition: color .15s;
+}
+.c-reply-btn:hover { color: var(--accent); }
+.c-empty { text-align: center; color: var(--text-mute); font-size: 13px; padding: 8px 0; }
 
 /* =========================================================
    搜索弹窗
