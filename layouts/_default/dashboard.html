@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>数据仪表盘 · {{ hugo.Data.site.author }}</title>
+  <style>
+    /* 兜底主题变量（预览/样式表缺失时生效；线上会被 /css/style.css 覆盖） */
+    :root{--bg:#05070f;--panel:rgba(16,20,38,.72);--panel-2:rgba(24,29,52,.62);--panel-solid:#0b1020;--text:#eef1fa;--text-dim:#9aa3c0;--text-mute:#6f7796;--border:rgba(255,255,255,.09);--border-strong:rgba(255,255,255,.18);--chip:rgba(255,255,255,.05);--brand:#6d8bff;--shadow:0 18px 50px rgba(3,6,18,.55);--radius:18px;}
+    body{background:var(--bg);color:var(--text);margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  </style>
   <link rel="stylesheet" href="/css/style.css">
   <script>
     (function () {
