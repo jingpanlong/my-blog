@@ -911,6 +911,13 @@ img { max-width: 100%; }
   border-left: 1px solid var(--border-strong);
   display: flex; flex-direction: column; gap: 3px;
 }
+/* 单条评论内回复较多时的「更多回复」就地展开 */
+.c-kids-more {
+  align-self: flex-start; margin: 4px 0 0 14px; padding: 3px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px dashed var(--border-strong); background: var(--panel); color: var(--accent);
+  font: inherit; font-size: 12px; font-weight: 600; transition: .15s;
+}
+.c-kids-more:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
 .comment-item.is-reply { padding: 3px 0; background: none; border: 0; border-radius: 0; gap: 2px; }
 .c-head { display: flex; align-items: center; gap: 9px; min-width: 0; }
 .c-avatar {

@@ -742,9 +742,11 @@
     var formAvatar = document.getElementById('c-form-avatar');
     var moreBtn = document.getElementById('c-more');
 
-    var PAGE_SIZE = 5;          // 默认展示条数，超出折叠
+    var PAGE_SIZE = 5;          // 默认展示根评论条数，超出折叠
+    var REPLY_LIMIT = 3;        // 单条评论下的回复超过此数则折叠，用「更多回复」就地展开
     var allComments = [];       // 当前文章全部评论（服务端顺序）
-    var expanded = false;       // 是否已展开
+    var expanded = false;       // 根评论是否已展开
+    var kidsExpanded = {};      // 各评论回复区的展开状态（按评论 id 记忆，避免重渲染丢失）
 
     function timeAgo(ts) {
       var s = Math.floor((Date.now() - ts) / 1000);
@@ -847,7 +849,8 @@
       return li;
     }
 
-    /* 递归渲染一棵树：先评论本体，再把回复列表挂进这条评论内部 */
+    /* 递归渲染一棵树：先评论本体，再把回复列表挂进这条评论内部；
+       单条评论下的回复超过 REPLY_LIMIT 时折叠，用「更多回复」就地展开其他级 */
     function renderNode(node, parentEl, all) {
       var li = renderComment(node.c, all, parentEl._depth || 0);
       parentEl.appendChild(li);
@@ -855,8 +858,28 @@
         var ul = document.createElement('ul');
         ul.className = 'c-kids';
         ul._depth = (parentEl._depth || 0) + 1;
-        node.kids.forEach(function (k) { renderNode(k, ul, all); });
+        var open = !!kidsExpanded[node.c.id];
+        var shown = open ? node.kids : node.kids.slice(0, REPLY_LIMIT);
+        shown.forEach(function (k) { renderNode(k, ul, all); });
         li.appendChild(ul);
+        if (node.kids.length > REPLY_LIMIT) {
+          var more = document.createElement('button');
+          more.type = 'button';
+          more.className = 'c-kids-more';
+          var hidden = node.kids.length - (open ? 0 : REPLY_LIMIT);
+          more.textContent = open ? '收起回复' : ('查看更多回复（' + hidden + '）');
+          more.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var nowOpen = !kidsExpanded[node.c.id];
+            kidsExpanded[node.c.id] = nowOpen;
+            ul.innerHTML = ''; // 仅重渲染该条评论下的回复，不动整页
+            var sh = nowOpen ? node.kids : node.kids.slice(0, REPLY_LIMIT);
+            sh.forEach(function (k) { renderNode(k, ul, all); });
+            var rest = node.kids.length - (nowOpen ? 0 : REPLY_LIMIT);
+            more.textContent = nowOpen ? '收起回复' : ('查看更多回复（' + rest + '）');
+          });
+          li.appendChild(more);
+        }
       }
     }
 
