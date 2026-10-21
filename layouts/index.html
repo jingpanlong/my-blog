@@ -194,11 +194,10 @@
       <blockquote class="about-quote">“{{ hugo.Data.site.quote }}”</blockquote>
       <div class="about-actions">
         {{ range hugo.Data.site.social }}
-          {{ if or (eq .icon "github") (eq .icon "email") }}
+          {{ if or (eq .icon "github") (eq .icon "email") (eq .icon "whatsapp") }}
           <a href="{{ .url }}"{{ if ne .url "#" }} target="_blank" rel="noopener"{{ end }}>{{ partial "icon.html" .icon }}<span>{{ .name }}</span></a>
           {{ end }}
         {{ end }}
-        <a href="/index.xml">{{ partial "icon.html" "rss" }}<span>RSS</span></a>
       </div>
     </section>
 
