@@ -26,4 +26,4 @@ layout: single
 
 欢迎通过下方的社交按钮找到我（GitHub / 邮箱 / 微信 / 小红书 / B站 / WhatsApp），鼠标悬停可扫码；或者直接在各篇文章下方留言。
 
-{{% social-links %}}
+{{< social-links >}}
