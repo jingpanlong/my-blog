@@ -16,6 +16,7 @@
   --chip-hover: rgba(255, 255, 255, 0.1);
   --brand: #6d8bff;
   --brand-2: #8b5cf6;
+  --accent: #6d8bff;
   --violet: #a78bfa;
   --cyan: #38e0d0;
   --pink: #f472b6;
@@ -41,6 +42,7 @@
   --border-strong: rgba(18, 24, 48, 0.18);
   --chip: rgba(18, 24, 48, 0.045);
   --chip-hover: rgba(18, 24, 48, 0.08);
+  --accent: #4f46e5;
   --shadow: 0 18px 40px rgba(70, 90, 170, 0.12);
 }
 
@@ -873,6 +875,7 @@ img { max-width: 100%; }
   display: flex; flex-direction: column; gap: 10px;
 }
 .cf-row { display: flex; gap: 10px; align-items: center; }
+.comment-form .cf-row .cf-msg { flex: 1; }
 .cf-input {
   width: 100%; padding: 10px 12px; border-radius: 10px;
   background: var(--panel); border: 1px solid var(--border-strong);
