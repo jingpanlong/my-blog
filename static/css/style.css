@@ -924,6 +924,48 @@ img { max-width: 100%; }
 .c-reply-btn:hover { color: var(--accent); }
 .c-empty { text-align: center; color: var(--text-mute); font-size: 13px; padding: 8px 0; }
 
+/* 登录态提示条 */
+.c-authbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.c-auth-out, .c-auth-in { display: flex; align-items: center; gap: 10px; width: 100%; justify-content: space-between; }
+.c-auth-tip { font-size: 13px; color: var(--text-mute); }
+.c-auth-open { flex: none; padding: 9px 18px; }
+.c-auth-name { font-size: 13.5px; color: var(--text-mute); }
+.c-auth-name b { color: var(--accent); font-weight: 600; }
+.c-auth-link { background: none; border: 0; cursor: pointer; color: var(--text-mute); font: inherit; font-size: 13px; text-decoration: underline; padding: 0; }
+.c-auth-link:hover { color: var(--accent); }
+.cf-textarea:disabled { opacity: .55; cursor: not-allowed; }
+
+/* 登录 / 注册弹窗 */
+.auth-modal {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10, 12, 28, 0.55); backdrop-filter: blur(6px);
+  padding: 20px;
+}
+.auth-modal[hidden] { display: none; }
+.auth-card {
+  position: relative; width: 100%; max-width: 380px;
+  padding: 28px 26px 24px; border-radius: var(--radius-lg);
+  background: var(--panel-solid); border: 1px solid var(--border-strong);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+}
+.auth-close {
+  position: absolute; top: 12px; right: 14px; width: 30px; height: 30px;
+  border-radius: 50%; border: 1px solid var(--border); background: var(--panel);
+  color: var(--text-mute); font-size: 20px; line-height: 1; cursor: pointer; transition: .15s;
+}
+.auth-close:hover { color: var(--text); border-color: var(--accent); }
+.auth-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.auth-tab {
+  flex: 1; padding: 9px 0; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600;
+  border: 1px solid var(--border-strong); background: var(--panel); color: var(--text-mute); transition: .15s;
+}
+.auth-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.auth-form { display: flex; flex-direction: column; gap: 12px; }
+.auth-field[hidden] { display: none; }
+.auth-msg { min-height: 18px; font-size: 12.5px; }
+.auth-submit { margin-top: 4px; padding: 11px; width: 100%; }
+
 /* =========================================================
    搜索弹窗
    ========================================================= */

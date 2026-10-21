@@ -1,24 +1,53 @@
 {{ if hugo.Data.site.commentApi }}
 <section class="comments glass" id="comments" data-path="{{ .RelPermalink }}">
   <h2 class="comments-title">评论 <span class="c-count" id="c-count">0</span></h2>
-  <p class="comments-hint">无需登录，填个昵称即可留言。理性发言，友好交流。</p>
+  <p class="comments-hint">登录后即可参与评论，理性发言，友好交流。</p>
+
+  <!-- 登录态提示条 -->
+  <div class="c-authbar" id="c-authbar">
+    <div class="c-auth-out" id="c-auth-out">
+      <span class="c-auth-tip">登录后才能评论</span>
+      <button type="button" class="cf-submit c-auth-open" id="c-auth-open">登录 / 注册</button>
+    </div>
+    <div class="c-auth-in" id="c-auth-in" hidden>
+      <span class="c-auth-name">已登录：<b id="c-auth-display"></b></span>
+      <button type="button" class="c-auth-link" id="c-logout">退出</button>
+    </div>
+  </div>
 
   <!-- 评论表单 -->
   <form class="comment-form" id="comment-form" novalidate>
+    <textarea id="c-content" class="cf-input cf-textarea" maxlength="800" placeholder="登录后说点什么吧～" aria-label="评论内容"></textarea>
     <div class="cf-row">
-      <input id="c-name" class="cf-input" type="text" maxlength="24" placeholder="昵称（必填）" autocomplete="name" aria-label="昵称">
+      <span class="cf-msg" id="c-msg" role="status"></span>
       <button type="submit" class="cf-submit" id="c-submit">发表评论</button>
     </div>
-    <textarea id="c-content" class="cf-input cf-textarea" maxlength="800" placeholder="说点什么吧～" aria-label="评论内容"></textarea>
     <div class="cf-foot">
-      <span class="cf-msg" id="c-msg" role="status"></span>
       <span class="cf-reply" id="c-reply" hidden>回复 <b id="c-reply-name"></b> <button type="button" id="c-reply-cancel" class="cf-cancel">取消</button></span>
     </div>
-    <!-- 蜜罐：真人不会填，机器人常自动填充 -->
-    <input type="text" id="c-website" class="cf-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
   </form>
 
   <!-- 评论列表 -->
   <ul class="comment-list" id="c-list" aria-live="polite"></ul>
 </section>
+
+<!-- 登录 / 注册弹窗 -->
+<div class="auth-modal" id="auth-modal" hidden>
+  <div class="auth-card glass" role="dialog" aria-modal="true" aria-label="登录或注册">
+    <button type="button" class="auth-close" id="auth-close" aria-label="关闭">×</button>
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" data-tab="login" id="tab-login">登录</button>
+      <button type="button" class="auth-tab" data-tab="register" id="tab-register">注册</button>
+    </div>
+    <form class="auth-form" id="auth-form" novalidate>
+      <div class="auth-field" id="auth-name-field" hidden>
+        <input class="cf-input" id="auth-name" type="text" maxlength="24" placeholder="昵称（将显示在评论中）" autocomplete="nickname" aria-label="昵称">
+      </div>
+      <input class="cf-input" id="auth-email" type="email" placeholder="邮箱" autocomplete="email" aria-label="邮箱">
+      <input class="cf-input" id="auth-pw" type="password" placeholder="密码（至少 8 位）" autocomplete="current-password" aria-label="密码">
+      <span class="cf-msg auth-msg" id="auth-msg" role="status"></span>
+      <button type="submit" class="cf-submit auth-submit" id="auth-submit">登录</button>
+    </form>
+  </div>
+</div>
 {{ end }}

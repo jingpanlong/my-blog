@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-部署 comments Worker（免登录轻量评论系统）。
+部署 comments Worker（注册/登录 + 评论系统）。
 只依赖标准库。需要以下环境变量：
   CF_API_TOKEN     Cloudflare API Token（需 Workers Scripts:Edit 权限）
   CF_ACCOUNT_ID    Cloudflare 账户 ID
 
-与 deploy_like_counter.py 同款做法：脚本 + KV binding 打包成 multipart 一次性 PUT 上传。
+与 deploy_oauth_worker.py 同款做法：脚本 + KV binding + secret_text 绑定
+打包成 multipart 一次性 PUT 上传（Cloudflare 写 secret 独立端点会 405，故随脚本注入）。
 KV 绑定：COMMENTS -> 复用已有的 blog-likes 命名空间（id 见下方 COMMENTS_ID）。
+secret_text 绑定：AUTH_SECRET -> 会话 token 的 HMAC 签名密钥（固定随机值，改它会使所有登录失效）。
 """
 import json
 import os
@@ -20,6 +22,8 @@ JS_PATH = os.path.normpath(os.path.join(HERE, "..", "worker", "comments.js"))
 
 # 复用 blog-likes KV 命名空间（评论与点赞/浏览量共存，仅 key 前缀不同）
 COMMENTS_ID = "b2ca0e377242436b8e79f3d2ecf2131d"
+# 会话 token 签名密钥（HMAC-SHA256）。固定值，请勿随意更改，否则所有用户需重新登录。
+AUTH_SECRET = "kwPTO07F9N4QiRgDevtvbb04NaKZIl36q1ElroRE3TM="
 
 CF_TOKEN = os.environ["CF_API_TOKEN"]
 ACCOUNT_ID = os.environ["CF_ACCOUNT_ID"]
@@ -55,6 +59,7 @@ def multipart_upload(script_js):
         "body_part": "script",
         "bindings": [
             {"name": "COMMENTS", "type": "kv_namespace", "namespace_id": COMMENTS_ID},
+            {"name": "AUTH_SECRET", "type": "secret_text", "text": AUTH_SECRET},
         ],
     }
     parts = []
@@ -108,20 +113,40 @@ def main():
 
     base = f"https://{SCRIPT}.470918507.workers.dev"
     import urllib.request as u
-    def probe(data=None):
+    def call(method, path, data=None, headers=None):
+        h = {"Content-Type": "application/json"}
+        if headers: h.update(headers)
         try:
-            req = u.Request(base + "/comments?path=/__selftest__/",
-                            data=(data.encode() if data else None),
-                            method=("POST" if data is not None else "GET"),
-                            headers={"Content-Type": "application/json"})
+            req = u.Request(base + path,
+                            data=(json.dumps(data).encode() if data is not None else None),
+                            method=method, headers=h)
             with u.urlopen(req, timeout=15) as r:
-                return json.loads(r.read().decode())
+                return r.status, json.loads(r.read().decode())
+        except u.HTTPError as e:
+            try: return e.code, json.loads(e.read().decode())
+            except Exception: return e.code, {"error": "http"}
         except Exception as e:
-            return {"error": str(e)}
+            return 0, {"error": str(e)}
+
     print("\n=== 部署完成 ===")
     print("Worker 地址 :", base)
-    print("评论 GET    :", json.dumps(probe()))
-    print("评论 POST   :", json.dumps(probe(json.dumps({"path": "/__selftest__/", "name": "probe", "content": "hello"}))))
+    print("评论 GET（公开）:", json.dumps(call("GET", "/comments?path=/__selftest__/")))
+    print("评论 POST（未登录）:", json.dumps(call("POST", "/comments", {"path": "/__selftest__/", "content": "x"})))
+    # 自动跑一遍 注册 -> 登录 -> 带 token 评论
+    st1, reg = call("POST", "/auth/register", {"email": "selftest@example.com", "name": "自测", "password": "selftest123"})
+    token = (reg or {}).get("token")
+    print("注册        :", st1, json.dumps({k: (v if k != "token" else bool(v)) for k, v in (reg or {}).items()}, ensure_ascii=False))
+    st2, lgn = call("POST", "/auth/login", {"email": "selftest@example.com", "password": "selftest123"})
+    print("登录        :", st2, json.dumps({k: (v if k != "token" else bool(v)) for k, v in (lgn or {}).items()}, ensure_ascii=False))
+    if token:
+        st3, cmt = call("POST", "/comments", {"path": "/__selftest__/", "content": "已登录评论"}, {"Authorization": "Bearer " + token})
+        print("带 token 评论:", st3, json.dumps(cmt, ensure_ascii=False))
+        # 清理自测用户与评论
+        try:
+            u.Request(base + "/auth/me", method="GET", headers={"Authorization": "Bearer " + token})
+        except Exception:
+            pass
+        print("(自测产生的注册用户/评论可手动在 KV 中清理：user:selftest@example.com、comment:/__selftest__/:*)")
 
 
 if __name__ == "__main__":
