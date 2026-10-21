@@ -762,9 +762,23 @@
     }
     function setCount(n) { if (countEl) countEl.textContent = n; }
 
-    function renderComment(c, all) {
+    /* 把平铺评论组装成树：根评论（无 replyTo 或父级已删除）在下挂回复 */
+    function buildTree(comments) {
+      var map = {};
+      comments.forEach(function (c) { map[c.id] = { c: c, kids: [] }; });
+      var roots = [];
+      comments.forEach(function (c) {
+        var node = map[c.id];
+        if (c.replyTo && map[c.replyTo]) map[c.replyTo].kids.push(node);
+        else roots.push(node); // 父级被删的回复升级为根评论
+      });
+      return roots;
+    }
+
+    /* depth: 0=根评论（卡片），>=1=回复（紧凑无卡片，随嵌套缩进） */
+    function renderComment(c, all, depth) {
       var li = document.createElement('li');
-      li.className = 'comment-item' + (c.replyTo ? ' is-reply' : '');
+      li.className = 'comment-item' + (depth > 0 ? ' is-reply' : '');
       li.setAttribute('data-id', c.id);
       li._c = c;
 
@@ -778,31 +792,27 @@
       var nm = document.createElement('span');
       nm.className = 'c-name';
       nm.textContent = c.name;
-      var tm = document.createElement('time');
+      var tm = document.createElement('span');
       tm.className = 'c-time';
       tm.textContent = timeAgo(c.createdAt);
       metaWrap.appendChild(nm);
       metaWrap.appendChild(tm);
-      head.appendChild(av);
-      head.appendChild(metaWrap);
-
-      var body = document.createElement('div');
-      body.className = 'c-body';
-      body.textContent = c.content; // textContent：杜绝 XSS
-
-      li.appendChild(head);
-      li.appendChild(body);
 
       if (c.replyTo && all) {
         var parent = all[c.replyTo];
         if (parent) {
-          var rep = document.createElement('div');
+          var rep = document.createElement('span');
           rep.className = 'c-reply-ref';
-          rep.textContent = '↩ 回复 @' + parent.name;
-          li.insertBefore(rep, body);
+          rep.textContent = '回复 @' + parent.name;
+          metaWrap.appendChild(rep); // 与昵称同行，省一行
         }
       }
+      head.appendChild(av);
+      head.appendChild(metaWrap);
 
+      /* 操作行：回复 + 删除（站长可删任意，普通用户仅能删自己的），与头部同行右侧 */
+      var actWrap = document.createElement('div');
+      actWrap.className = 'c-actions';
       var act = document.createElement('button');
       act.type = 'button';
       act.className = 'c-reply-btn';
@@ -813,9 +823,6 @@
         if (replyWrap) replyWrap.hidden = false;
         if (contentEl) contentEl.focus();
       });
-      /* 操作行：回复 + 删除（站长可删任意，普通用户仅能删自己的） */
-      var actWrap = document.createElement('div');
-      actWrap.className = 'c-actions';
       actWrap.appendChild(act);
 
       var me = BlogAuth.user();
@@ -829,8 +836,28 @@
         del.setAttribute('data-del', c.id);
         actWrap.appendChild(del);
       }
-      li.appendChild(actWrap);
+      head.appendChild(actWrap);
+
+      var body = document.createElement('div');
+      body.className = 'c-body';
+      body.textContent = c.content; // textContent：杜绝 XSS
+
+      li.appendChild(head);
+      li.appendChild(body);
       return li;
+    }
+
+    /* 递归渲染一棵树：先评论本体，再把回复列表挂进这条评论内部 */
+    function renderNode(node, parentEl, all) {
+      var li = renderComment(node.c, all, parentEl._depth || 0);
+      parentEl.appendChild(li);
+      if (node.kids.length) {
+        var ul = document.createElement('ul');
+        ul.className = 'c-kids';
+        ul._depth = (parentEl._depth || 0) + 1;
+        node.kids.forEach(function (k) { renderNode(k, ul, all); });
+        li.appendChild(ul);
+      }
     }
 
     function isAuthed() { return !!(BlogAuth.user() || BlogAuth.owner()); }
@@ -852,13 +879,15 @@
       }
       var map = {};
       allComments.forEach(function (c) { map[c.id] = c; });
-      var shown = expanded ? allComments : allComments.slice(0, PAGE_SIZE);
-      shown.forEach(function (c) {
-        listEl.appendChild(renderComment(c, map));
+      var roots = buildTree(allComments);
+      listEl._depth = 0;
+      var shownRoots = expanded ? roots : roots.slice(0, PAGE_SIZE); // 折叠只折叠根评论，回复始终跟随父级
+      shownRoots.forEach(function (node) {
+        renderNode(node, listEl, map);
       });
       setCount(allComments.length);
       if (moreBtn) {
-        if (allComments.length > PAGE_SIZE) {
+        if (roots.length > PAGE_SIZE) {
           moreBtn.hidden = false;
           moreBtn.textContent = !authed
             ? ('登录后查看全部评论（' + allComments.length + '）')
