@@ -45,6 +45,7 @@ social:
     url: '#'
     icon: wechat
     handle: JovialPioneerLegen
+    qr: /img/wechat-qr.jpg
   - name: 小红书
     url: https://xhslink.cn/o/91exvN6cZUA
     icon: xhs

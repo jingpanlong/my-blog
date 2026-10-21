@@ -163,6 +163,32 @@ img { max-width: 100%; }
 }
 .social-btn:hover { color: var(--text); border-color: var(--border-strong); transform: translateY(-1px); }
 .social-btn .mono { font-size: 0.72rem; font-weight: 700; }
+/* 微信/含二维码图标：悬停弹出二维码 */
+.social-btn.has-qr { position: relative; }
+.qr-pop {
+  position: absolute; bottom: calc(100% + 10px); left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  width: 150px; padding: 11px; border-radius: 13px;
+  background: var(--panel-2); border: 1px solid var(--border);
+  box-shadow: 0 14px 34px rgba(0,0,0,.22);
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  opacity: 0; visibility: hidden; pointer-events: none; transition: .2s ease; z-index: 60;
+}
+.social-btn.has-qr:hover .qr-pop,
+.social-btn.has-qr:focus-within .qr-pop {
+  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+}
+/* 指向下方图标的小三角 */
+.qr-pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 7px solid transparent; border-top-color: var(--panel-2);
+  filter: drop-shadow(0 1px 0 var(--border));
+}
+.qr-pop img {
+  width: 126px; height: 126px; object-fit: contain; display: block;
+  background: #fff; border-radius: 9px; padding: 4px;
+}
+.qr-pop .qr-cap { font-size: 11px; color: var(--text-mute); line-height: 1.3; text-align: center; }
 .i-moon { display: none; }
 [data-theme="light"] .i-sun { display: none; }
 [data-theme="light"] .i-moon { display: block; }
