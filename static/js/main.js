@@ -813,8 +813,8 @@
           if (authAvatar) authAvatar.textContent = u.avatar || '🙂';
         }
         if (formAvatar) { formAvatar.textContent = u.avatar || '🙂'; formAvatar.hidden = false; }
-        if (contentEl) contentEl.disabled = false;
-        if (submitEl) submitEl.disabled = !u.verified;
+        if (contentEl) { contentEl.readOnly = false; contentEl.classList.remove('is-locked'); }
+        if (submitEl) { submitEl.disabled = false; submitEl.textContent = '发表评论'; }
         if (verifyBar) verifyBar.hidden = !!u.verified;
         if (!u.verified) setMsg('请先验证邮箱后再评论', true);
       } else if (o) {
@@ -825,20 +825,30 @@
           if (authAvatar) authAvatar.textContent = o.avatar || '🌟';
         }
         if (formAvatar) { formAvatar.textContent = o.avatar || '🌟'; formAvatar.hidden = false; }
-        if (contentEl) contentEl.disabled = false;
-        if (submitEl) submitEl.disabled = false;
+        if (contentEl) { contentEl.readOnly = false; contentEl.classList.remove('is-locked'); }
+        if (submitEl) { submitEl.disabled = false; submitEl.textContent = '发表评论'; }
         if (verifyBar) verifyBar.hidden = true;
       } else {
         if (authIn) authIn.hidden = true;
         if (authOut) authOut.hidden = false;
         if (formAvatar) formAvatar.hidden = true;
-        if (contentEl) contentEl.disabled = true;
-        if (submitEl) submitEl.disabled = true;
+        /* 未登录：输入框只读不置灰，按钮保持实心可点，点击即唤起登录 */
+        if (contentEl) { contentEl.readOnly = true; contentEl.classList.add('is-locked'); }
+        if (submitEl) { submitEl.disabled = false; submitEl.textContent = '登录后评论'; }
         if (verifyBar) verifyBar.hidden = true;
       }
     }
     BlogAuth.on(function (st) { applyAuthUI(st); });
     applyAuthUI(BlogAuth.state);
+
+    /* 未登录时点击输入框 → 直接弹登录 */
+    function lockHint() {
+      if (!BlogAuth.user() && !BlogAuth.owner()) BlogAuth.open('login');
+    }
+    if (contentEl) {
+      contentEl.addEventListener('focus', lockHint);
+      contentEl.addEventListener('click', lockHint);
+    }
 
     if (authOpenBtn) authOpenBtn.addEventListener('click', function () { BlogAuth.open('login'); });
     if (logoutBtn) logoutBtn.addEventListener('click', function () {
@@ -896,7 +906,10 @@
         .then(function () {
           var u2 = BlogAuth.user();
           var o2 = BlogAuth.owner();
-          if (submitEl) submitEl.disabled = !((u2 && u2.verified) || o2);
+          if (submitEl) {
+            submitEl.disabled = false;
+            submitEl.textContent = (u2 || o2) ? '发表评论' : '登录后评论';
+          }
         });
     });
 

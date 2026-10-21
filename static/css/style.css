@@ -973,6 +973,9 @@ img { max-width: 100%; }
 .c-auth-link { background: none; border: 0; cursor: pointer; color: var(--text-mute); font: inherit; font-size: 13px; text-decoration: underline; padding: 0; }
 .c-auth-link:hover { color: var(--accent); }
 .cf-textarea:disabled { opacity: .55; cursor: not-allowed; }
+/* 未登录：只读但保持明亮，点击即唤起登录 */
+.cf-textarea.is-locked { opacity: 1; cursor: pointer; border-style: dashed; }
+.cf-textarea.is-locked::placeholder { color: var(--accent); opacity: .85; }
 
 /* 未验证邮箱提示条 */
 .c-verify-bar {
