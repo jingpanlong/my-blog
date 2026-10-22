@@ -537,19 +537,19 @@ img { max-width: 100%; }
   -webkit-user-select: none; user-select: none;
   border-radius: 18px;
   background:
-    radial-gradient(120% 130% at 16% 10%, rgba(60, 42, 122, .55) 0%, transparent 44%),
-    radial-gradient(120% 130% at 86% 92%, rgba(16, 70, 104, .55) 0%, transparent 50%),
-    var(--km-sky, #090d1e);
-  box-shadow: inset 0 0 60px rgba(0,0,0,.45);
+    radial-gradient(120% 130% at 16% 8%, rgba(31, 36, 81, .75) 0%, transparent 46%),
+    radial-gradient(120% 130% at 86% 94%, rgba(95, 103, 168, .32) 0%, transparent 52%),
+    #090d1f;
+  box-shadow: inset 0 0 70px rgba(2, 5, 18, .65);
   --px: 0; --py: 0;
 }
 /* 星云 */
 .km-nebula {
   position: absolute; inset: -22%; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(38% 32% at 30% 34%, rgba(124, 92, 255, .22), transparent 70%),
-    radial-gradient(34% 28% at 72% 64%, rgba(45, 196, 255, .18), transparent 72%),
-    radial-gradient(30% 26% at 56% 16%, rgba(236, 72, 153, .12), transparent 70%);
+    radial-gradient(38% 32% at 30% 34%, rgba(95, 103, 168, .34), transparent 70%),
+    radial-gradient(34% 28% at 72% 64%, rgba(56, 189, 248, .16), transparent 72%),
+    radial-gradient(30% 26% at 56% 16%, rgba(139, 92, 246, .16), transparent 70%);
   filter: blur(22px);
   animation: kmNebula 28s ease-in-out infinite alternate;
   opacity: .85;
@@ -645,26 +645,50 @@ img { max-width: 100%; }
 .km-core-txt { position: relative; z-index: 3; pointer-events: none; }
 .km-core-txt b { display: block; font-size: clamp(12px, 1.4vw, 14px); font-weight: 700; color: #fff; letter-spacing: .5px; text-shadow: 0 2px 12px rgba(8,14,40,.85); }
 .km-core-txt small { display: block; margin-top: 2px; font-size: 8px; letter-spacing: 2.4px; color: #bccafd; }
-/* 知识节点（径向环绕，玻璃拟态发光卡片） */
+/* 知识节点（径向环绕：发光星球 + 纯文本标签，无卡片背景） */
 .km-node {
   position: absolute; left: var(--x); top: var(--y); z-index: 5;
   transform: translate(-50%,-50%) translate3d(var(--tx,0px), var(--ty,0px), 0);
-  display: flex; align-items: center; gap: 10px;
-  padding: 9px 13px; border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-  box-shadow: 0 8px 24px rgba(2,6,18,.5), inset 0 0 0 1px rgba(255,255,255,.04), 0 0 18px color-mix(in srgb, var(--c) 22%, transparent);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .3s ease, transform .25s ease;
+  display: flex; align-items: center; gap: 13px;
+  padding: 4px 6px; border-radius: 14px;
+  background: none; border: 0; box-shadow: none;
+  transition: opacity .3s ease, transform .25s ease;
   will-change: transform;
 }
 .km-node[data-side="left"] { flex-direction: row-reverse; text-align: right; }
 .km-node[data-side="center"] { flex-direction: column; gap: 6px; text-align: center; }
+/* 节点星球：带辉光光晕的立体小球 */
 .km-dot {
-  width: 9px; height: 9px; border-radius: 50%; flex: none;
-  background: radial-gradient(circle at 35% 30%, #fff, var(--c) 62%);
-  box-shadow: 0 0 8px var(--c), 0 0 18px var(--c);
-  transition: transform .25s ease, box-shadow .25s ease;
+  width: 17px; height: 17px; border-radius: 50%; flex: none;
+  background:
+    radial-gradient(circle at 33% 27%, #ffffff 0%,
+      color-mix(in srgb, var(--c) 55%, #ffffff) 22%,
+      var(--c) 56%,
+      color-mix(in srgb, var(--c) 62%, #05070f) 100%);
+  box-shadow:
+    0 0 9px color-mix(in srgb, var(--c) 75%, transparent),
+    0 0 24px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 52px color-mix(in srgb, var(--c) 22%, transparent),
+    inset -2px -3px 6px rgba(0,0,0,.45);
+  animation: kmOrb 5s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1s);
+  transition: transform .25s ease;
+}
+@keyframes kmOrb {
+  0%, 100% {
+    box-shadow:
+      0 0 9px color-mix(in srgb, var(--c) 70%, transparent),
+      0 0 24px color-mix(in srgb, var(--c) 40%, transparent),
+      0 0 52px color-mix(in srgb, var(--c) 18%, transparent),
+      inset -2px -3px 6px rgba(0,0,0,.45);
+  }
+  50% {
+    box-shadow:
+      0 0 13px color-mix(in srgb, var(--c) 90%, transparent),
+      0 0 32px color-mix(in srgb, var(--c) 58%, transparent),
+      0 0 68px color-mix(in srgb, var(--c) 30%, transparent),
+      inset -2px -3px 6px rgba(0,0,0,.45);
+  }
 }
 .km-body { min-width: 0; }
 .km-body b {
@@ -677,68 +701,64 @@ img { max-width: 100%; }
   line-height: 1.4; white-space: nowrap; text-shadow: 0 1px 8px rgba(0,0,0,.55);
 }
 .km-node:hover, .km-node.is-hot {
-  background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
-  border-color: color-mix(in srgb, var(--c) 78%, transparent);
-  box-shadow: 0 16px 40px rgba(2,6,18,.6), 0 0 28px color-mix(in srgb, var(--c) 48%, transparent), inset 0 0 0 1px rgba(255,255,255,.12);
-  transform: translate(-50%,-50%) translate3d(var(--tx,0px), var(--ty,0px), 0) scale(1.04);
+  transform: translate(-50%,-50%) translate3d(var(--tx,0px), var(--ty,0px), 0) scale(1.05);
 }
-.km-node.is-hot .km-dot { transform: scale(1.35); box-shadow: 0 0 12px var(--c), 0 0 26px var(--c); }
+.km-node:hover .km-body b, .km-node.is-hot .km-body b { color: #fff; }
+.km-node.is-hot .km-dot { transform: scale(1.35); }
 .km.has-hot .km-node:not(.is-hot) { opacity: .45; }
-/* 浅色主题适配 */
+/* 浅色主题适配：柔和粉彩（淡紫 / 藕灰 / 奶油 / 浅粉），而非高饱和暖色 */
 [data-theme="light"] .km {
   background:
-    radial-gradient(120% 130% at 16% 10%, rgba(255, 221, 190, .6) 0%, transparent 44%),
-    radial-gradient(120% 130% at 86% 92%, rgba(190, 222, 255, .6) 0%, transparent 50%),
-    linear-gradient(160deg, #eef3ff 0%, #e6edfb 100%);
-  box-shadow: inset 0 0 60px rgba(120,140,200,.18);
+    radial-gradient(120% 130% at 16% 8%, rgba(229, 231, 244, .95) 0%, transparent 46%),
+    radial-gradient(120% 130% at 86% 94%, rgba(244, 232, 229, .9) 0%, transparent 52%),
+    linear-gradient(160deg, #f3f1f6 0%, #e9eff9 100%);
+  box-shadow: inset 0 0 70px rgba(150, 155, 200, .16);
 }
 [data-theme="light"] .km-nebula {
   background:
-    radial-gradient(38% 32% at 30% 34%, rgba(255, 178, 120, .26), transparent 70%),
-    radial-gradient(34% 28% at 72% 64%, rgba(120, 190, 255, .24), transparent 72%),
-    radial-gradient(30% 26% at 56% 16%, rgba(255, 150, 200, .18), transparent 70%);
+    radial-gradient(38% 32% at 30% 34%, rgba(182, 158, 157, .34), transparent 70%),
+    radial-gradient(34% 28% at 72% 64%, rgba(228, 218, 219, .5), transparent 72%),
+    radial-gradient(30% 26% at 56% 16%, rgba(253, 242, 220, .55), transparent 70%);
 }
 [data-theme="light"] .km-body b,
 [data-theme="light"] .km-body small { text-shadow: none; }
-[data-theme="light"] .km-link { stroke: rgba(96,124,220,.38); }
-[data-theme="light"] .km-orbits i { border-color: rgba(110,130,210,.18); }
-[data-theme="light"] .km-stars { opacity: .22; }
-[data-theme="light"] .km-node {
-  background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.4));
-  border-color: color-mix(in srgb, var(--c) 40%, rgba(255,255,255,.2));
-  box-shadow: 0 10px 26px rgba(70,90,170,.16), 0 0 16px color-mix(in srgb, var(--c) 20%, transparent);
+[data-theme="light"] .km-link { stroke: rgba(150, 155, 200, .42); }
+[data-theme="light"] .km-orbits i { border-color: rgba(150, 155, 200, .22); }
+[data-theme="light"] .km-stars { opacity: .18; }
+[data-theme="light"] .km-node:hover .km-body b,
+[data-theme="light"] .km-node.is-hot .km-body b { color: #2a2f4a; }
+[data-theme="light"] .km-dot {
+  box-shadow:
+    0 0 8px color-mix(in srgb, var(--c) 45%, transparent),
+    0 0 20px color-mix(in srgb, var(--c) 28%, transparent),
+    inset -2px -3px 6px rgba(90, 95, 140, .3);
 }
-[data-theme="light"] .km-node:hover, [data-theme="light"] .km-node.is-hot {
-  background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.6));
-  border-color: color-mix(in srgb, var(--c) 70%, transparent);
-  box-shadow: 0 16px 40px rgba(70,90,170,.2), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent);
-}
-/* 中央星球 → 暖色「晨曦」球体 */
+/* 中央星球 → 粉彩柔光球体 */
 [data-theme="light"] .km-halo {
-  background: radial-gradient(circle, rgba(255, 190, 120, 0.34) 0%, rgba(255, 170, 90, 0.12) 44%, transparent 70%);
+  background: radial-gradient(circle, rgba(182, 158, 157, .3) 0%, rgba(200, 200, 225, .14) 44%, transparent 70%);
 }
 [data-theme="light"] .km-core {
-  background: radial-gradient(circle at 34% 26%, #fffdf6 0%, #ffe9c9 12%, #ffca8a 30%, #f2a25c 52%, #cf7434 74%, #9c4a1e 100%);
-  border-color: rgba(206, 128, 52, 0.5);
+  background: radial-gradient(circle at 34% 26%, #ffffff 0%, #fbf8f7 9%, #f3f1f6 22%, #e5e7f4 38%, #d5d9ee 56%, #c3c7e4 74%, #aeb2d4 100%);
+  border-color: rgba(150, 155, 200, .5);
   animation: kmBreatheLight 6s ease-in-out infinite;
 }
-[data-theme="light"] .km-core::after { opacity: .22; }
+[data-theme="light"] .km-core::after { opacity: .3; }
 @keyframes kmBreatheLight {
-  0%, 100% { box-shadow: 0 0 40px rgba(255, 188, 116, 0.42), 0 0 100px rgba(255, 170, 90, 0.2), inset -18px -22px 46px rgba(158, 82, 24, 0.38), inset 14px 16px 32px rgba(255, 240, 214, 0.62); }
-  50%      { box-shadow: 0 0 66px rgba(255, 176, 96, 0.6), 0 0 150px rgba(255, 160, 80, 0.3), inset -18px -22px 46px rgba(158, 82, 24, 0.34), inset 16px 18px 36px rgba(255, 244, 224, 0.72); }
+  0%, 100% { box-shadow: 0 0 40px rgba(170, 175, 215, .38), 0 0 100px rgba(190, 195, 230, .18), inset -18px -22px 46px rgba(120, 124, 165, .3), inset 14px 16px 32px rgba(255, 255, 255, .72); }
+  50%      { box-shadow: 0 0 66px rgba(160, 165, 210, .52), 0 0 150px rgba(185, 190, 228, .26), inset -18px -22px 46px rgba(120, 124, 165, .26), inset 16px 18px 36px rgba(255, 255, 255, .85); }
 }
-[data-theme="light"] .km-core-txt b { color: #6b3208; text-shadow: 0 1px 8px rgba(255, 246, 230, 0.8); }
-[data-theme="light"] .km-core-txt small { color: #a05a1c; }
+[data-theme="light"] .km-core-txt b { color: #3a3f5c; text-shadow: 0 1px 8px rgba(255, 255, 255, .9); }
+[data-theme="light"] .km-core-txt small { color: #7a7f9e; }
 [data-theme="light"] .km-sheen {
   mix-blend-mode: normal;
-  background: conic-gradient(from 0deg, transparent 0deg 64%, rgba(255, 255, 255, 0.55) 78%, rgba(255, 214, 160, 0.22) 88%, transparent 96%);
+  background: conic-gradient(from 0deg, transparent 0deg 64%, rgba(255, 255, 255, 0.6) 78%, rgba(228, 232, 248, 0.25) 88%, transparent 96%);
 }
 [data-theme="light"] .km-ring {
-  background: linear-gradient(118deg, rgba(206,128,52,0) 8%, rgba(214,150,80,.6) 50%, rgba(206,128,52,0) 92%) border-box;
-  filter: drop-shadow(0 0 8px rgba(255,180,100,.4));
+  background: linear-gradient(118deg, rgba(150,155,200,0) 8%, rgba(174,178,212,.65) 50%, rgba(150,155,200,0) 92%) border-box;
+  filter: drop-shadow(0 0 8px rgba(150,155,200,.35));
 }
-[data-theme="light"] .km-ring.rB { background: linear-gradient(118deg, rgba(206,128,52,0) 12%, rgba(224,165,95,.5) 50%, rgba(206,128,52,0) 88%) border-box; }
-[data-theme="light"] .km-ring.rC { background: linear-gradient(118deg, rgba(206,128,52,0) 16%, rgba(214,150,80,.3) 50%, rgba(206,128,52,0) 84%) border-box; }
+[data-theme="light"] .km-ring.rB { background: linear-gradient(118deg, rgba(150,155,200,0) 12%, rgba(190,194,225,.5) 50%, rgba(150,155,200,0) 88%) border-box; }
+[data-theme="light"] .km-ring.rC { background: linear-gradient(118deg, rgba(150,155,200,0) 16%, rgba(174,178,212,.3) 50%, rgba(150,155,200,0) 84%) border-box; }
 
 /* 侧栏卡片 */
 .scard {
@@ -1497,7 +1517,7 @@ img { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; }
   .hero-copy > *, .hero-quote, .hero-words, .hero-motto, .hero-script,
-  .km-node, .km-core, .km-sheen, .km-ring, .km-orbits i, .km-stars, .km-link, .km-nebula {
+  .km-node, .km-core, .km-sheen, .km-ring, .km-orbits i, .km-stars, .km-link, .km-nebula, .km-dot {
     animation: none !important;
   }
   .km-core::after { animation: none !important; }
