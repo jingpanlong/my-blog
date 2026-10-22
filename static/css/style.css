@@ -607,6 +607,50 @@ img { max-width: 100%; }
 [data-theme="light"] .km-node[data-k="3"] { left: 18.44%; top: 71.28%; width: 14.09%; height: 6.81%; }
 [data-theme="light"] .km-node[data-k="4"] { left: 6.06%;  top: 31.17%; width: 13.79%; height: 6.60%; }
 
+/* ============ 高级特效层（叠加在底图之上，不破坏场景） ============ */
+/* 极光漂移 */
+.km-aurora { position: absolute; inset: -12%; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: .55; }
+.km-aurora i { position: absolute; border-radius: 50%; }
+.km-aurora .a1 { width: 40%; height: 58%; left: 6%; top: 8%; background: radial-gradient(circle, rgba(124,92,255,.34), transparent 70%); animation: kmDrift 26s ease-in-out infinite; }
+.km-aurora .a2 { width: 46%; height: 54%; right: 4%; bottom: 4%; background: radial-gradient(circle, rgba(40,140,255,.26), transparent 70%); animation: kmDrift 34s ease-in-out infinite reverse; }
+.km-aurora .a3 { width: 34%; height: 40%; left: 38%; top: 52%; background: radial-gradient(circle, rgba(56,214,196,.20), transparent 70%); animation: kmDrift 42s ease-in-out infinite; }
+@keyframes kmDrift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(4%,-5%) scale(1.14); } }
+[data-theme="light"] .km-aurora { mix-blend-mode: normal; opacity: .20; }
+
+/* 卫星沿轨道环绕 */
+.km-orbit { position: absolute; left: 51%; top: 50.5%; z-index: 2; pointer-events: none; mix-blend-mode: screen; animation: kmOrbitSpin var(--dur,22s) linear infinite; }
+.km-orbit i { position: absolute; top: 0; left: 50%; width: 7px; height: 7px; border-radius: 50%; transform: translate(-50%,-50%); background: #fff; box-shadow: 0 0 10px #cfe3ff, 0 0 22px rgba(140,180,255,.75); }
+.km-orbit.orb-a { width: 46%; height: 20%; --tilt: -18deg; --dur: 22s; }
+.km-orbit.orb-b { width: 33%; height: 13%; --tilt: 14deg; --dur: 15s; animation-direction: reverse; }
+.km-orbit.orb-b i { box-shadow: 0 0 10px #e6d2ff, 0 0 22px rgba(160,120,255,.72); }
+.km-orbit.orb-c { width: 60%; height: 27%; --tilt: -32deg; --dur: 30s; }
+.km-orbit.orb-c i { box-shadow: 0 0 10px #ccf5ec, 0 0 22px rgba(60,214,196,.66); }
+@keyframes kmOrbitSpin { from { transform: translate(-50%,-50%) rotate(var(--tilt,-18deg)); } to { transform: translate(-50%,-50%) rotate(calc(var(--tilt,-18deg) + 360deg)); } }
+[data-theme="light"] .km-orbit { mix-blend-mode: normal; opacity: .85; }
+[data-theme="light"] .km-orbit i { box-shadow: 0 0 8px rgba(90,120,200,.5); }
+
+/* 星球能量脉冲环 */
+.km-pulse { position: absolute; left: 51%; top: 50.5%; width: 26%; aspect-ratio: 1; border-radius: 50%; z-index: 2; pointer-events: none; mix-blend-mode: screen; border: 2px solid rgba(150,190,255,.5); opacity: 0; animation: kmPulse 4.5s ease-out infinite; }
+.km-pulse.p2 { animation-delay: 1.5s; }
+.km-pulse.p3 { animation-delay: 3s; }
+@keyframes kmPulse { 0% { transform: translate(-50%,-50%) scale(.72); opacity: 0; } 15% { opacity: .55; } 100% { transform: translate(-50%,-50%) scale(2); opacity: 0; } }
+[data-theme="light"] .km-pulse { mix-blend-mode: normal; border-color: rgba(230,170,90,.5); }
+
+/* 鼠标跟随光斑 */
+.km-spot { position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; border-radius: 50%; z-index: 2; pointer-events: none; mix-blend-mode: screen; filter: blur(6px); transform: translate(-50%,-50%) translate(calc(var(--px,0) * 34%), calc(var(--py,0) * 34%)); background: radial-gradient(circle, rgba(140,175,255,.16), transparent 62%); }
+[data-theme="light"] .km-spot { mix-blend-mode: normal; opacity: .5; background: radial-gradient(circle, rgba(255,205,120,.22), transparent 62%); }
+
+/* 玻璃流光扫过 */
+.km-sheen-sweep { position: absolute; inset: 0; z-index: 2; pointer-events: none; mix-blend-mode: screen; opacity: 0; background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.08) 48%, rgba(205,228,255,.16) 50%, rgba(255,255,255,.08) 52%, transparent 58%); animation: kmSheenSweep 9s ease-in-out infinite; }
+@keyframes kmSheenSweep { 0% { transform: translateX(-130%); opacity: 0; } 12% { opacity: .8; } 70% { opacity: .5; } 100% { transform: translateX(130%); opacity: 0; } }
+[data-theme="light"] .km-sheen-sweep { mix-blend-mode: normal; background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.4) 50%, transparent 58%); }
+
+/* 流星 */
+.km-meteor { position: absolute; top: 10%; left: 0; width: 14cqw; height: 2px; z-index: 2; pointer-events: none; mix-blend-mode: screen; border-radius: 2px; opacity: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.95)); filter: drop-shadow(0 0 6px rgba(185,215,255,.9)); animation: kmMeteor 9s linear infinite; }
+.km-meteor.m2 { animation-delay: 4.5s; animation-duration: 12s; top: 34%; }
+@keyframes kmMeteor { 0% { transform: translate(0,0) rotate(22deg); opacity: 0; } 4% { opacity: 1; } 16% { opacity: 0; } 100% { transform: translate(118cqw, 42cqh) rotate(22deg); opacity: 0; } }
+[data-theme="light"] .km-meteor { mix-blend-mode: normal; }
+
 /* 侧栏卡片 */
 .scard {
   background: var(--panel); border: 1px solid var(--border);
@@ -1259,7 +1303,7 @@ img { max-width: 100%; }
   .panel { padding: 18px; }
   .km-panel { padding: 16px; }
   .km { aspect-ratio: auto; background-image: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .km-fx-glow, .km-fx-stars { display: none; }
+  .km-fx-glow, .km-fx-stars, .km-aurora, .km-orbit, .km-pulse, .km-spot, .km-sheen-sweep, .km-meteor { display: none; }
   .km-core-txt { position: static; transform: none; grid-column: 1 / -1; text-align: left; padding: 6px 4px 2px; }
   .km-node { position: static; width: auto; height: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 11px 13px; border-radius: 12px; background: var(--chip); border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border)); }
   .km-node b, .km-node small { white-space: normal; text-shadow: none; }
@@ -1365,7 +1409,7 @@ img { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; }
   .hero-copy > *, .hero-quote, .hero-words, .hero-motto, .hero-script,
-  .km-node, .km-fx-glow, .km-fx-stars {
+  .km-node, .km-fx-glow, .km-fx-stars, .km-aurora i, .km-orbit, .km-pulse, .km-sheen-sweep, .km-meteor {
     animation: none !important;
   }
   .km-core::after { animation: none !important; }
