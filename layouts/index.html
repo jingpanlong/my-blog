@@ -139,44 +139,16 @@
     </section>
 
     <!-- 知识地图 -->
-    <section class="panel">
-      <div class="panel-head">
-        <span class="panel-ico ico-cyan" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/><ellipse cx="12" cy="12" rx="4.5" ry="10"/></svg>
-        </span>
-        <div class="panel-titles">
-          <h2>{{ $secKnowledge.title | default "知识地图" }}</h2>
-          <p>{{ $secKnowledge.sub | default "在不同的领域持续学习，构建自己的知识体系" }}</p>
-        </div>
-      </div>
-
+    <section class="panel km-panel">
       <div class="km" data-km>
-        <div class="km-stars" aria-hidden="true"></div>
-        <div class="km-orbits" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+        <div class="km-fx-glow" aria-hidden="true"></div>
+        <div class="km-fx-stars" aria-hidden="true"></div>
 
-        {{ $nodes := first 5 hugo.Data.site.knowledge }}
-        {{ $pos := slice "50,11,center" "86,38,right" "73,82,right" "27,82,left" "14,38,left" }}
+        <div class="km-core-txt"><b>{{ $secKnowledge.core | default "更好的自己" }}</b><small>{{ $secKnowledge.coreEn | default "A BETTER ME" }}</small></div>
 
-        <svg class="km-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-          {{ range $i, $k := $nodes }}
-            {{ $s := split (index $pos $i) "," }}
-            <line class="km-link" x1="{{ index $s 0 }}" y1="{{ index $s 1 }}" x2="50" y2="50" vector-effect="non-scaling-stroke" style="--i:{{ $i }}"/>
-          {{ end }}
-        </svg>
-
-        <div class="km-halo" aria-hidden="true"></div>
-        <div class="km-core">
-          <i class="km-sheen" aria-hidden="true"></i>
-          <i class="km-ring rA" aria-hidden="true"></i>
-          <i class="km-ring rB" aria-hidden="true"></i>
-          <span class="km-core-txt"><b>{{ $secKnowledge.core | default "更好的自己" }}</b><small>{{ $secKnowledge.coreEn | default "A BETTER ME" }}</small></span>
-        </div>
-
-        {{ range $i, $k := $nodes }}
-          {{ $s := split (index $pos $i) "," }}
-          <div class="km-node" data-side="{{ index $s 2 }}" style="--c:{{ $k.color }};--x:{{ index $s 0 }}%;--y:{{ index $s 1 }}%;--i:{{ $i }}">
-            <span class="km-dot" aria-hidden="true"></span>
-            <span class="km-body"><b>{{ $k.title }}</b><small>{{ $k.desc }}</small></span>
+        {{ range $i, $k := first 5 hugo.Data.site.knowledge }}
+          <div class="km-node" data-k="{{ $i }}" style="--c:{{ $k.color }}">
+            <b>{{ $k.title }}</b><small>{{ $k.desc }}</small>
           </div>
         {{ end }}
       </div>
