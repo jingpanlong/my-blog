@@ -535,7 +535,29 @@ img { max-width: 100%; }
   overflow: hidden;
   isolation: isolate;
   -webkit-user-select: none; user-select: none;
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 130% at 16% 10%, rgba(60, 42, 122, .55) 0%, transparent 44%),
+    radial-gradient(120% 130% at 86% 92%, rgba(16, 70, 104, .55) 0%, transparent 50%),
+    var(--km-sky, #090d1e);
+  box-shadow: inset 0 0 60px rgba(0,0,0,.45);
   --px: 0; --py: 0;
+}
+/* 星云 */
+.km-nebula {
+  position: absolute; inset: -22%; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(38% 32% at 30% 34%, rgba(124, 92, 255, .22), transparent 70%),
+    radial-gradient(34% 28% at 72% 64%, rgba(45, 196, 255, .18), transparent 72%),
+    radial-gradient(30% 26% at 56% 16%, rgba(236, 72, 153, .12), transparent 70%);
+  filter: blur(22px);
+  animation: kmNebula 28s ease-in-out infinite alternate;
+  opacity: .85;
+}
+@keyframes kmNebula {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(2%, -2%, 0) scale(1.08); }
+  100% { transform: translate3d(-2%, 2%, 0) scale(1.04); }
 }
 /* 星尘 */
 .km-stars {
@@ -575,15 +597,23 @@ img { max-width: 100%; }
 /* 中央星球 */
 .km-core {
   position: absolute; left: 50%; top: 50%;
-  width: clamp(122px, 21%, 188px); aspect-ratio: 1; border-radius: 50%;
+  width: clamp(118px, 20%, 180px); aspect-ratio: 1; border-radius: 50%;
   transform: translate(-50%,-50%) translate3d(calc(var(--px) * 9px), calc(var(--py) * 9px), 0);
   display: grid; place-items: center; text-align: center;
-  background: radial-gradient(circle at 34% 26%, #e6edff 0%, #a7bcff 10%, #5b72d8 30%, #2a3570 52%, #121933 74%, #070b18 100%);
+  background: radial-gradient(circle at 34% 26%, #f0f4ff 0%, #c3d2ff 7%, #7e93e6 18%, #4559b8 34%, #26306e 54%, #121a3d 76%, #070b1c 100%);
   border: 1px solid rgba(165,190,255,.42);
-  box-shadow: 0 0 46px rgba(110,140,255,.42), 0 0 120px rgba(125,100,255,.20), inset -16px -20px 44px rgba(2,5,18,.92), inset 12px 14px 30px rgba(180,202,255,.30);
+  box-shadow: 0 0 46px rgba(110,140,255,.42), 0 0 120px rgba(125,100,255,.20), inset -18px -22px 46px rgba(2,5,18,.92), inset 14px 16px 32px rgba(190,210,255,.32);
   z-index: 3;
   animation: kmBreathe 6s ease-in-out infinite;
 }
+/* 行星表面条纹（缓慢扫过，增强质感） */
+.km-core::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none; z-index: 1;
+  background: repeating-linear-gradient(116deg, rgba(255,255,255,.06) 0 5px, rgba(255,255,255,0) 5px 13px);
+  mix-blend-mode: screen; opacity: .55;
+  animation: kmSurface 26s linear infinite;
+}
+@keyframes kmSurface { to { transform: rotate(360deg); } }
 @keyframes kmBreathe {
   0%,100% { box-shadow: 0 0 40px rgba(110,140,255,.32), 0 0 100px rgba(125,100,255,.14), inset -16px -20px 44px rgba(2,5,18,.92), inset 12px 14px 30px rgba(178,200,255,.26); }
   50%     { box-shadow: 0 0 64px rgba(130,158,255,.52), 0 0 150px rgba(135,110,255,.24), inset -16px -20px 44px rgba(2,5,18,.92), inset 14px 16px 34px rgba(186,208,255,.36); }
@@ -595,10 +625,19 @@ img { max-width: 100%; }
   animation: kmSheen 9s linear infinite; mix-blend-mode: screen;
 }
 @keyframes kmSheen { to { transform: rotate(360deg); } }
-/* 行星环（置于球体之上、文字之下，形成环绕感） */
-.km-ring { position: absolute; left: 50%; top: 50%; border-radius: 50%; pointer-events: none; z-index: 2; animation: kmRing 14s ease-in-out infinite alternate; }
-.km-ring.rA { width: 196%; height: 54%; border: 1.5px solid rgba(155,184,255,.50); box-shadow: 0 0 14px rgba(110,140,255,.35), inset 0 0 10px rgba(110,140,255,.25); }
-.km-ring.rB { width: 158%; height: 40%; border: 1px solid rgba(180,200,255,.32); animation-duration: 18s; animation-delay: -6s; }
+/* 行星环带（多层叠加，形成土星式光环） */
+.km-ring {
+  position: absolute; left: 50%; top: 50%; border-radius: 50%; pointer-events: none; z-index: 2;
+  border: 6px solid transparent;
+  background: linear-gradient(118deg, rgba(150,180,255,0) 8%, rgba(170,196,255,.6) 50%, rgba(150,180,255,0) 92%) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  filter: drop-shadow(0 0 8px rgba(120,150,255,.35));
+  animation: kmRing 16s ease-in-out infinite alternate;
+}
+.km-ring.rA { width: 202%; height: 58%; border-width: 7px; animation-duration: 16s; }
+.km-ring.rB { width: 162%; height: 44%; border-width: 4px; background: linear-gradient(118deg, rgba(180,200,255,0) 12%, rgba(195,212,255,.5) 50%, rgba(180,200,255,0) 88%) border-box; animation-duration: 20s; animation-delay: -7s; }
+.km-ring.rC { width: 238%; height: 76%; border-width: 3px; background: linear-gradient(118deg, rgba(150,180,255,0) 16%, rgba(165,190,255,.32) 50%, rgba(150,180,255,0) 84%) border-box; animation-duration: 24s; animation-delay: -12s; }
 @keyframes kmRing {
   from { transform: translate(-50%,-50%) rotate(-26deg); }
   to   { transform: translate(-50%,-50%) rotate(-10deg); }
@@ -606,14 +645,17 @@ img { max-width: 100%; }
 .km-core-txt { position: relative; z-index: 3; pointer-events: none; }
 .km-core-txt b { display: block; font-size: clamp(12px, 1.4vw, 14px); font-weight: 700; color: #fff; letter-spacing: .5px; text-shadow: 0 2px 12px rgba(8,14,40,.85); }
 .km-core-txt small { display: block; margin-top: 2px; font-size: 8px; letter-spacing: 2.4px; color: #bccafd; }
-/* 知识节点（径向环绕） */
+/* 知识节点（径向环绕，玻璃拟态发光卡片） */
 .km-node {
   position: absolute; left: var(--x); top: var(--y); z-index: 5;
   transform: translate(-50%,-50%) translate3d(var(--tx,0px), var(--ty,0px), 0);
-  display: flex; align-items: center; gap: 9px;
-  padding: 7px 10px; border-radius: 12px;
-  background: transparent; border: 1px solid transparent;
-  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .3s ease;
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 13px; border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  box-shadow: 0 8px 24px rgba(2,6,18,.5), inset 0 0 0 1px rgba(255,255,255,.04), 0 0 18px color-mix(in srgb, var(--c) 22%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .3s ease, transform .25s ease;
   will-change: transform;
 }
 .km-node[data-side="left"] { flex-direction: row-reverse; text-align: right; }
@@ -635,18 +677,42 @@ img { max-width: 100%; }
   line-height: 1.4; white-space: nowrap; text-shadow: 0 1px 8px rgba(0,0,0,.55);
 }
 .km-node:hover, .km-node.is-hot {
-  background: var(--chip-hover); border-color: var(--border-strong);
-  box-shadow: 0 10px 30px rgba(3,6,18,.45);
+  background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+  border-color: color-mix(in srgb, var(--c) 78%, transparent);
+  box-shadow: 0 16px 40px rgba(2,6,18,.6), 0 0 28px color-mix(in srgb, var(--c) 48%, transparent), inset 0 0 0 1px rgba(255,255,255,.12);
+  transform: translate(-50%,-50%) translate3d(var(--tx,0px), var(--ty,0px), 0) scale(1.04);
 }
 .km-node.is-hot .km-dot { transform: scale(1.35); box-shadow: 0 0 12px var(--c), 0 0 26px var(--c); }
 .km.has-hot .km-node:not(.is-hot) { opacity: .45; }
 /* 浅色主题适配 */
+[data-theme="light"] .km {
+  background:
+    radial-gradient(120% 130% at 16% 10%, rgba(255, 221, 190, .6) 0%, transparent 44%),
+    radial-gradient(120% 130% at 86% 92%, rgba(190, 222, 255, .6) 0%, transparent 50%),
+    linear-gradient(160deg, #eef3ff 0%, #e6edfb 100%);
+  box-shadow: inset 0 0 60px rgba(120,140,200,.18);
+}
+[data-theme="light"] .km-nebula {
+  background:
+    radial-gradient(38% 32% at 30% 34%, rgba(255, 178, 120, .26), transparent 70%),
+    radial-gradient(34% 28% at 72% 64%, rgba(120, 190, 255, .24), transparent 72%),
+    radial-gradient(30% 26% at 56% 16%, rgba(255, 150, 200, .18), transparent 70%);
+}
 [data-theme="light"] .km-body b,
 [data-theme="light"] .km-body small { text-shadow: none; }
 [data-theme="light"] .km-link { stroke: rgba(96,124,220,.38); }
 [data-theme="light"] .km-orbits i { border-color: rgba(110,130,210,.18); }
 [data-theme="light"] .km-stars { opacity: .22; }
-[data-theme="light"] .km-node:hover, [data-theme="light"] .km-node.is-hot { box-shadow: 0 10px 30px rgba(70, 90, 170, 0.18); }
+[data-theme="light"] .km-node {
+  background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.4));
+  border-color: color-mix(in srgb, var(--c) 40%, rgba(255,255,255,.2));
+  box-shadow: 0 10px 26px rgba(70,90,170,.16), 0 0 16px color-mix(in srgb, var(--c) 20%, transparent);
+}
+[data-theme="light"] .km-node:hover, [data-theme="light"] .km-node.is-hot {
+  background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.6));
+  border-color: color-mix(in srgb, var(--c) 70%, transparent);
+  box-shadow: 0 16px 40px rgba(70,90,170,.2), 0 0 26px color-mix(in srgb, var(--c) 40%, transparent);
+}
 /* 中央星球 → 暖色「晨曦」球体 */
 [data-theme="light"] .km-halo {
   background: radial-gradient(circle, rgba(255, 190, 120, 0.34) 0%, rgba(255, 170, 90, 0.12) 44%, transparent 70%);
@@ -656,9 +722,10 @@ img { max-width: 100%; }
   border-color: rgba(206, 128, 52, 0.5);
   animation: kmBreatheLight 6s ease-in-out infinite;
 }
+[data-theme="light"] .km-core::after { opacity: .22; }
 @keyframes kmBreatheLight {
-  0%, 100% { box-shadow: 0 0 40px rgba(255, 188, 116, 0.42), 0 0 100px rgba(255, 170, 90, 0.2), inset -16px -20px 44px rgba(158, 82, 24, 0.38), inset 12px 14px 30px rgba(255, 240, 214, 0.62); }
-  50%      { box-shadow: 0 0 64px rgba(255, 176, 96, 0.6), 0 0 150px rgba(255, 160, 80, 0.3), inset -16px -20px 44px rgba(158, 82, 24, 0.34), inset 14px 16px 34px rgba(255, 244, 224, 0.72); }
+  0%, 100% { box-shadow: 0 0 40px rgba(255, 188, 116, 0.42), 0 0 100px rgba(255, 170, 90, 0.2), inset -18px -22px 46px rgba(158, 82, 24, 0.38), inset 14px 16px 32px rgba(255, 240, 214, 0.62); }
+  50%      { box-shadow: 0 0 66px rgba(255, 176, 96, 0.6), 0 0 150px rgba(255, 160, 80, 0.3), inset -18px -22px 46px rgba(158, 82, 24, 0.34), inset 16px 18px 36px rgba(255, 244, 224, 0.72); }
 }
 [data-theme="light"] .km-core-txt b { color: #6b3208; text-shadow: 0 1px 8px rgba(255, 246, 230, 0.8); }
 [data-theme="light"] .km-core-txt small { color: #a05a1c; }
@@ -666,8 +733,12 @@ img { max-width: 100%; }
   mix-blend-mode: normal;
   background: conic-gradient(from 0deg, transparent 0deg 64%, rgba(255, 255, 255, 0.55) 78%, rgba(255, 214, 160, 0.22) 88%, transparent 96%);
 }
-[data-theme="light"] .km-ring.rA { border-color: rgba(206, 128, 52, 0.55); box-shadow: 0 0 14px rgba(255, 180, 100, 0.45), inset 0 0 10px rgba(255, 180, 100, 0.3); }
-[data-theme="light"] .km-ring.rB { border-color: rgba(206, 128, 52, 0.34); }
+[data-theme="light"] .km-ring {
+  background: linear-gradient(118deg, rgba(206,128,52,0) 8%, rgba(214,150,80,.6) 50%, rgba(206,128,52,0) 92%) border-box;
+  filter: drop-shadow(0 0 8px rgba(255,180,100,.4));
+}
+[data-theme="light"] .km-ring.rB { background: linear-gradient(118deg, rgba(206,128,52,0) 12%, rgba(224,165,95,.5) 50%, rgba(206,128,52,0) 88%) border-box; }
+[data-theme="light"] .km-ring.rC { background: linear-gradient(118deg, rgba(206,128,52,0) 16%, rgba(214,150,80,.3) 50%, rgba(206,128,52,0) 84%) border-box; }
 
 /* 侧栏卡片 */
 .scard {
@@ -1319,8 +1390,8 @@ img { max-width: 100%; }
   .hero-inner { padding: 92px 18px 24px; }
   .dash-grid { padding: 4px 16px 44px; }
   .panel { padding: 18px; }
-  .km { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; aspect-ratio: auto; min-height: 0; padding: 2px 0; overflow: visible; }
-  .km-stars, .km-orbits, .km-links, .km-halo, .km-core { display: none; }
+  .km { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; aspect-ratio: auto; min-height: 0; padding: 2px 0; overflow: visible; background: none; box-shadow: none; border-radius: 0; }
+  .km-stars, .km-orbits, .km-links, .km-halo, .km-core, .km-nebula { display: none; }
   .km-node {
     position: static; left: auto; top: auto; transform: none !important;
     flex-direction: row !important; text-align: left !important;
@@ -1426,9 +1497,10 @@ img { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1 !important; transform: none !important; }
   .hero-copy > *, .hero-quote, .hero-words, .hero-motto, .hero-script,
-  .km-node, .km-core, .km-sheen, .km-ring, .km-orbits i, .km-stars, .km-link {
+  .km-node, .km-core, .km-sheen, .km-ring, .km-orbits i, .km-stars, .km-link, .km-nebula {
     animation: none !important;
   }
+  .km-core::after { animation: none !important; }
   .hero-bg, .hero-aurora, .hero-aurora .au, .hero-grain::after { animation: none !important; }
   .hero-aurora { transform: none !important; }
   .km-node { transition: none; }
