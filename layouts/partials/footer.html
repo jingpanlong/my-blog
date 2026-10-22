@@ -1,21 +1,22 @@
+{{ $s := hugo.Data.site }}
+{{ $f := $s.footer }}
+{{ $mode := $s.brandMode | default "image" }}
 <footer class="site-footer">
   <div class="foot-inner">
     <div class="foot-brand">
-      <img class="brand-logo" src="/img/logo-mark.png" alt="{{ hugo.Data.site.author }}">
+      {{ if eq $mode "text" }}
+        <span class="brand-mark" aria-hidden="true">{{ $s.brandMark | default "JP" }}</span>
+      {{ else }}
+        <img class="brand-logo" src="{{ $s.logoMark | default "/img/logo-mark.png" }}" alt="{{ $s.author }}">
+      {{ end }}
       <div class="foot-id">
-        <b>{{ hugo.Data.site.author }}</b>
-        <small>{{ hugo.Data.site.subtitle }}</small>
+        <b>{{ $s.author }}</b>
+        <small>{{ $s.subtitle }}</small>
       </div>
     </div>
 
     <nav class="foot-nav" aria-label="页脚导航">
-      <a href="/">首页</a>
-      <a href="/posts/">文章</a>
-      <a href="/projects/">项目</a>
-      <a href="/tags/">标签</a>
-      <a href="/archive/">归档</a>
-      <a href="/about/">关于我</a>
-      <a href="/dashboard/">数据</a>
+      {{ range $f.nav }}<a href="{{ .url }}">{{ .label }}</a>{{ end }}
     </nav>
 
     <div class="foot-right">
@@ -23,10 +24,10 @@
         {{ partial "social-links.html" }}
       </div>
       <div class="foot-copy">
-        <span>Stay Curious · Keep Building</span>
-        <span>© {{ now.Year }} {{ hugo.Data.site.author }}</span>
+        <span>{{ $f.tagline | default "Stay Curious · Keep Building" }}</span>
+        <span>© {{ now.Year }} {{ $s.author }}</span>
       </div>
     </div>
   </div>
-  <p class="footer-note">由 <strong>Hugo</strong> 构建 · 部署于 <strong>Cloudflare Pages</strong></p>
+  <p class="footer-note">由 <strong>{{ $f.builtBy | default "Hugo" }}</strong> 构建 · 部署于 <strong>{{ $f.hostedOn | default "Cloudflare Pages" }}</strong></p>
 </footer>

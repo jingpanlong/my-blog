@@ -120,6 +120,15 @@ img { max-width: 100%; }
   width: auto; height: 40px; flex: none; display: block;
   object-fit: contain;
 }
+/* 文字模式 Logo：品牌色方块 + 字样（后台 brandMode = text 时启用） */
+.brand-mark {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 12px;
+  font-size: 14px; font-weight: 800; letter-spacing: 0.06em; line-height: 1;
+  color: #fff; text-transform: uppercase;
+  background: linear-gradient(135deg, #f59e0b 0%, #fb923c 48%, #6366f1 100%);
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.32);
+}
 .brand-copy { display: flex; flex-direction: column; line-height: 1.2; }
 .brand-copy b { font-size: 15px; letter-spacing: 0.5px; }
 .brand-copy small { font-size: 11px; color: var(--text-mute); letter-spacing: 0.3px; }

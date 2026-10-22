@@ -1,69 +1,167 @@
 # ============================================================
-# 站点可编辑信息（由后台 /admin/ 维护，请勿手改格式）
-# 构建配置在 hugo.toml，本文件只放「内容 / 个人资料」类信息
+# 站点可编辑信息（由后台 /admin/ 的「站点设置」维护）
+# 结构改动时需同步 static/admin/config.yml 与 layouts 模板
 # ============================================================
-subtitle: 在构建与书写之间，留住思考的痕迹
-description: 景盼龙的个人博客，记录代码、产品与生活的痕迹。
 
-# ---- 身份 ----
+# ---- 品牌与身份 ----
 author: 景盼龙
-brandMark: JP
+brandMode: image            # image = 显示 Logo 图片；text = 显示「Logo 字样」文字方块
+brandMark: JP               # 文字方块里的字样（brandMode 为 text 时生效）
 brandTagline: 记录 · 创造 · 让想法成为产品
 role: 全栈开发者 · 独立产品 · 技术博主
 bio: 把想法做成产品，把过程写成文字。
 quote: 把想法做成产品，把过程写成文字。
 avatar: /img/avatar.jpg
-logo: /img/logo.png
 logoMark: /img/logo-mark.png
 meta:
   - 中国 · 开发者
   - 独立产品
   - 咖啡爱好者
 
-# ---- 首页 Hero ----
-heroSub: 一名热爱创造的全栈开发者 · 技术博主 · 产品探索者
-heroDesc: 用代码构建想象，用文字记录思考，在技术、产品与生活的交汇处，寻找更大的可能。
-verticalWords:
-  - CODE
-  - WRITE
-  - BUILD
-  - EXPLORE
-  - LIVE
-  - BETTER ME
+subtitle: 在构建与书写之间，留住思考的痕迹
+description: 景盼龙的个人博客，记录代码、产品与生活的痕迹。
 
-# ---- 社交链接（icon 可选：github / email / wechat / xhs / bilibili / rss）----
+# ---- 页头导航 ----
+nav:
+  - label: 首页
+    url: /
+  - label: 文章
+    url: /posts/
+  - label: 项目
+    url: /projects/
+  - label: 随笔
+    url: /tags/随笔/
+  - label: 关于我
+    url: /about/
+
+# ---- 页脚 ----
+footer:
+  nav:
+    - label: 首页
+      url: /
+    - label: 文章
+      url: /posts/
+    - label: 项目
+      url: /projects/
+    - label: 标签
+      url: /tags/
+    - label: 归档
+      url: /archive/
+    - label: 关于我
+      url: /about/
+    - label: 数据
+      url: /dashboard/
+  tagline: Stay Curious · Keep Building
+  builtBy: Hugo
+  hostedOn: Cloudflare Pages
+
+# ---- 首页 Hero ----
+hero:
+  greet: 你好，我是
+  sub: 一名热爱创造的全栈开发者 · 技术博主 · 产品探索者
+  desc: 用代码构建想象，用文字记录思考，在技术、产品与生活的交汇处，寻找更大的可能。
+  cta1:
+    label: 阅读博客
+    url: /posts/
+  cta2:
+    label: 查看项目
+    url: /projects/
+  stats:
+    posts: 篇文章
+    projects: 个作品
+    tags: 个标签
+    years: 持续分享
+  verticalWords:
+    - CODE
+    - WRITE
+    - BUILD
+    - EXPLORE
+    - LIVE
+    - BETTER ME
+  motto:
+    - A
+    - MORE
+    - CREATIVE
+    - LIFE
+  script:
+    - Keep Building
+    - A Better Me
+
+# ---- 首页区块标题 ----
+home:
+  posts:
+    title: 精选文章
+    sub: 记录技术、产品与生活的思考
+    more: 查看全部
+  projects:
+    title: 我的项目
+    sub: 一些有趣的实验性项目，探索更多可能
+    more: 查看全部
+  knowledge:
+    title: 知识地图
+    sub: 在不同的领域持续学习，构建自己的知识体系
+    core: 更好的自己
+    coreEn: A BETTER ME
+  about:
+    title: 关于我
+    more: 更多
+  activity:
+    title: 最新动态
+    more: 全部
+  subscribe:
+    title: 订阅更新
+    desc: 输入邮箱，获取最新文章和项目动态
+    placeholder: 你的邮箱地址
+    hint: 每月最多一封，不会打扰你
+  tags:
+    title: 常用标签
+    more: 更多
+
+# ---- 界面通用文案 ----
+ui:
+  searchPlaceholder: 搜索感兴趣的内容…
+  readTime: 分钟阅读
+
+# ---- 社交链接（pinned = 是否显示在首页侧栏「关于我」卡片）----
 social:
   - name: GitHub
     url: https://github.com/jingpanlong
     icon: github
     handle: jingpanlong
+    pinned: true
   - name: 邮箱
     url: mailto:etrodrigoxqbro435@gmail.com
     icon: email
     handle: ''
+    pinned: true
   - name: 微信
     url: https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkzODkyNTk1Nw==
     icon: wechat
     handle: 景同志
     qr: /img/wechat-qr.jpg
+    qrCap: 扫码关注 · 景同志
+    pinned: false
   - name: 小红书
     url: https://xhslink.cn/o/91exvN6cZUA
     icon: xhs
     handle: ''
-    qrCap: 扫码关注 · 小红书
     qr: /img/xhs-qr.png
+    qrCap: 扫码关注 · 小红书
+    pinned: false
   - name: B站
     url: https://b23.tv/zDegVTB
     icon: bilibili
     handle: ''
-    qrCap: 扫码关注 · B站
     qr: /img/bilibili-qr.png
+    qrCap: 扫码关注 · B站
+    pinned: false
   - name: WhatsApp
     url: https://wa.me/jingdraco
     icon: whatsapp
     handle: jingdraco
-    qrCap: 扫码加我 · jingdraco
     qr: /img/whatsapp-qr.png
+    qrCap: 扫码加我 · jingdraco
+    pinned: true
 
 # ---- 知识地图（首页轨道节点）----
 knowledge:
@@ -83,7 +181,7 @@ knowledge:
     desc: 在日常中发现不平凡
     color: '#34d399'
 
-# ---- 功能配置（一般不用改）----
+# ---- 功能接口（一般不用改）----
 likeApi: https://like-counter.470918507.workers.dev
 viewApi: https://like-counter.470918507.workers.dev/views
 commentApi: https://comments.470918507.workers.dev/comments

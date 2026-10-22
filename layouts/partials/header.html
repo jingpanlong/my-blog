@@ -1,19 +1,26 @@
+{{ $s := hugo.Data.site }}
+{{ $ui := $s.ui }}
+{{ $mode := $s.brandMode | default "image" }}
+{{ $cur := (urls.Parse .Permalink).Path }}
 <header class="site-header">
   <div class="nav-inner">
     <a class="brand" href="/" aria-label="{{ .Site.Title }} 首页">
-      <img class="brand-logo" src="/img/logo-mark.png" alt="{{ hugo.Data.site.author }}">
+      {{ if eq $mode "text" }}
+        <span class="brand-mark" aria-hidden="true">{{ $s.brandMark | default "JP" }}</span>
+      {{ else }}
+        <img class="brand-logo" src="{{ $s.logoMark | default "/img/logo-mark.png" }}" alt="{{ $s.author }}">
+      {{ end }}
       <span class="brand-copy">
-        <b>{{ hugo.Data.site.author }}</b>
-        <small>{{ hugo.Data.site.brandTagline }}</small>
+        <b>{{ $s.author }}</b>
+        <small>{{ $s.brandTagline }}</small>
       </span>
     </a>
 
     <nav class="nav-links" aria-label="主导航">
-      <a href="/" {{ if .IsHome }}class="active"{{ end }}>首页</a>
-      <a href="/posts/" {{ if and (eq .Section "posts") (not .IsHome) }}class="active"{{ end }}>文章</a>
-      <a href="/projects/" {{ if eq .Section "projects" }}class="active"{{ end }}>项目</a>
-      <a href="/tags/随笔/" {{ if and (eq .Section "tags") (in .RelPermalink "随笔") }}class="active"{{ end }}>随笔</a>
-      <a href="/about/" {{ if eq .RelPermalink "/about/" }}class="active"{{ end }}>关于我</a>
+      {{ range $s.nav }}
+        {{ $u := .url | default "/" }}
+        <a href="{{ $u }}"{{ if cond (eq $u "/") (eq $cur "/") (hasPrefix $cur $u) }} class="active"{{ end }}>{{ .label }}</a>
+      {{ end }}
     </nav>
 
     <div class="nav-actions">
@@ -21,7 +28,7 @@
 
       <button id="search-toggle" class="search-trigger" type="button" aria-label="搜索文章">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <span class="st-text">搜索感兴趣的内容…</span>
+        <span class="st-text">{{ $ui.searchPlaceholder | default "搜索感兴趣的内容…" }}</span>
         <kbd>⌘K</kbd>
       </button>
 

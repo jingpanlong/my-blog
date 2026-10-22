@@ -3,7 +3,8 @@
 # 入口：https://my-blog-jingpanlong.pages.dev/admin/
 # 流程：后台写内容 → 提交到 GitHub → Cloudflare 自动构建上线
 #
-# 顶部「数据仪表盘」按钮：内嵌 /dashboard/，同源共享站长密钥
+# 注意：本文件字段与 data/site.yaml 结构一一对应，
+#       增删字段时两边要同步（否则保存会丢字段）
 # ============================================================
 
 backend:
@@ -42,6 +43,10 @@ collections:
       preview: false
     summary: '{{title}} — {{date}}'
     sortable_fields: ['date', 'title']
+    preview_path: 'posts/{{slug}}/'
+    view_groups:
+      - { label: 专栏, field: kicker }
+      - { label: 年份, field: date, pattern: '\d{4}' }
     fields:
       - { name: title, label: 标题, widget: string, hint: '显示在卡片与文章页顶部' }
       - { name: description, label: 摘要, widget: text, hint: '首页卡片上的一行简介，建议 40 字内' }
@@ -58,6 +63,7 @@ collections:
           - 产品思考
           - 生活随笔
         default: 技术实践
+        hint: '首页与文章卡的角标文案'
       - { name: tags, label: 标签, widget: list, hint: '回车分隔，如 Hugo / Cloudflare' }
       - { name: categories, label: 分类, widget: list, default: ['技术'] }
       - name: cover
@@ -83,6 +89,11 @@ collections:
       preview: false
     summary: '{{title}} — {{status}}'
     sortable_fields: ['date', 'title', 'status']
+    preview_path: 'projects/{{slug}}/'
+    view_filters:
+      - { label: 已上线, field: status, pattern: '已上线' }
+      - { label: 开发中, field: status, pattern: '开发中' }
+      - { label: 规划中, field: status, pattern: '规划中' }
     fields:
       - { name: title, label: 项目名, widget: string }
       - { name: summary, label: 一句话简介, widget: text }
@@ -127,7 +138,7 @@ collections:
   - name: settings
     label: 站点设置
     label_singular: 设置
-    description: 个人资料、首页文案、社交链接、知识地图与接口地址。
+    description: 身份、导航、首页文案、社交链接、知识地图与接口。
     files:
       - name: site
         label: 个人资料与站点
@@ -135,37 +146,180 @@ collections:
         editor:
           preview: false
         fields:
-          # ---- 身份 ----
-          - { name: author, label: 名字, widget: string }
-          - { name: brandMark, label: 'Logo 字样（页头方块里的字）', widget: string }
-          - { name: brandTagline, label: 'Logo 下方标语', widget: string }
-          - { name: role, label: '身份标签（Hero 顶部小字）', widget: string }
+          # ============ 品牌与身份 ============
+          - { name: author, label: 名字, widget: string, hint: '页头、页脚、首页 Hero 都会用到' }
+          - name: brandMode
+            label: Logo 显示方式
+            widget: select
+            default: image
+            options:
+              - { label: 图片 Logo（推荐）, value: image }
+              - { label: 文字方块, value: text }
+            hint: 选「文字方块」时不再显示图片，改为下面「Logo 字样」的品牌色方块
+          - { name: brandMark, label: 'Logo 字样', widget: string, required: false, hint: '仅「文字方块」模式可见，建议 2–3 个字母，如 JP' }
+          - { name: brandTagline, label: 'Logo 右侧标语', widget: string, hint: '页头作者名下方那行小字' }
+          - { name: role, label: '身份标签', widget: string, hint: '首页 Hero 顶部小字 + 侧栏身份' }
           - { name: bio, label: 侧栏简介, widget: text }
-          - { name: quote, label: '座右铭 / 引言', widget: text }
-          - { name: avatar, label: 头像, widget: image, required: false, choose_url: true, hint: '默认 /img/avatar.jpg' }
-          - { name: logo, label: 站点 Logo, widget: image, required: false, choose_url: true, hint: '默认 /img/logo.png' }
-          - { name: logoMark, label: 'Logo 标记（小尺寸）', widget: image, required: false, choose_url: true, hint: '默认 /img/logo-mark.png' }
+          - { name: quote, label: '座右铭 / 引言', widget: text, hint: '首页右侧引言卡与侧栏引用' }
+          - { name: avatar, label: 头像, widget: image, required: false, choose_url: true, hint: '默认 /img/avatar.jpg，建议正方形' }
+          - { name: logoMark, label: '方形 Logo（页头 / 页脚）', widget: image, required: false, choose_url: true, hint: '默认 /img/logo-mark.png；建议透明底 PNG' }
           - name: meta
             label: 侧栏身份标签
             widget: list
             hint: '如：中国 · 开发者'
-
-          # ---- SEO / 页脚 ----
           - { name: subtitle, label: '页脚副标题', widget: string }
-          - { name: description, label: 'SEO 描述', widget: text }
+          - { name: description, label: 'SEO 描述', widget: text, hint: '搜索引擎与社交分享摘要' }
 
-          # ---- 首页 Hero ----
-          - { name: heroSub, label: 'Hero 副标题', widget: string }
-          - { name: heroDesc, label: 'Hero 正文', widget: text }
-          - name: verticalWords
-            label: 右侧竖排标语
+          # ============ 导航 ============
+          - name: nav
+            label: 页头导航
             widget: list
-            required: false
+            summary: '{{fields.label}} → {{fields.url}}'
+            hint: '顺序即显示顺序；当前页会自动高亮'
+            fields:
+              - { name: label, label: 文案, widget: string }
+              - { name: url, label: 链接, widget: string, hint: '站内写 /posts/ 这种相对路径' }
 
-          # ---- 社交链接 ----
+          # ============ 页脚 ============
+          - name: footer
+            label: 页脚
+            widget: object
+            collapsed: true
+            fields:
+              - name: nav
+                label: 页脚导航
+                widget: list
+                summary: '{{fields.label}}'
+                fields:
+                  - { name: label, label: 文案, widget: string }
+                  - { name: url, label: 链接, widget: string }
+              - { name: tagline, label: '左下角标语', widget: string }
+              - { name: builtBy, label: '构建工具', widget: string }
+              - { name: hostedOn, label: '托管平台', widget: string }
+
+          # ============ 首页 Hero ============
+          - name: hero
+            label: 首页 Hero
+            widget: object
+            collapsed: true
+            fields:
+              - { name: greet, label: '问候语（名字前）', widget: string, hint: '如「你好，我是」，后面会自动接名字' }
+              - { name: sub, label: 副标题, widget: string }
+              - { name: desc, label: 正文, widget: text }
+              - name: cta1
+                label: 主按钮
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: label, label: 文案, widget: string }
+                  - { name: url, label: 链接, widget: string }
+              - name: cta2
+                label: 次按钮
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: label, label: 文案, widget: string }
+                  - { name: url, label: 链接, widget: string }
+              - name: stats
+                label: 数据条文案
+                widget: object
+                collapsed: true
+                hint: '数字自动统计，这里只改单位文案'
+                fields:
+                  - { name: posts, label: 文章, widget: string }
+                  - { name: projects, label: 作品, widget: string }
+                  - { name: tags, label: 标签, widget: string }
+                  - { name: years, label: 年份, widget: string }
+              - name: verticalWords
+                label: 右侧竖排标语
+                widget: list
+                required: false
+              - name: motto
+                label: '右下角英文大字（逐行）'
+                widget: list
+                required: false
+              - name: script
+                label: '左下角手写体（逐行）'
+                widget: list
+                required: false
+
+          # ============ 首页区块标题 ============
+          - name: home
+            label: 首页区块标题
+            widget: object
+            collapsed: true
+            description: 每个区块的标题、副标题与「更多」按钮文案
+            fields:
+              - name: posts
+                label: 精选文章
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: sub, label: 副标题, widget: string }
+                  - { name: more, label: '更多按钮', widget: string }
+              - name: projects
+                label: 我的项目
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: sub, label: 副标题, widget: string }
+                  - { name: more, label: '更多按钮', widget: string }
+              - name: knowledge
+                label: 知识地图
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: sub, label: 副标题, widget: string }
+                  - { name: core, label: '中心文字', widget: string }
+                  - { name: coreEn, label: '中心英文（小字）', widget: string }
+              - name: about
+                label: 侧栏 · 关于我
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: more, label: '更多按钮', widget: string }
+              - name: activity
+                label: 侧栏 · 最新动态
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: more, label: '更多按钮', widget: string }
+              - name: subscribe
+                label: 侧栏 · 订阅更新
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: desc, label: 说明, widget: text }
+                  - { name: placeholder, label: 输入框占位符, widget: string }
+                  - { name: hint, label: 底部小字, widget: string }
+              - name: tags
+                label: 侧栏 · 常用标签
+                widget: object
+                collapsed: true
+                fields:
+                  - { name: title, label: 标题, widget: string }
+                  - { name: more, label: '更多按钮', widget: string }
+
+          # ============ 界面文案 ============
+          - name: ui
+            label: 界面通用文案
+            widget: object
+            collapsed: true
+            fields:
+              - { name: searchPlaceholder, label: 搜索框占位符, widget: string }
+              - { name: readTime, label: '阅读时长单位', widget: string, hint: '如「分钟阅读」，前面会自动接数字' }
+
+          # ============ 社交链接 ============
           - name: social
             label: '社交链接'
             widget: list
+            summary: '{{fields.name}} → {{fields.icon}}'
             hint: '页头、侧栏、页脚共用同一份。填了「二维码」就会自动获得鼠标悬停弹二维码效果。'
             fields:
               - { name: name, label: '名称', widget: string }
@@ -182,7 +336,7 @@ collections:
                   - { label: 'WhatsApp', value: whatsapp }
                   - { label: 'RSS', value: rss }
                   - { label: '链接（通用）', value: link }
-              - { name: handle, label: '账号 / 备注', widget: string, required: false }
+              - { name: handle, label: '账号 / 备注', widget: string, required: false, hint: '悬停提示里会显示' }
               - name: qr
                 label: '二维码图片'
                 widget: image
@@ -190,18 +344,23 @@ collections:
                 choose_url: true
                 hint: '留空则悬停只显示文字提示；填写后鼠标移上去弹出二维码'
               - { name: qrCap, label: '二维码下方文案', widget: string, required: false, hint: '留空自动生成「扫码关注 · 账号」' }
+              - { name: pinned, label: '显示在首页侧栏', widget: boolean, default: false, required: false, hint: '开启后出现在首页「关于我」卡片的按钮行' }
 
-          # ---- 知识地图 ----
+          # ============ 知识地图 ============
           - name: knowledge
             label: '知识地图节点'
             widget: list
+            summary: '{{fields.title}}'
             hint: '首页「知识地图」绕星球排列的节点，建议 5 个'
             fields:
               - { name: title, label: '标题', widget: string }
               - { name: desc, label: '描述', widget: string }
               - { name: color, label: '颜色', widget: color }
 
-          # ---- 接口 ----
-          - { name: likeApi, label: '点赞计数接口', widget: string, required: false }
+          # ============ 接口 ============
+          - name: likeApi
+            label: 点赞计数接口
+            widget: string
+            required: false
           - { name: viewApi, label: '浏览量计数接口', widget: string, required: false }
           - { name: commentApi, label: '评论接口', widget: string, required: false }
