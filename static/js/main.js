@@ -471,6 +471,8 @@
       if (res.s === 200 && res.d && res.d.token) {
         persist(res.d.token);
         state.user = res.d.user || null;
+        // 登录普通账号即退出站长模式：避免站长密钥在同一浏览器跨账号残留，被误判为站长
+        state.owner = null; state.ownerKey = ''; setOwnerKey('');
         emit();
         return true;
       }
@@ -626,7 +628,8 @@
       state: state,
       token: function () { return state.token; },
       user: function () { return state.user; },
-      owner: function () { return state.owner; },
+      // 站长身份仅在没有登录普通账号时生效；登录账号后一律按普通用户对待（与删除请求实际携带的凭据一致）
+      owner: function () { return (state.user || state.token) ? null : state.owner; },
       ownerKey: function () { return state.ownerKey; },
       open: open, close: close, setMode: setMode, on: on, emit: emit, refresh: refresh,
       logout: logout, logoutAll: logoutAll, resendVerify: resendVerify, verifyToken: verifyToken,
