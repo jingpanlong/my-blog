@@ -1305,22 +1305,40 @@ img { max-width: 100%; }
   .dash-grid { padding: 4px 16px 44px; }
   .panel { padding: 18px; }
   .km-panel { padding: 16px; }
-  .km { aspect-ratio: auto; background-image: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; container-type: normal; }
+  /* 移动端知识地图改写为卡片网格。
+     注意：本段所有规则统一加 [data-theme] 前缀，用于压过桌面端
+     [data-theme="light"] .km / .km-node[data-k] / .km-core-txt b 等主题规则
+     （它们特异性更高，否则浅色主题下底图、绝对定位与白字会全部"复活"）。 */
+  [data-theme] .km {
+    aspect-ratio: auto; background-image: none; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 12px; container-type: normal;
+  }
   .km-fx-glow, .km-fx-stars, .km-aurora, .km-orbit, .km-pulse, .km-spot, .km-sheen-sweep, .km-meteor { display: none; }
-  .km-core-txt { position: static; transform: none; grid-column: 1 / -1; text-align: left; padding: 6px 4px 2px; }
-  .km-node { position: static; width: auto; height: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 11px 13px; border-radius: 12px; background: var(--chip); border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border)); }
-  /* 中和桌面端 [data-k] 坐标规则（特异性更高，必须显式重置，否则卡片仍带 % 宽高被压扁） */
-  .km-node[data-k] { left: auto; top: auto; width: auto; height: auto; }
-  .km-node b, .km-node small { white-space: normal; text-shadow: none; }
-  .km-node b { color: var(--text); }
-  .km-node small { color: var(--text-dim); }
-  .km-core-txt b { color: var(--text); text-shadow: none; }
-  .km-core-txt small { color: var(--text-dim); }
-  /* container-type: normal 后 cqw/cqh 失效，移动端改用显式字号 */
-  .km-core-txt b { font-size: 20px; font-weight: 800; letter-spacing: .02em; line-height: 1.15; }
-  .km-core-txt small { font-size: 11px; font-weight: 600; letter-spacing: .32em; margin-top: 5px; }
-  .km-node b { font-size: 14.5px; }
-  .km-node small { font-size: 12px; }
+  [data-theme] .km-core-txt { position: static; transform: none; grid-column: 1 / -1; text-align: left; padding: 6px 4px 2px; }
+  [data-theme] .km-core-txt b {
+    color: var(--text); text-shadow: none;
+    font-size: 20px; font-weight: 800; letter-spacing: .02em; line-height: 1.15;
+  }
+  [data-theme] .km-core-txt small {
+    color: var(--text-dim); text-shadow: none;
+    font-size: 11px; font-weight: 600; letter-spacing: .32em; margin-top: 5px;
+  }
+  [data-theme] .km-node {
+    position: static; width: auto; height: auto;
+    display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+    padding: 11px 13px; border-radius: 12px;
+    background: var(--chip); border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border));
+  }
+  /* 中和桌面端 [data-k] 坐标规则（深浅两套都带 [data-theme="light"] 变体，此处一并压过） */
+  [data-theme] .km-node[data-k] { left: auto; top: auto; width: auto; height: auto; }
+  [data-theme] .km-node b {
+    color: var(--text); white-space: normal; text-shadow: none;
+    font-size: 14.5px; line-height: 1.25;
+  }
+  [data-theme] .km-node small {
+    color: var(--text-dim); white-space: normal; text-shadow: none;
+    font-size: 12px; line-height: 1.35;
+  }
   /* 移动端卡片：加一颗与节点同色的发光小圆点，保留桌面端的色彩识别度 */
   .km-node::before {
     content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%;
@@ -1347,7 +1365,7 @@ img { max-width: 100%; }
   .stat b { font-size: 18px; }
   .acards { grid-template-columns: 1fr; }
   .pcards { grid-template-columns: 1fr; }
-  .km { grid-template-columns: 1fr; }
+  [data-theme] .km { grid-template-columns: 1fr; }
   .dash-side { grid-template-columns: 1fr; }
   .panel-head { flex-wrap: wrap; }
   .panel-more { margin-left: auto; }
