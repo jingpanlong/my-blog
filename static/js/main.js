@@ -919,7 +919,19 @@
       shown.forEach(function (k) { renderNode(k, ul, all, deepOpen); });
       li.appendChild(ul);
 
-      if (!deepOpen && node.kids.length > REPLY_LIMIT) {
+      if (deepExpanded[node.c.id]) {
+        // 用户手动展开的深层子树：在展开结果末尾给出「收起回复」，点击折回折叠态
+        var collapse = document.createElement('button');
+        collapse.type = 'button';
+        collapse.className = 'c-kids-more';
+        collapse.textContent = '收起回复';
+        collapse.addEventListener('click', function (e) {
+          e.stopPropagation();
+          deepExpanded[node.c.id] = false;
+          fillKids(node, li, all, false);
+        });
+        li.appendChild(collapse);
+      } else if (!deepOpen && node.kids.length > REPLY_LIMIT) {
         var more = document.createElement('button');
         more.type = 'button';
         more.className = 'c-kids-more';
