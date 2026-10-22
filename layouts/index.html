@@ -139,46 +139,48 @@
     </section>
 
     <!-- 知识地图 -->
-    <section class="panel">
-      <div class="panel-head">
-        <span class="panel-ico ico-cyan" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="4.5"/><ellipse cx="12" cy="12" rx="4.5" ry="10"/></svg>
-        </span>
-        <div class="panel-titles">
-          <h2>{{ $secKnowledge.title | default "知识地图" }}</h2>
-          <p>{{ $secKnowledge.sub | default "在不同的领域持续学习，构建自己的知识体系" }}</p>
-        </div>
-      </div>
-
+    <section class="panel km-panel">
       <div class="km" data-km>
         <div class="km-nebula" aria-hidden="true"></div>
         <div class="km-stars" aria-hidden="true"></div>
+        <div class="km-galaxy" aria-hidden="true"></div>
+        <div class="km-planet km-planet-a" aria-hidden="true"></div>
+        <div class="km-planet km-planet-b" aria-hidden="true"></div>
         <div class="km-orbits" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+        <div class="km-sats" aria-hidden="true">
+          <i class="km-sat" style="--x:30%;--y:40%;--d:0s"></i>
+          <i class="km-sat" style="--x:68%;--y:35%;--d:-2.4s"></i>
+          <i class="km-sat" style="--x:41%;--y:67%;--d:-4.8s"></i>
+        </div>
+
+        <div class="km-title">
+          <span class="km-title-ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="6.2"/><ellipse cx="12" cy="12" rx="10.4" ry="3.8" transform="rotate(-18 12 12)"/></svg>
+          </span>
+          <span class="km-title-txt"><b>{{ $secKnowledge.title | default "知识地图" }}</b><small>{{ $secKnowledge.sub | default "在不同的领域持续学习，构建自己的知识体系" }}</small></span>
+        </div>
 
         {{ $nodes := first 5 hugo.Data.site.knowledge }}
-        {{ $pos := slice "54,12,center" "88,42,right" "78,80,right" "22,79,left" "15,39,left" }}
+        {{ $pos := slice "50,13,top" "88,45,left" "79,80,left" "25,80,right" "15,28,right" }}
 
         <svg class="km-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
           {{ range $i, $k := $nodes }}
             {{ $s := split (index $pos $i) "," }}
-            <line class="km-link" x1="{{ index $s 0 }}" y1="{{ index $s 1 }}" x2="50" y2="50" vector-effect="non-scaling-stroke" style="--i:{{ $i }}"/>
+            <line class="km-link" x1="{{ index $s 0 }}" y1="{{ index $s 1 }}" x2="50" y2="52" vector-effect="non-scaling-stroke" style="--i:{{ $i }}"/>
           {{ end }}
         </svg>
 
         <div class="km-halo" aria-hidden="true"></div>
-        <div class="km-core">
-          <i class="km-sheen" aria-hidden="true"></i>
-          <i class="km-ring rA" aria-hidden="true"></i>
-          <i class="km-ring rB" aria-hidden="true"></i>
-          <i class="km-ring rC" aria-hidden="true"></i>
-          <span class="km-core-txt"><b>{{ $secKnowledge.core | default "更好的自己" }}</b><small>{{ $secKnowledge.coreEn | default "A BETTER ME" }}</small></span>
-        </div>
+        <div class="km-rings" aria-hidden="true"><i class="km-ring rA"></i><i class="km-ring rB"></i><i class="km-ring rC"></i></div>
+        <div class="km-core" aria-hidden="true"><i class="km-core-atm"></i><i class="km-sheen"></i></div>
+        <div class="km-rings km-rings-front" aria-hidden="true"><i class="km-ring rA"></i><i class="km-ring rB"></i><i class="km-ring rC"></i></div>
+        <div class="km-core-txt"><b>{{ $secKnowledge.core | default "更好的自己" }}</b><small>{{ $secKnowledge.coreEn | default "A BETTER ME" }}</small></div>
 
         {{ range $i, $k := $nodes }}
           {{ $s := split (index $pos $i) "," }}
           <div class="km-node" data-side="{{ index $s 2 }}" style="--c:{{ $k.color }};--x:{{ index $s 0 }}%;--y:{{ index $s 1 }}%;--i:{{ $i }}">
-            <span class="km-dot" aria-hidden="true"></span>
-            <span class="km-body"><b>{{ $k.title }}</b><small>{{ $k.desc }}</small></span>
+            <span class="km-orb" aria-hidden="true"><i class="km-orb-ring"></i></span>
+            <span class="km-card"><b>{{ $k.title }}</b><small>{{ $k.desc }}</small></span>
           </div>
         {{ end }}
       </div>
