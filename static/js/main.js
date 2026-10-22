@@ -751,9 +751,11 @@
 
     var PAGE_SIZE = 5;          // 默认展示根评论条数，超出折叠
     var REPLY_LIMIT = 3;        // 单条评论下的回复超过此数则折叠，用「更多回复」就地展开
+    var MAX_DEPTH = 1;          // 默认内联展开的嵌套层级：0=根评论，1=一级回复；更深的回复折叠为「查看更多回复」
     var allComments = [];       // 当前文章全部评论（服务端顺序）
     var expanded = false;       // 根评论是否已展开
     var kidsExpanded = {};      // 各评论回复区的展开状态（按评论 id 记忆，避免重渲染丢失）
+    var deepExpanded = {};      // 深层嵌套是否已展开（超过 MAX_DEPTH 的子树，按评论 id 记忆）
 
     function timeAgo(ts) {
       var s = Math.floor((Date.now() - ts) / 1000);
@@ -872,38 +874,73 @@
       return li;
     }
 
-    /* 递归渲染一棵树：先评论本体，再把回复列表挂进这条评论内部；
-       单条评论下的回复超过 REPLY_LIMIT 时折叠，用「更多回复」就地展开其他级 */
-    function renderNode(node, parentEl, all) {
-      var li = renderComment(node.c, all, parentEl._depth || 0);
-      parentEl.appendChild(li);
-      if (node.kids.length) {
-        var ul = document.createElement('ul');
-        ul.className = 'c-kids';
-        ul._depth = (parentEl._depth || 0) + 1;
-        var open = !!kidsExpanded[node.c.id];
-        var shown = open ? node.kids : node.kids.slice(0, REPLY_LIMIT);
-        shown.forEach(function (k) { renderNode(k, ul, all); });
-        li.appendChild(ul);
-        if (node.kids.length > REPLY_LIMIT) {
-          var more = document.createElement('button');
-          more.type = 'button';
-          more.className = 'c-kids-more';
-          var hidden = node.kids.length - (open ? 0 : REPLY_LIMIT);
-          more.textContent = open ? '收起回复' : ('查看更多回复（' + hidden + '）');
-          more.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var nowOpen = !kidsExpanded[node.c.id];
-            kidsExpanded[node.c.id] = nowOpen;
-            ul.innerHTML = ''; // 仅重渲染该条评论下的回复，不动整页
-            var sh = nowOpen ? node.kids : node.kids.slice(0, REPLY_LIMIT);
-            sh.forEach(function (k) { renderNode(k, ul, all); });
-            var rest = node.kids.length - (nowOpen ? 0 : REPLY_LIMIT);
-            more.textContent = nowOpen ? '收起回复' : ('查看更多回复（' + rest + '）');
-          });
-          li.appendChild(more);
-        }
+    /* 统计一条评论下的全部后代数量（各级回复），用于「查看更多回复（N）」 */
+    function countDescendants(node) {
+      var n = 0;
+      (function walk(x) {
+        x.kids.forEach(function (k) { n++; walk(k); });
+      })(node);
+      return n;
+    }
+
+    /* 渲染某条评论的回复区（可重复调用以就地展开/收起，不整页重渲染）：
+       - 深层嵌套：超过 MAX_DEPTH 的子树默认折叠为「查看更多回复（N）」，点击一次性展开整棵子树
+       - 兄弟折叠：同一父级下回复超过 REPLY_LIMIT 时按条数折叠 */
+    function fillKids(node, li, all, showAllDepth) {
+      // 清掉旧的回复区（只取 li 的直接子节点，避免误删更深层已渲染的节点）
+      var olds = li.querySelectorAll(':scope > .c-kids, :scope > .c-kids-more');
+      for (var i = olds.length - 1; i >= 0; i--) olds[i].parentNode.removeChild(olds[i]);
+      if (!node.kids.length) return;
+
+      var depth = li._depth || 0;
+      var kidDepth = depth + 1;
+      var deepOpen = !!showAllDepth || !!deepExpanded[node.c.id];
+
+      // 深层嵌套：默认只给一个展开按钮，避免回复链无限向内缩进
+      if (kidDepth > MAX_DEPTH && !deepOpen) {
+        var foldMore = document.createElement('button');
+        foldMore.type = 'button';
+        foldMore.className = 'c-kids-more';
+        foldMore.textContent = '查看更多回复（' + countDescendants(node) + '）';
+        foldMore.addEventListener('click', function (e) {
+          e.stopPropagation();
+          deepExpanded[node.c.id] = true;
+          fillKids(node, li, all, true); // 就地展开整棵子树
+        });
+        li.appendChild(foldMore);
+        return;
       }
+
+      var sibOpen = deepOpen || !!kidsExpanded[node.c.id];
+      var shown = sibOpen ? node.kids : node.kids.slice(0, REPLY_LIMIT);
+      var ul = document.createElement('ul');
+      ul.className = 'c-kids';
+      ul._depth = kidDepth;
+      shown.forEach(function (k) { renderNode(k, ul, all, deepOpen); });
+      li.appendChild(ul);
+
+      if (!deepOpen && node.kids.length > REPLY_LIMIT) {
+        var more = document.createElement('button');
+        more.type = 'button';
+        more.className = 'c-kids-more';
+        var hidden = node.kids.length - (sibOpen ? 0 : REPLY_LIMIT);
+        more.textContent = sibOpen ? '收起回复' : ('查看更多回复（' + hidden + '）');
+        more.addEventListener('click', function (e) {
+          e.stopPropagation();
+          kidsExpanded[node.c.id] = !kidsExpanded[node.c.id];
+          fillKids(node, li, all, false); // 仅重渲染该条评论的回复区
+        });
+        li.appendChild(more);
+      }
+    }
+
+    /* 递归渲染一棵树：先渲染评论本体，再挂回复区（深度/条数折叠见 fillKids） */
+    function renderNode(node, parentEl, all, showAllDepth) {
+      var depth = parentEl._depth || 0;
+      var li = renderComment(node.c, all, depth);
+      li._depth = depth;
+      parentEl.appendChild(li);
+      fillKids(node, li, all, showAllDepth);
     }
 
     function isAuthed() { return !!(BlogAuth.user() || BlogAuth.owner()); }
@@ -946,6 +983,7 @@
 
     function load() {
       expanded = false;
+      deepExpanded = {};   // 重新拉取时恢复默认折叠
       fetch(api + '?path=' + encodeURIComponent(path))
         .then(function (r) { return r.json(); })
         .then(function (d) { renderList((d && d.comments) || []); })
