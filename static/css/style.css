@@ -1293,24 +1293,40 @@ img { max-width: 100%; }
   .brand-copy small { display: none; }
   .nav-links {
     display: flex; gap: 0; overflow-x: auto; margin-left: 0;
+    min-width: 0; flex: 0 1 auto;          /* 允许收缩并内部横向滚动，避免把右侧按钮挤出屏幕 */
     scrollbar-width: none; -ms-overflow-style: none;
   }
   .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { padding: 7px 11px; font-size: 13.5px; }
+  .nav-actions { flex: 0 0 auto; min-width: 0; }   /* 右侧操作区不参与收缩，保证主题按钮可见 */
+  .ac-login { padding: 7px 11px; }                 /* 登录按钮收紧，给图标按钮腾位 */
   .hero-band { min-height: 0; }
   .hero-inner { padding: 92px 18px 24px; }
   .dash-grid { padding: 4px 16px 44px; }
   .panel { padding: 18px; }
   .km-panel { padding: 16px; }
-  .km { aspect-ratio: auto; background-image: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .km { aspect-ratio: auto; background-image: none; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; container-type: normal; }
   .km-fx-glow, .km-fx-stars, .km-aurora, .km-orbit, .km-pulse, .km-spot, .km-sheen-sweep, .km-meteor { display: none; }
   .km-core-txt { position: static; transform: none; grid-column: 1 / -1; text-align: left; padding: 6px 4px 2px; }
   .km-node { position: static; width: auto; height: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 11px 13px; border-radius: 12px; background: var(--chip); border: 1px solid color-mix(in srgb, var(--c) 30%, var(--border)); }
+  /* 中和桌面端 [data-k] 坐标规则（特异性更高，必须显式重置，否则卡片仍带 % 宽高被压扁） */
+  .km-node[data-k] { left: auto; top: auto; width: auto; height: auto; }
   .km-node b, .km-node small { white-space: normal; text-shadow: none; }
   .km-node b { color: var(--text); }
   .km-node small { color: var(--text-dim); }
   .km-core-txt b { color: var(--text); text-shadow: none; }
   .km-core-txt small { color: var(--text-dim); }
+  /* container-type: normal 后 cqw/cqh 失效，移动端改用显式字号 */
+  .km-core-txt b { font-size: 20px; font-weight: 800; letter-spacing: .02em; line-height: 1.15; }
+  .km-core-txt small { font-size: 11px; font-weight: 600; letter-spacing: .32em; margin-top: 5px; }
+  .km-node b { font-size: 14.5px; }
+  .km-node small { font-size: 12px; }
+  /* 移动端卡片：加一颗与节点同色的发光小圆点，保留桌面端的色彩识别度 */
+  .km-node::before {
+    content: ""; flex: none; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 75%, transparent);
+    margin-bottom: 3px;
+  }
   .hero-script { display: none; }
   .container { padding: 88px 16px 48px; }
   .site-footer { padding: 0 16px 30px; }
@@ -1320,6 +1336,11 @@ img { max-width: 100%; }
 }
 
 @media (max-width: 620px) {
+  .nav-inner { gap: 10px; }
+  .brand-copy { display: none; }              /* 超窄屏只留 Logo，给右侧操作区腾位 */
+  .ac-login { padding: 7px; }
+  .ac-login span { display: none; }           /* 登录/注册收成图标按钮（aria-label 保留） */
+  .ac-user .ac-name { display: none; }        /* 已登录状态也只留头像 */
   .hero-title { font-size: 1.75rem; }
   .hero-title .grad { margin-left: 6px; }
   .hero-stats { gap: 22px; }
