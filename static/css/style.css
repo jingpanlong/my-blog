@@ -180,12 +180,16 @@ img { max-width: 100%; }
   width: 150px; padding: 11px; border-radius: 13px;
   background: var(--panel-2); border: 1px solid var(--border);
   box-shadow: 0 14px 34px rgba(0,0,0,.22);
-  display: flex; flex-direction: column; align-items: center; gap: 7px;
-  opacity: 0; visibility: hidden; pointer-events: none; transition: .2s ease; z-index: 60;
+  /* 隐藏态用 display:none 彻底移出布局，避免绝对定位的二维码弹层把页面横向撑宽导致左侧被切 */
+  display: none; flex-direction: column; align-items: center; gap: 7px;
+  opacity: 0; visibility: hidden; pointer-events: none; z-index: 60;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+  transition-behavior: allow-discrete;
 }
 .social-btn.has-qr:hover .qr-pop,
 .social-btn.has-qr:focus-within .qr-pop {
-  opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0);
+  display: flex; opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
 }
 /* 指向下方图标的小三角 */
 .qr-pop::after {
@@ -198,6 +202,12 @@ img { max-width: 100%; }
   background: #fff; border-radius: 9px; padding: 4px;
 }
 .qr-pop .qr-cap { font-size: 11px; color: var(--text-mute); line-height: 1.3; text-align: center; }
+
+/* 页脚社交按钮贴着页面右缘：弹层改为右对齐并向右翻转，避免显示时向右溢出视口产生横向滚动 */
+.foot-social .social-btn.has-qr .qr-pop { left: auto; right: 0; transform: translateY(6px); }
+.foot-social .social-btn.has-qr:hover .qr-pop,
+.foot-social .social-btn.has-qr:focus-within .qr-pop { transform: translateY(0); }
+.foot-social .qr-pop::after { left: auto; right: 14px; transform: none; }
 .i-moon { display: none; }
 [data-theme="light"] .i-sun { display: none; }
 [data-theme="light"] .i-moon { display: block; }
