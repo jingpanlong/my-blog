@@ -106,6 +106,16 @@
       .dash { padding: 24px 16px 48px; }
       .dash-kpi-num { font-size: 1.6rem; }
     }
+
+    /* 内嵌模式（后台 /admin/ 浮层里打开）：收掉大标题与返回链接，只留数据区 */
+    body.embed .dash { max-width: none; padding: 16px 18px 28px; }
+    body.embed .dash-head { margin-bottom: 14px; }
+    body.embed .dash-title,
+    body.embed .dash-sub,
+    body.embed .dash-home { display: none; }
+    body.embed .dash-head-actions { margin-left: auto; }
+    body.embed .dash-table-wrap,
+    body.embed .dash-comments { max-height: calc(100vh - 320px); }
   </style>
 </head>
 <body>
@@ -178,6 +188,9 @@
 (function () {
   var LIKE_API = "{{ hugo.Data.site.likeApi }}";
   var OWNER_STORE = 'blog_owner_key';
+
+  // 后台浮层内嵌打开：?embed=1，收掉页头大标题
+  if (/[?&]embed=1/.test(location.search)) document.body.classList.add('embed');
 
   var elGate = document.getElementById('dash-gate');
   var elBody = document.getElementById('dash-body');

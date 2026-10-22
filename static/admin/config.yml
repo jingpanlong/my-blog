@@ -2,6 +2,8 @@
 # 博客管理后台配置（Decap CMS）
 # 入口：https://my-blog-jingpanlong.pages.dev/admin/
 # 流程：后台写内容 → 提交到 GitHub → Cloudflare 自动构建上线
+#
+# 顶部「数据仪表盘」按钮：内嵌 /dashboard/，同源共享站长密钥
 # ============================================================
 
 backend:
@@ -30,6 +32,7 @@ collections:
   - name: posts
     label: 文章
     label_singular: 文章
+    description: 博客正文。保存后自动触发构建，约 1–2 分钟上线。
     folder: content/posts
     create: true
     slug: '{{slug}}'
@@ -38,6 +41,7 @@ collections:
     editor:
       preview: false
     summary: '{{title}} — {{date}}'
+    sortable_fields: ['date', 'title']
     fields:
       - { name: title, label: 标题, widget: string, hint: '显示在卡片与文章页顶部' }
       - { name: description, label: 摘要, widget: text, hint: '首页卡片上的一行简介，建议 40 字内' }
@@ -60,13 +64,16 @@ collections:
         label: 封面图
         widget: image
         required: false
+        choose_url: true
         hint: '留空则首页文章卡不显示封面'
+      - { name: draft, label: 草稿（暂不发布）, widget: boolean, default: false, required: false }
       - { name: body, label: 正文, widget: markdown }
 
   # ---------------- 项目 ----------------
   - name: projects
     label: 项目
     label_singular: 项目
+    description: 首页作品卡片与项目详情页。
     folder: content/projects
     create: true
     slug: '{{slug}}'
@@ -75,6 +82,7 @@ collections:
     editor:
       preview: false
     summary: '{{title}} — {{status}}'
+    sortable_fields: ['date', 'title', 'status']
     fields:
       - { name: title, label: 项目名, widget: string }
       - { name: summary, label: 一句话简介, widget: text }
@@ -95,6 +103,7 @@ collections:
   - name: pages
     label: 页面
     label_singular: 页面
+    description: 站内固定页面。
     files:
       - name: about
         label: 关于我
@@ -105,11 +114,20 @@ collections:
           - { name: title, label: 标题, widget: string }
           - { name: layout, label: '布局', widget: hidden, default: single }
           - { name: body, label: 页面内容, widget: markdown }
+      - name: archive
+        label: 归档页
+        file: content/archive.md
+        editor:
+          preview: false
+        fields:
+          - { name: title, label: 标题, widget: string, default: 归档 }
+          - { name: layout, label: '布局', widget: hidden, default: archive }
 
   # ---------------- 站点设置 ----------------
   - name: settings
     label: 站点设置
     label_singular: 设置
+    description: 个人资料、首页文案、社交链接、知识地图与接口地址。
     files:
       - name: site
         label: 个人资料与站点
@@ -117,39 +135,63 @@ collections:
         editor:
           preview: false
         fields:
+          # ---- 身份 ----
           - { name: author, label: 名字, widget: string }
-          - { name: brandMark, label: 'Logo 字样', widget: string }
+          - { name: brandMark, label: 'Logo 字样（页头方块里的字）', widget: string }
           - { name: brandTagline, label: 'Logo 下方标语', widget: string }
           - { name: role, label: '身份标签（Hero 顶部小字）', widget: string }
           - { name: bio, label: 侧栏简介, widget: text }
           - { name: quote, label: '座右铭 / 引言', widget: text }
-          - { name: avatar, label: '头像路径', widget: string, default: '/img/avatar.jpg' }
+          - { name: avatar, label: 头像, widget: image, required: false, choose_url: true, hint: '默认 /img/avatar.jpg' }
+          - { name: logo, label: 站点 Logo, widget: image, required: false, choose_url: true, hint: '默认 /img/logo.png' }
+          - { name: logoMark, label: 'Logo 标记（小尺寸）', widget: image, required: false, choose_url: true, hint: '默认 /img/logo-mark.png' }
           - name: meta
             label: 侧栏身份标签
             widget: list
             hint: '如：中国 · 开发者'
+
+          # ---- SEO / 页脚 ----
           - { name: subtitle, label: '页脚副标题', widget: string }
           - { name: description, label: 'SEO 描述', widget: text }
 
+          # ---- 首页 Hero ----
           - { name: heroSub, label: 'Hero 副标题', widget: string }
           - { name: heroDesc, label: 'Hero 正文', widget: text }
           - name: verticalWords
             label: 右侧竖排标语
             widget: list
+            required: false
 
+          # ---- 社交链接 ----
           - name: social
             label: '社交链接'
             widget: list
-            hint: '页头、侧栏、页脚都会用到'
+            hint: '页头、侧栏、页脚共用同一份。填了「二维码」就会自动获得鼠标悬停弹二维码效果。'
             fields:
               - { name: name, label: '名称', widget: string }
               - { name: url, label: '链接', widget: string, hint: '邮箱请写 mailto:xxx' }
               - name: icon
                 label: '图标'
                 widget: select
-                options: ['github', 'email', 'wechat', 'xhs', 'bilibili', 'rss']
+                options:
+                  - { label: 'GitHub', value: github }
+                  - { label: '邮箱', value: email }
+                  - { label: '微信', value: wechat }
+                  - { label: '小红书', value: xhs }
+                  - { label: 'B站', value: bilibili }
+                  - { label: 'WhatsApp', value: whatsapp }
+                  - { label: 'RSS', value: rss }
+                  - { label: '链接（通用）', value: link }
               - { name: handle, label: '账号 / 备注', widget: string, required: false }
+              - name: qr
+                label: '二维码图片'
+                widget: image
+                required: false
+                choose_url: true
+                hint: '留空则悬停只显示文字提示；填写后鼠标移上去弹出二维码'
+              - { name: qrCap, label: '二维码下方文案', widget: string, required: false, hint: '留空自动生成「扫码关注 · 账号」' }
 
+          # ---- 知识地图 ----
           - name: knowledge
             label: '知识地图节点'
             widget: list
@@ -159,6 +201,7 @@ collections:
               - { name: desc, label: '描述', widget: string }
               - { name: color, label: '颜色', widget: color }
 
+          # ---- 接口 ----
           - { name: likeApi, label: '点赞计数接口', widget: string, required: false }
           - { name: viewApi, label: '浏览量计数接口', widget: string, required: false }
           - { name: commentApi, label: '评论接口', widget: string, required: false }

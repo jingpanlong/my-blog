@@ -82,8 +82,74 @@
     }
     #fail button:hover { background: rgba(255, 255, 255, 0.13); border-color: rgba(255, 255, 255, 0.3); }
 
+    /* ---------- 数据仪表盘入口 ---------- */
+    #dash-fab {
+      position: fixed; right: 22px; bottom: 22px; z-index: 8000;
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 11px 19px 11px 15px;
+      font: inherit; font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+      color: #fff; cursor: pointer;
+      background: linear-gradient(135deg, #f59e0b 0%, #fb923c 46%, #6366f1 100%);
+      border: 0; border-radius: 999px;
+      box-shadow: 0 10px 28px rgba(245, 158, 11, 0.34), 0 2px 8px rgba(0, 0, 0, 0.45);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+    #dash-fab:hover { transform: translateY(-2px); filter: brightness(1.07); box-shadow: 0 14px 34px rgba(245, 158, 11, 0.42), 0 2px 10px rgba(0, 0, 0, 0.5); }
+    #dash-fab:active { transform: translateY(0); }
+    #dash-fab:focus-visible { outline: 2px solid #fbbf24; outline-offset: 3px; }
+    #dash-fab .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.22); }
+
+    #dash-layer {
+      position: fixed; inset: 0; z-index: 9000;
+      display: none; flex-direction: column;
+      background: rgba(4, 6, 13, 0.84);
+      backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
+    }
+    #dash-layer.open { display: flex; }
+
+    .dash-shell {
+      display: flex; flex-direction: column;
+      width: min(1300px, calc(100% - 40px)); height: min(900px, calc(100% - 40px));
+      margin: auto; overflow: hidden;
+      background: #05070f;
+      border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.66);
+      animation: dashIn 0.22s ease both;
+    }
+    @keyframes dashIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.994); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .dash-bar {
+      display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;
+      padding: 10px 12px 10px 16px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+    }
+    .dash-bar .mark-dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18); flex: none; }
+    .dash-bar strong { font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
+    .dash-bar .sub { color: #7b86ab; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-bar .grow { flex: 1 1 auto; }
+    .dash-bar a, .dash-bar button {
+      flex: none; font: inherit; font-size: 12.5px; color: #cfd8f2; text-decoration: none;
+      background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px; padding: 6px 11px; cursor: pointer;
+      transition: background 0.16s, border-color 0.16s;
+    }
+    .dash-bar a:hover, .dash-bar button:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.28); }
+    #dash-frame { flex: 1 1 auto; width: 100%; border: 0; display: block; background: #05070f; }
+
+    @media (max-width: 620px) {
+      #dash-fab { right: 14px; bottom: 14px; padding: 10px 15px 10px 13px; font-size: 12.5px; }
+      .dash-shell { width: calc(100% - 16px); height: calc(100% - 16px); border-radius: 12px; }
+      .dash-bar .sub { display: none; }
+      .dash-bar a { display: none; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      .ring::before, .ring::after, .mark .cube { animation: none; }
+      .ring::before, .ring::after, .mark .cube, .dash-shell { animation: none; }
     }
   </style>
 </head>
@@ -98,6 +164,27 @@
       <h2>后台资源加载失败</h2>
       <p>无法从 CDN 获取 Decap CMS（<code>unpkg.com</code>）。请检查网络连接后重试；若持续失败，可尝试切换网络或关闭代理。</p>
       <button type="button" onclick="location.reload()">重新加载</button>
+    </div>
+  </div>
+
+  <!-- 数据仪表盘：内嵌 /dashboard/，与后台同源，共享站长密钥 -->
+  <button id="dash-fab" type="button" aria-controls="dash-layer" aria-expanded="false">
+    <span class="dot" aria-hidden="true"></span>
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l3.5-4 3 2.5L20 7"/></svg>
+    数据仪表盘
+  </button>
+
+  <div id="dash-layer" role="dialog" aria-modal="true" aria-label="数据仪表盘">
+    <div class="dash-shell">
+      <div class="dash-bar">
+        <span class="mark-dot" aria-hidden="true"></span>
+        <strong>数据仪表盘</strong>
+        <span class="sub">浏览量 · 点赞 · 收藏 · 评论</span>
+        <span class="grow"></span>
+        <a href="/dashboard/" target="_blank" rel="noopener">新窗口打开</a>
+        <button id="dash-close" type="button" aria-label="关闭仪表盘">✕</button>
+      </div>
+      <iframe id="dash-frame" title="数据仪表盘" src="about:blank" referrerpolicy="same-origin"></iframe>
     </div>
   </div>
 
@@ -140,6 +227,37 @@
       setTimeout(function () {
         if (!window.CMS) fail();
       }, CDN_TIMEOUT);
+
+      // ---------- 数据仪表盘浮层 ----------
+      var fab = document.getElementById('dash-fab');
+      var layer = document.getElementById('dash-layer');
+      var frame = document.getElementById('dash-frame');
+      var btnClose = document.getElementById('dash-close');
+      var frameLoaded = false;
+
+      function openDash() {
+        // 首次打开才加载 iframe，避免每次进后台都打一次统计接口
+        if (!frameLoaded) { frame.src = '/dashboard/?embed=1'; frameLoaded = true; }
+        layer.classList.add('open');
+        fab.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () { if (btnClose) btnClose.focus(); }, 30);
+      }
+      function closeDash() {
+        layer.classList.remove('open');
+        fab.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+        fab.focus();
+      }
+      if (fab && layer && frame) {
+        fab.addEventListener('click', openDash);
+        if (btnClose) btnClose.addEventListener('click', closeDash);
+        // 点击浮层空白处关闭
+        layer.addEventListener('click', function (e) { if (e.target === layer) closeDash(); });
+        document.addEventListener('keydown', function (e) {
+          if ((e.key === 'Escape' || e.key === 'Esc') && layer.classList.contains('open')) closeDash();
+        });
+      }
     })();
   </script>
 </body>
