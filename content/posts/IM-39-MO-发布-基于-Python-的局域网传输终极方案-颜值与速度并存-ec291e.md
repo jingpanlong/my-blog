@@ -117,4 +117,4 @@ IM'MO v5.0 Ultimate 现已打包完毕，开箱即用，绿色免安装。
 
 ---
 
-<p><small>本文搬运自微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw</a></small></p>
+<p><small>本文首发于我的微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw</a></small></p>

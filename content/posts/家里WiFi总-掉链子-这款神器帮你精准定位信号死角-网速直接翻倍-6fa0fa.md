@@ -111,4 +111,4 @@ source: 'https://mp.weixin.qq.com/s/T48e3r6b_up341GDMfJeEw'
 
 ---
 
-<p><small>本文搬运自微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/T48e3r6b_up341GDMfJeEw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/T48e3r6b_up341GDMfJeEw</a></small></p>
+<p><small>本文首发于我的微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/T48e3r6b_up341GDMfJeEw" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/T48e3r6b_up341GDMfJeEw</a></small></p>

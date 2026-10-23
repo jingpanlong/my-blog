@@ -101,4 +101,4 @@ BMI可不是随便发明的数字游戏。它通过体重与身高的比例，�
 
 ---
 
-<p><small>本文搬运自微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ</a></small></p>
+<p><small>本文首发于我的微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ</a></small></p>

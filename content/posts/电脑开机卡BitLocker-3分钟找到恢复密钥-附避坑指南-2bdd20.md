@@ -97,4 +97,4 @@ BitLocker虽然偶尔 “添堵”，但能防硬盘丢失后数据泄露，还�
 
 ---
 
-<p><small>本文搬运自微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA</a></small></p>
+<p><small>本文首发于我的微信公众号，原文链接：<a href="https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA</a></small></p>

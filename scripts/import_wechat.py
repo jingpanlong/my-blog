@@ -215,7 +215,7 @@ def process(url, category, write=True):
               f"cover: '{cover_local or (f'/img/posts/{slug}/01.jpg' if img_n else '')}'\n"
               f"source: '{url}'\n---\n\n")
         footer = (f"\n\n---\n\n"
-                  f"<p><small>本文搬运自微信公众号，原文链接："
+                  f"<p><small>本文首发于我的微信公众号，原文链接："
                   f"<a href=\"{url}\" target=\"_blank\" rel=\"noopener\">{url}</a></small></p>\n")
         out = fm + md + footer
         os.makedirs(CONTENT_DIR, exist_ok=True)
