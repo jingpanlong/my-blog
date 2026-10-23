@@ -36,7 +36,9 @@ const MAX_SUB_PER_HOUR = 5;        // 订阅：每 IP 每小时上限
 const NOTIFY_MAX_RECIPIENTS = 500; // 单次群发收件人上限（防止误伤）
 const SITE_ORIGIN = 'https://my-blog-jingpanlong.pages.dev';
 const WORKER_ORIGIN = 'https://comments.470918507.workers.dev'; // 本 Worker 公网地址（退订链接用）
-const FROM_EMAIL = 'onboarding@resend.dev'; // Resend 测试发件人（无需自有域名）
+// 发件人：默认用 Resend 测试地址（只能发到你自己注册 Resend 的邮箱）。
+// 要真正发给订阅者，需在 Resend 验证自有域名，并把这里改成该域名下的地址（部署时用 RESEND_FROM_EMAIL 注入）。
+const FROM_EMAIL = (typeof RESEND_FROM_EMAIL === 'string' && RESEND_FROM_EMAIL) || 'onboarding@resend.dev';
 const AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉', '🐧', '🦄', '🌟', '🍎'];
 
 const enc = new TextEncoder();
@@ -221,16 +223,17 @@ async function rateLimited(prefix, ip, max) {
 }
 
 // ---------------- 发信（Resend 可选）----------------
+// 返回是否发送成功；未配置 key 或请求失败均返回 false（不抛异常，不影响主流程）
 async function sendEmail(to, subject, html) {
-  if (typeof RESEND_API_KEY === 'string' && RESEND_API_KEY.length > 0) {
-    try {
-      await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + RESEND_API_KEY },
-        body: JSON.stringify({ from: FROM_EMAIL, to: [to], subject: subject, html: html })
-      });
-    } catch (e) { /* 忽略发信失败，不影响主流程 */ }
-  }
+  if (typeof RESEND_API_KEY !== 'string' || RESEND_API_KEY.length === 0) return false;
+  try {
+    var r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + RESEND_API_KEY },
+      body: JSON.stringify({ from: FROM_EMAIL, to: [to], subject: subject, html: html })
+    });
+    return r.ok;
+  } catch (e) { return false; }
 }
 function verifyLink(token) { return SITE_ORIGIN + '/?verify=' + encodeURIComponent(token); }
 function resetLink(token) { return SITE_ORIGIN + '/?reset=' + encodeURIComponent(token); }
@@ -275,8 +278,8 @@ async function subscribe(request, cors) {
     + '<p style="margin:0 0 16px;color:#4a5473;font-size:14px;line-height:1.7;">感谢订阅本站，以后有新文章会第一时间邮件通知你。</p>'
     + '<p style="margin:0 0 22px;"><a href="' + SITE_ORIGIN + '" style="display:inline-block;padding:10px 22px;background:#6d8bff;color:#ffffff;border-radius:999px;text-decoration:none;font-weight:600;">去首页看看</a></p>'
     + '<p style="margin:0;color:#9aa3bd;font-size:12px;line-height:1.6;">不想再收到邮件？<a href="' + unsub + '" style="color:#6d8bff;">点此退订</a></p>');
-  await sendEmail(email, '订阅成功 · 新文章将邮件通知你', html);
-  return json({ ok: true }, 200, cors);
+  var mailed = await sendEmail(email, '订阅成功 · 新文章将邮件通知你', html);
+  return json({ ok: true, mailSent: mailed }, 200, cors);
 }
 
 async function unsubscribePage(url, cors) {
@@ -344,8 +347,7 @@ async function broadcastNewPost(title, summary, postUrl, path) {
   var sent = 0;
   for (var j = 0; j < subs.length; j++) {
     var u = unsubLink(subs[j].email, subs[j].token, WORKER_ORIGIN);
-    await sendEmail(subs[j].email, '新文章 · ' + title, html.replace(/__UNSUB__/g, u));
-    sent++;
+    if (await sendEmail(subs[j].email, '新文章 · ' + title, html.replace(/__UNSUB__/g, u))) sent++;
   }
   await COMMENTS.put('notified:' + path, String(Date.now()));
   return { sent: sent, total: subs.length };

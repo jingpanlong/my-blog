@@ -335,7 +335,11 @@
       }).then(function (res) {
         if (res.s === 200 && res.d && res.d.ok) {
           if (input) input.value = '';
-          setHint(res.d.already ? '你已订阅过啦，新文章会继续通知你' : '订阅成功！新文章将邮件通知你，邮件里可随时退订');
+          if (res.d.mailSent === false) {
+            setHint('订阅已记录，但确认邮件发送失败，请联系站长', true);
+          } else {
+            setHint(res.d.already ? '你已订阅过啦，新文章会继续通知你' : '订阅成功！新文章将邮件通知你，邮件里可随时退订');
+          }
         } else if (res.s === 404 || res.s === 405) {
           // 订阅后端尚未部署：回退 mailto 直达站长邮箱
           window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent('订阅博客 · ' + v)

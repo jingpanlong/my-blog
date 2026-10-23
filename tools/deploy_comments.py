@@ -26,7 +26,11 @@ COMMENTS_ID = "b2ca0e377242436b8e79f3d2ecf2131d"
 AUTH_SECRET = "kwPTO07F9N4QiRgDevtvbb04NaKZIl36q1ElroRE3TM="
 # Resend 发信密钥（可选）。留空则走 dev 模式：验证/重置链接直接随 API 响应返回，便于本地测试。
 # 填入真实 key 后，验证邮件与找回密码邮件将通过 Resend 真实发送到用户邮箱。
+# 注意：未在 Resend 验证自有域名时，用默认发件人 onboarding@resend.dev 只能发到你自己注册 Resend
+# 的邮箱；要发给订阅者/评论者，需先在 Resend 添加并验证域名，再用 RESEND_FROM_EMAIL 指定发件地址。
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+# 发件人地址（需与 Resend 已验证域名匹配），默认使用 Resend 测试发件人。
+RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 # 站长免登录评论：浏览器以 X-Owner-Key 头携带此密钥即可评论/回复（无需注册登录）。
 # 密钥只存在站长本机 localStorage，不进前端代码；换密钥重新部署即可。
 OWNER_KEY = os.environ.get("OWNER_KEY", "o+h2a2MliUpTzuUTkBh3O5JCw6HVRhUd")
@@ -73,6 +77,7 @@ def multipart_upload(script_js):
             {"name": "COMMENTS", "type": "kv_namespace", "namespace_id": COMMENTS_ID},
             {"name": "AUTH_SECRET", "type": "secret_text", "text": AUTH_SECRET},
             {"name": "RESEND_API_KEY", "type": "secret_text", "text": RESEND_API_KEY},
+            {"name": "RESEND_FROM_EMAIL", "type": "secret_text", "text": RESEND_FROM_EMAIL},
             {"name": "OWNER_KEY", "type": "secret_text", "text": OWNER_KEY},
             {"name": "OWNER_NAME", "type": "secret_text", "text": OWNER_NAME},
             {"name": "OWNER_AVATAR", "type": "secret_text", "text": OWNER_AVATAR},
