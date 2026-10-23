@@ -336,6 +336,12 @@
         if (res.s === 200 && res.d && res.d.ok) {
           if (input) input.value = '';
           setHint(res.d.already ? '你已订阅过啦，新文章会继续通知你' : '订阅成功！新文章将邮件通知你，邮件里可随时退订');
+        } else if (res.s === 404 || res.s === 405) {
+          // 订阅后端尚未部署：回退 mailto 直达站长邮箱
+          window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent('订阅博客 · ' + v)
+            + '&body=' + encodeURIComponent('你好，我想订阅你的博客。\n\n我的邮箱：' + v + '\n');
+          setHint('已打开邮件客户端，发送后即完成订阅');
+          if (input) input.value = '';
         } else {
           setHint((res.d && res.d.error) || '订阅失败，请稍后重试', true);
         }
