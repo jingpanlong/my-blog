@@ -6,9 +6,11 @@ description: "今天给大家安利一款「跨设备共享打印神器」，只
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/cover.jpg'
+cover: '/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/01.jpg'
 source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 ---
+
+> **导语：** 今天给大家安利一款「跨设备共享打印神器」，只需1步设置，让你的电脑变身打印服务器，手机、平板、笔记本直接通过浏览器打印，全程免驱动、免安装！🚀
 
 <figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/01.jpg" alt=""></figure>
 
@@ -26,7 +28,7 @@ source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 
 今天给大家安利一款「跨设备共享打印神器」，只需1步设置，让你的电脑变身打印服务器，手机、平板、笔记本直接通过浏览器打印，全程免驱动、免安装！🚀
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/02.jpg" alt=""></figure>
+
 
 **核心亮点**
 
@@ -38,7 +40,7 @@ source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 
 设置简单到离谱：打开软件，选择你的打印机，就能生成一个专属访问地址。支持密码保护🔒，不想让外人用？设置个密码，只有同事能访问，还能拉黑陌生IP，安全感拉满！
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/03.jpg" alt=""></figure>
+
 
 **开机自动启动，懒人福音**
 
@@ -46,7 +48,7 @@ source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 
 <figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/04.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/05.jpg" alt=""></figure>
+
 
 **设置步骤**
 
@@ -58,7 +60,7 @@ source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 
 ③ 复制软件生成的访问地址（比如 http://192.168.1.100:5000），用手机或其他电脑打开，就能上传文件打印啦！
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/06.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/07.jpg" alt=""></figure>
 
@@ -84,9 +86,9 @@ source: 'https://mp.weixin.qq.com/s/xHtRtrdF_7fGm1PmM3P1Hw'
 
 （需要工具的朋友，关注本公众号，后台回复「打印自由」，我来告诉你获取方式～）
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/08.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/告别打印线-这款神器让手机-电脑秒变-quot-共享打印机-quot-办公室效率-4a96d9/09.jpg" alt=""></figure>
+
+
 
 
 ---

@@ -6,9 +6,11 @@ description: "今天要给大家安利一款「宝藏工具」—— 随机语�
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/cover.jpg'
+cover: '/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/01.jpg'
 source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 ---
+
+> **导语：** 今天要给大家安利一款「宝藏工具」—— 随机语录生成器！无论是治愈金句、热血台词，还是古典诗词、网络热梗，轻轻一点，就能收获专属你的“精神充电站”🔋
 
 <figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/01.jpg" alt=""></figure>
 
@@ -22,7 +24,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 今天要给大家安利一款「宝藏工具」—— 随机语录生成器！无论是治愈金句、热血台词，还是古典诗词、网络热梗，轻轻一点，就能收获专属你的“精神充电站”🔋
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/02.jpg" alt=""></figure>
+
 
 **丰富分类，涵盖多元领域**
 
@@ -34,7 +36,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 * 📖 文学控必看：从杜甫的「读书破万卷」到尼采的「每一个不曾起舞的日子」，古今中外的智慧全收录。
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/03.jpg" alt=""></figure>
+
 
 还有动漫、诗词、哲学、网络热梗……甚至连「原创语录」都有专属区，每一句都是生活的切片✨
 
@@ -52,7 +54,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 🔍 想找的句子，一秒精准捕捉。记得某部电影里有句台词，却想不起具体内容？
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/05.jpg" alt=""></figure>
+
 
 * 直接搜关键词！不管是角色名、出处，还是句子里的某个词，嗖的一下就能揪出所有相关语录，再也不用疯狂翻聊天记录了✌️
 
@@ -62,7 +64,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 * 遇到戳心的句子怎么办？点一下「收藏」⭐，就能把它放进专属小仓库，不怕下次找不到。
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/06.jpg" alt=""></figure>
+
 
 * 如果自己有原创金句？「添加新语录」功能帮你存档，说不定哪天就成了别人的灵感来源呢～
 
@@ -72,7 +74,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 🌓 白天黑夜，它都懂你的眼睛。
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/08.jpg" alt=""></figure>
+
 
 * 白天用浅色模式清爽护眼☀️，晚上切深色模式不刺眼🌙，一键切换，怎么舒服怎么来～
 
@@ -91,7 +93,7 @@ source: 'https://mp.weixin.qq.com/s/NW9RUUzxd8s32rxTrHeSyw'
 
 快来试试吧，说不定下一句，就是你此刻最需要的答案～ 😉
 
-<figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/09.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/刷到就是赚到-这款-随机语录生成器-承包你所有的情绪出口-c6cf1e/10.jpg" alt=""></figure>
 

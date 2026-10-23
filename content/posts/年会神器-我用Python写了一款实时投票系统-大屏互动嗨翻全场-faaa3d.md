@@ -2,13 +2,15 @@
 title: "年会神器！我用Python写了一款实时投票系统，大屏互动嗨翻全场！"
 date: 2026-01-08
 lastmod: 2026-01-08
-description: "这是一款“开箱即用”的投票软件。你不需要买服务器，也不需要连接互联网。只要你的电脑和大家的手机在同一个WiFi（局域网）下，软件会自动生成一个二维码。📱大家掏出手机扫一扫，就能进入"
+description: "这是一款“开箱即用”的投票软件。你不需要买服务器，也不需要连接互联网。只要你的电脑和大家的手机在同一个WiFi（局域网）下，软件会自动生成一个二维码。📱大家掏出手机扫一扫，就能进入投票界面；大屏幕上，票数实时滚动，特效拉满！"
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/cover.jpg'
+cover: '/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/01.jpg'
 source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 ---
+
+> **导语：** 这是一款“开箱即用”的投票软件。你不需要买服务器，也不需要连接互联网。只要你的电脑和大家的手机在同一个WiFi（局域网）下，软件会自动生成一个二维码。📱大家掏出手机扫一扫，就能进入投票界面；大屏幕上，票数实时滚动，特效拉满！
 
 <figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/01.jpg" alt=""></figure>
 
@@ -20,7 +22,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 于是，我熬了两个通宵，用 **Python **搓出了这款【局域网实时投票系统】。不管是公司年会、班级评选，还是沙龙活动，只要有一台电脑、一个WiFi，就能立马搭建一套**专业级**的投票现场！🚀废话不多说，直接看东西！👇
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/02.jpg" alt=""></figure>
+
 
 **系统用途**
 
@@ -30,7 +32,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 大家掏出手机**扫一扫**，就能进入投票界面；大屏幕上，票数**实时滚动**，特效拉满！
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/03.jpg" alt=""></figure>
+
 
 **核心功能亮点**
 
@@ -48,7 +50,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 <figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/04.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/05.jpg" alt=""></figure>
+
 
 **2️⃣ 极简的手机端体验 📱**
 
@@ -60,7 +62,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 * 状态同步：未开始时不能投，结束后自动锁定，一切听指挥。
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/06.jpg" alt=""></figure>
+
 
 **3️⃣ Excel批量导入/导出（打工人救星） 📊**
 
@@ -72,7 +74,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 *** 结果导出：**活动结束，老板要数据？点一下“导出Excel”，精准的排名报表直接生成，汇报无压力。
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/08.jpg" alt=""></figure>
+
 
 **4️⃣ 完全自定义的“控制台” ⚙️**
 
@@ -84,7 +86,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 *** 自动托管：**怕忘记关通道？设置好“开始时间”和“结束时间”，系统到点自动开关，精准控制流程。
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/09.jpg" alt=""></figure>
+
 
 **5️⃣ 安全稳定，不怕断电 🛡️**
 
@@ -100,7 +102,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 1. 下载软件：获取我打包好的 .exe 文件（文末获取）。
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/11.jpg" alt=""></figure>
+
 
 **2. 双击运行：**你会看到一个控制窗口。
 
@@ -126,7 +128,7 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 *(喜欢的话，记得点个****赞****和****在看****哦，这对我真的很重要！❤️)*
 
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/12.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/13.jpg" alt=""></figure>
 

@@ -2,13 +2,15 @@
 title: "拒绝“忘记密码”！我用Python撸了一个高颜值的【本地加密】账号管家，真香！"
 date: 2026-01-31
 lastmod: 2026-01-31
-description: "全网首发！这款基于 Python 开发的「安全账号管家 Pro」是一款零联网、纯本地的密码管理神器。采用 AES-256 军工级加密，确保隐私绝不外泄。软件具备**高颜值可视化仪表"
+description: "全网首发！这款基于 Python 开发的「安全账号管家 Pro」是一款零联网、纯本地的密码管理神器。采用 AES-256 军工级加密，确保隐私绝不外泄。软件具备**高颜值可视化仪表盘，支持暗黑模式、拖拽分组及 Excel 互通。"
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/cover.jpg'
+cover: '/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/01.jpg'
 source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 ---
+
+> **导语：** 全网首发！这款基于 Python 开发的「安全账号管家 Pro」是一款零联网、纯本地的密码管理神器。采用 AES-256 军工级加密，确保隐私绝不外泄。软件具备**高颜值可视化仪表盘，支持暗黑模式、拖拽分组及 Excel 互通。
 
 <figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/01.jpg" alt=""></figure>
 
@@ -26,7 +28,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 不画大饼，直接看它到底有多顶！👇👇👇
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/02.jpg" alt=""></figure>
+
 
 **🎨 一、始于颜值：这才是2026年该有的界面**
 
@@ -42,7 +44,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 *** 🚨 风险预警卡片：**顶部的卡片会实时告警！如果你有大量弱密码，它会标红示警，逼死强迫症，但真的安全！**⚠️**
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/03.jpg" alt=""></figure>
+
 
 **2️⃣ 沉浸式「暗黑模式」 🌑**
 
@@ -60,13 +62,13 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 嗖的一下就过去了！那种丝滑的交互感，真的会让你上瘾！🖱️💨
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/05.jpg" alt=""></figure>
+
 
 **4️⃣ 强迫症最爱的「分类管理」 📂**
 
 * 🌈 自定义分组：不仅能建分组，还能给每个分组选一个专属主题色！
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/06.jpg" alt=""></figure>
+
 
 *** ⭐ 特别关注：**常用的微信、支付宝账号，点亮小星星，直接在侧边栏「特别关注」里一键直达！
 
@@ -74,7 +76,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 *** 💊 回收站后悔药：**手抖删错了？别慌！它有回收站机制，随时一键恢复，或者选择彻底粉碎！♻️
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/08.jpg" alt=""></figure>
+
 
 **5️⃣ 贴心的「操作体验」 👀**
 
@@ -82,7 +84,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 *** 📋 一键复制：**账号、密码旁边都有快捷按钮，点一下就进剪贴板，填表效率 Max！⚡️
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/09.jpg" alt=""></figure>
+
 
 **🛡️ 三、硬核安全：把数据锁进保险箱**
 
@@ -96,7 +98,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 *** 🕵️‍♂️ 重复密码检测：**Pro 版杀手锏！ 点击「安全检测」，全盘扫描揪出那些你偷懒共用的密码。拒绝撞库，从这里开始！ 🚫
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/11.jpg" alt=""></figure>
+
 
 **7️⃣ 军工级加密内核 🔐**
 
@@ -108,7 +110,7 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 起身倒水怕被人动电脑？设置个“5分钟无操作自动锁定”**。**
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/12.jpg" alt=""></figure>
+
 
 **超时后软件**自动上锁，必须重新输入主密码才能解锁。安全感爆棚！🔒☕️
 
@@ -120,11 +122,11 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 * 📥 批量导入：下载标准模板，把原本散落在 Excel 里的几百个账号填进去，一键上传，瞬间入库并加密！
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/14.jpg" alt=""></figure>
+
 
 *** 📤 自由导出：**想换软件？支持导出 Excel（明文）或 JSON（备份）。数据是你的，你想带去哪就带去哪，绝不搞“生态绑架”！ 🏃‍♂️
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/15.jpg" alt=""></figure>
+
 
 **🔟 最小化托盘 ↘️**
 
@@ -150,9 +152,9 @@ source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 
 *(觉得好用的话，记得点个*「在看」🌟，转发给身边那个总是忘密码的朋友！你的支持是我秃头更新的动力！💪👨‍🦲)*
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/17.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/18.jpg" alt=""></figure>
+
+
 
 
 ---

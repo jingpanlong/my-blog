@@ -2,13 +2,15 @@
 title: "办公神器 | 告别数据线！局域网文件秒传，这款 Python 工具真香！"
 date: 2025-12-23
 lastmod: 2025-12-23
-description: "今天，给大家安利一款由 Python + PyQt5 打造的开源局域网文件共享工具——「文件共享工具 - 景同志」。它主打零配置、跨平台、高速传输，只要在同一个 Wi-Fi（局域网"
+description: "今天，给大家安利一款由 Python + PyQt5 打造的开源局域网文件共享工具——「文件共享工具 - 景同志」。它主打零配置、跨平台、高速传输，只要在同一个 Wi-Fi（局域网）下，无需安装任何客户端，浏览器就能直接管理文件！"
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/cover.jpg'
+cover: '/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/01.jpg'
 source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 ---
+
+> **导语：** 今天，给大家安利一款由 Python + PyQt5 打造的开源局域网文件共享工具——「文件共享工具 - 景同志」。它主打零配置、跨平台、高速传输，只要在同一个 Wi-Fi（局域网）下，无需安装任何客户端，浏览器就能直接管理文件！
 
 <figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/01.jpg" alt=""></figure>
 
@@ -22,7 +24,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 今天，给大家安利一款由 Python + PyQt5 打造的开源局域网文件共享工具——「文件共享工具 - 景同志」。它主打零配置、跨平台、高速传输，只要在同一个 Wi-Fi（局域网）下，无需安装任何客户端，浏览器就能直接管理文件！
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/02.jpg" alt=""></figure>
+
 
 **一、软件特性**
 
@@ -30,7 +32,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 不同于传统简陋的命令行工具，这款软件拥有现代化 GUI 界面。打开软件，界面清爽干净。左侧实时显示连接状态，右侧是清晰的日志监控。无需懂代码，点一下「启动服务」，你的电脑瞬间变身私有云盘！(此处建议插入软件主界面截图)
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/03.jpg" alt=""></figure>
+
 
 **2. 📱 扫码即连，全平台兼容**
 
@@ -42,7 +44,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 * ✅ 电脑端：网页版支持暗黑模式/亮色模式一键切换，夜间办公不刺眼。(此处建议插入手机端浏览器访问的截图，展示文件列表)
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/05.jpg" alt=""></figure>
+
 
 **3. 🚀 批量操作，效率翻倍**
 
@@ -54,7 +56,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 * ✏️ 在线管理：直接在网页端进行新建文件夹、重命名、删除等操作。
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/06.jpg" alt=""></figure>
+
 
 **4. 🔒 安全可控，隐私无忧**
 
@@ -66,7 +68,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 * 管理密码 🛡️：普通访客只能下载，只有输入管理员密码，才能进行上传、删除、重命名等敏感操作。
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/08.jpg" alt=""></figure>
+
 
 你可以放心地把链接发给同事，既方便了分享，又保护了数据安全。
 
@@ -80,7 +82,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 * 访问了多少次？
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/09.jpg" alt=""></figure>
+
 
 一切尽在掌握，安全感拉满！🕵️‍♂️(此处建议插入“连接设备详情”弹窗的截图)
 
@@ -102,7 +104,7 @@ source: 'https://mp.weixin.qq.com/s/AE78S0Nvqjzl9A03GQsjEA'
 
 <figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/10.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/办公神器-告别数据线-局域网文件秒传-这款-Python-工具真香-948c38/11.jpg" alt=""></figure>
+
 
 
 ---

@@ -2,13 +2,15 @@
 title: "电脑开机卡BitLocker？3分钟找到恢复密钥！附避坑指南"
 date: 2025-09-03
 lastmod: 2025-09-03
-description: "宝子们有没有过这种崩溃时刻：赶方案的早上，电脑一开机突然弹出「需要 BitLocker 恢复密钥」，键盘停在半空，脑子瞬间空白 —— 这串 “解锁密码” 到底存在哪儿了？别慌！今天"
+description: "宝子们有没有过这种崩溃时刻：赶方案的早上，电脑一开机突然弹出「需要 BitLocker 恢复密钥」，键盘停在半空，脑子瞬间空白 —— 这串 “解锁密码” 到底存在哪儿了？别慌！今天就把 4 个找密钥的实用方法、3 个避坑提醒全教给你。"
 tags: ['随笔', '微信']
 categories: ['随笔']
 kicker: '随笔'
-cover: '/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/cover.jpg'
+cover: '/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/01.jpg'
 source: 'https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA'
 ---
+
+> **导语：** 宝子们有没有过这种崩溃时刻：赶方案的早上，电脑一开机突然弹出「需要 BitLocker 恢复密钥」，键盘停在半空，脑子瞬间空白 —— 这串 “解锁密码” 到底存在哪儿了？别慌！今天就把 4 个找密钥的实用方法、3 个避坑提醒全教给你。
 
 <figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/01.jpg" alt=""></figure>
 
@@ -24,7 +26,7 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 其实密钥早就在你开启BitLocker时，让你备份过！只是大概率被忘在某个角落了…
 
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/02.jpg" alt=""></figure>
+
 
 **📌4个找密钥的方法（按成功率排序）**
 
@@ -34,7 +36,7 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 ①用手机 / 另一台电脑打开【微软账户官网】（🔗 [account.microsoft.com]）
 
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/03.jpg" alt=""></figure>
+
 
 ②登录和电脑绑定的微软账户
 
@@ -42,7 +44,7 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 ③ 找到左侧【设备】→ 点击需要解锁的电脑名称
 
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/05.jpg" alt=""></figure>
+
 
 ④ 下拉找到【BitLocker恢复密钥】，复制那串24位数字
 ⑤ 回到卡住的电脑，输入密钥就能解锁！💻
@@ -53,7 +55,7 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 * 电脑本地：默认路径可能在「文档」文件夹里，文件名类似「BitLocker恢复密钥XXX.txt」（XXX是电脑ID）
 
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/06.jpg" alt=""></figure>
+
 
 * U 盘：插在电脑上，打开后看看有没有同名TXT文件
 * 移动硬盘 / 云盘：比如之前存过到百度云、OneDrive的 “备份文件夹”
@@ -92,7 +94,7 @@ BitLocker虽然偶尔 “添堵”，但能防硬盘丢失后数据泄露，还�
 
 <figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/07.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/08.jpg" alt=""></figure>
+
 
 
 ---

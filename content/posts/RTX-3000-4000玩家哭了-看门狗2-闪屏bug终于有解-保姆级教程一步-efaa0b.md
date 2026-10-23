@@ -6,15 +6,17 @@ description: "💥谁懂啊！用RTX 3060/4070玩《看门狗2》，刚潜入一
 tags: ['随笔', '微信']
 categories: ['随笔']
 kicker: '随笔'
-cover: '/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/cover.jpg'
+cover: '/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/01.jpg'
 source: 'https://mp.weixin.qq.com/s/S_YCrjb0hIu1ZynzvD4cNA'
 ---
+
+> **导语：** 💥谁懂啊！用RTX 3060/4070玩《看门狗2》，刚潜入一半，画面突然疯狂闪烁，阴影乱跳、建筑“隐身”，好好的黑客体验直接变“赛博蹦迪”💢 别慌！
 
 <figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/01.jpg" alt=""></figure>
 
 **💥**谁懂啊！用RTX 3060/4070玩《看门狗2》，刚潜入一半，画面突然疯狂闪烁，阴影乱跳、建筑“隐身”，好好的黑客体验直接变“赛博蹦迪”💢 别慌！今天把PC Gaming Wiki上的权威防闪屏教程扒透了，两种方法任选，新手也能跟着做，从此告别闪屏烦恼！
 
-<figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/02.jpg" alt=""></figure>
+
 
 **❗先搞懂：这闪屏不是显卡坏了！**
 
@@ -65,7 +67,7 @@ source: 'https://mp.weixin.qq.com/s/S_YCrjb0hIu1ZynzvD4cNA'
 
 1. 打开刚才下载的“Nvidia Profile Inspector”，界面顶部找到 “Import Profile” 按钮（导入配置），点击它；
 
-<figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/03.jpg" alt=""></figure>
+
 
 2. 在弹出的窗口里，找到桌面保存的 WatchDogs2_Fix.nip 文件，选中后点击“打开”；
 
@@ -73,7 +75,7 @@ source: 'https://mp.weixin.qq.com/s/S_YCrjb0hIu1ZynzvD4cNA'
 
 3. 提示导入成功后，关闭工具，重启《看门狗2》——闪屏消失！画面终于稳定了🎉
 
-<figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/05.jpg" alt=""></figure>
+
 
 注：觉得文字操作不好理解？可以去B站看我的专属教学视频（链接：https://b23.tv/1QVM0bG），跟着画面一步步操作，上手更快～
 
@@ -87,7 +89,7 @@ source: 'https://mp.weixin.qq.com/s/S_YCrjb0hIu1ZynzvD4cNA'
 
 （✨ 关注我们，获取更多的工具✨欢迎在评论区聊聊你们的看法，后期将会出看门狗2防闪屏方法二～）
 
-<figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/06.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/RTX-3000-4000玩家哭了-看门狗2-闪屏bug终于有解-保姆级教程一步-efaa0b/07.jpg" alt=""></figure>
 

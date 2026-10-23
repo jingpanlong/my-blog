@@ -2,13 +2,15 @@
 title: "年会救星！我用 Python 撸了一款「王炸级」抽奖软件，颜值与功能齐飞！（附下载）"
 date: 2026-01-07
 lastmod: 2026-01-07
-description: "趁着周末，我爆肝了一套**「年度盛典·幸运大抽奖」工具。不仅界面是针对 2026 年定制的“驭马乘风”主题，而且完全本地化运行，支持 Excel 导入，甚至还有权重设置（懂的都懂 "
+description: "趁着周末，我爆肝了一套**「年度盛典·幸运大抽奖」工具。不仅界面是针对 2026 年定制的“驭马乘风”主题，而且完全本地化运行，支持 Excel 导入，甚至还有权重设置（懂的都懂 😏）"
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/cover.jpg'
+cover: '/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/01.jpg'
 source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 ---
+
+> **导语：** 趁着周末，我爆肝了一套**「年度盛典·幸运大抽奖」工具。不仅界面是针对 2026 年定制的“驭马乘风”主题，而且完全本地化运行，支持 Excel 导入，甚至还有权重设置（懂的都懂 😏）
 
 <figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/01.jpg" alt=""></figure>
 
@@ -20,7 +22,7 @@ source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 
 趁着周末，我爆肝了一套**「年度盛典·幸运大抽奖」**工具。不仅界面是针对 2026 年定制的“驭马乘风”主题，而且**完全本地化运行，支持 Excel 导入，甚至还有权重设置（懂的都懂 😏）。话不多说，直接看效果！👇
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/02.jpg" alt=""></figure>
+
 
 **核心亮点：这就叫“排面”！**
 
@@ -28,7 +30,7 @@ source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 
 告别那种 90 年代风格的抽奖界面。我这套系统采用了**动态渐变流体背景**，不仅支持全屏投屏，当大奖诞生时，还有**全屏粒子烟花 + 3D 弹窗**特效。这往大屏幕上一投，配合那个紧张刺激的滚动音效，全场气氛瞬间拿捏！🎉
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/03.jpg" alt=""></figure>
+
 
 **2. 📊 名单管理：Excel 一键梭哈**
 
@@ -38,11 +40,11 @@ source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 
 * 支持分组：不管是“技术部”、“市场部”还是“全员参与”，随时切换抽奖池。
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/05.jpg" alt=""></figure>
+
 
 *** 黑科技“权重”：**代码里藏了个小彩蛋，支持给特定人员设置“权重”。咳咳，领导非要中奖？老员工福利倾斜？在这个框里改个数字，概率翻倍！（低调使用，别说是我教的🤫）
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/06.jpg" alt=""></figure>
+
 
 **3. ⚙️ 高度自定义：你的场子你做主**
 
@@ -60,11 +62,11 @@ source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 
 * 去重机制：担心一个人中两次大奖？默认开启“排除已中奖”，当然如果你想搞“阳光普照”，也能切回允许重复模式。
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/08.jpg" alt=""></figure>
+
 
 *** 数据导出：**抽完了怎么核对？一键导出 Excel 中奖名单，财务发奖金直接用，不用拿个小本本在旁边记了。
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/09.jpg" alt=""></figure>
+
 
 *** 断电保护：**数据实时写入本地 JSON，就算不小心把电源踢断了，重启软件，数据全都在！
 
@@ -94,7 +96,7 @@ source: 'https://mp.weixin.qq.com/s/Uj-n3Vk-kvMM3p2lS3J0aQ'
 
 <figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/10.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/年会救星-我用-Python-撸了一款-王炸级-抽奖软件-颜值与功能齐飞-附下载-605ebe/11.jpg" alt=""></figure>
+
 
 
 ---

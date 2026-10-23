@@ -2,13 +2,15 @@
 title: "IM&#39;MO 发布：基于 Python 的局域网传输终极方案，颜值与速度并存"
 date: 2025-12-30
 lastmod: 2025-12-30
-description: "为了解决文件传输这个痛点，我利用周末时间，用 Python 写了一个纯粹、极速、高颜值的局域网传输工具 —— IM\x26#39;MO Transfer。它没有广告，不走公网流量，"
+description: "为了解决文件传输这个痛点，我利用周末时间，用 Python 写了一个纯粹、极速、高颜值的局域网传输工具 —— IM\x26#39;MO Transfer。它没有广告，不走公网流量，只要你的设备在同一个 WiFi 下，速度只取决于你的路由器有多快。⚡️"
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/cover.jpg'
+cover: '/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/01.jpg'
 source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 ---
+
+> **导语：** 为了解决文件传输这个痛点，我利用周末时间，用 Python 写了一个纯粹、极速、高颜值的局域网传输工具 —— IM\x26#39;MO Transfer。它没有广告，不走公网流量，只要你的设备在同一个 WiFi 下，速度只取决于你的路由器有多快。⚡️
 
 <figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/01.jpg" alt=""></figure>
 
@@ -32,7 +34,7 @@ source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 
 它没有广告，不走公网流量，只要你的设备在同一个 WiFi 下，速度只取决于你的路由器有多快。⚡️
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/02.jpg" alt=""></figure>
+
 
 🎨**颜值即正义：IM'MO 的设计美学**
 
@@ -40,7 +42,7 @@ source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 
 * 配色方案：IM'MO 采用了深受开发者喜爱的 Catppuccin (Mocha) 配色方案。
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/03.jpg" alt=""></figure>
+
 
 *** 深色模式： **#1e1e2e 的深邃背景，护眼又高级。
 
@@ -48,7 +50,7 @@ source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 
 *** 交互细节： **拖拽上传、平滑的进度条、极简的卡片式布局。
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/05.jpg" alt=""></figure>
+
 
 这不仅仅是一个工具，放在桌面上也是一种享受。✨
 
@@ -64,7 +66,7 @@ source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 
 这是我最自豪的功能。 接收端不需要安装任何软件！ 电脑生成链接后，会自动弹出一个二维码。安卓、iOS、iPad 甚至另一台电脑，拿出手机扫一扫（或者浏览器输入 IP），直接通过网页极速下载。
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/06.jpg" alt=""></figure>
+
 
 💡 技术揭秘：程序内置了一个微型 Flask 服务器，瞬间把你的电脑变成专属文件服务器。
 
@@ -78,11 +80,11 @@ source: 'https://mp.weixin.qq.com/s/Va25MKTyvxWloWLGClC_Vw'
 
 * 局域网传输： 文件不经过任何第三方服务器，绝对安全。
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/08.jpg" alt=""></figure>
+
 
 *** 阅后即焚： **你可以设置提取码、限制下载次数（比如被下载 1 次后自动失效）、设置过期时间。
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/09.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/10.jpg" alt=""></figure>
 
@@ -110,9 +112,9 @@ IM'MO v5.0 Ultimate 现已打包完毕，开箱即用，绿色免安装。
 
 (PS: 软件内关于界面有彩蛋，欢迎去发现)
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/11.jpg" alt=""></figure>
 
-<figure><img src="/img/posts/IM-39-MO-发布-基于-Python-的局域网传输终极方案-颜值与速度并存-ec291e/12.jpg" alt=""></figure>
+
+
 
 
 ---

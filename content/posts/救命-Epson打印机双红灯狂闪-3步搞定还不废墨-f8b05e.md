@@ -6,15 +6,17 @@ description: "🚨谁懂啊！正赶合同/印娃作业/打报告，Epson打印�
 tags: ['随笔', '微信']
 categories: ['随笔']
 kicker: '随笔'
-cover: '/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/cover.jpg'
+cover: '/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/01.jpg'
 source: 'https://mp.weixin.qq.com/s/r-2DFtZ97cdoKHWaf9FqjQ'
 ---
+
+> **导语：** 🚨谁懂啊！正赶合同/印娃作业/打报告，Epson打印机突然 “罢工”—— 两个红灯像小警报似的疯狂闪烁，点打印键完全没反应！
 
 <figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/01.jpg" alt=""></figure>
 
 🚨谁懂啊！正赶合同/印娃作业/打报告，Epson打印机突然 “罢工”—— 两个红灯像小警报似的疯狂闪烁，点打印键完全没反应！😫 别慌，这不是机器坏了，是它在 “喊你处理废墨仓” 呢！今天手把手教你搞定，小白也能学会～
 
-<figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/02.jpg" alt=""></figure>
+
 
 **🔴 先搞懂：双红灯闪 = 废墨仓 “满负荷” 了！**
 
@@ -28,7 +30,7 @@ source: 'https://mp.weixin.qq.com/s/r-2DFtZ97cdoKHWaf9FqjQ'
 
 不同型号的Epson打印机，对应不同的清零工具！比如L3119/L3251/L4168等常见型号，直接搜 “Epson [你的机型] 清零软件”，认准正规网站（比如打印机品牌论坛、靠谱工具站），避免下到带广告的垃圾软件～💻
 
-<figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/03.jpg" alt=""></figure>
+
 
 （小提醒：部分软件需要先解压，记得关掉电脑杀毒软件，防止被误判拦截！）
 
@@ -48,7 +50,7 @@ source: 'https://mp.weixin.qq.com/s/r-2DFtZ97cdoKHWaf9FqjQ'
 
 清零完成后，先关掉打印机电源，等10秒再重新开机 —— 你会发现：双红灯不闪了！试打一张纸，机器稳稳恢复工作～✅
 
-<figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/05.jpg" alt=""></figure>
+
 
 **📌 关键提醒：想避免频繁清零？换个新废墨仓！**
 
@@ -68,7 +70,7 @@ source: 'https://mp.weixin.qq.com/s/r-2DFtZ97cdoKHWaf9FqjQ'
 
 你家打印机有没有过这种 “小脾气”？评论区聊聊你之前是怎么解决的～👇 要是还搞不定，留言机型，我帮你找对应清零技巧！
 
-<figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/06.jpg" alt=""></figure>
+
 
 <figure><img src="/img/posts/救命-Epson打印机双红灯狂闪-3步搞定还不废墨-f8b05e/07.jpg" alt=""></figure>
 
