@@ -837,6 +837,10 @@ img { max-width: 100%; }
 .single-desc { margin: 10px 0 0; font-size: 13.5px; color: var(--text-dim); }
 .single-content { font-size: 15px; line-height: 1.85; }
 .single-content img { border-radius: 14px; margin: 18px 0; box-shadow: var(--shadow); }
+.single-content figure { margin: 24px 0; }
+.single-content figure img { display: block; width: 100%; margin: 0 0 10px; }
+.single-content figcaption { font-size: 13px; line-height: 1.6; color: #8b95b5; text-align: center; padding: 0 10px; }
+[data-theme="light"] .single-content figcaption { color: #6b7490; }
 .single-content h2 { margin-top: 34px; position: relative; padding-left: 14px; }
 .single-content h2::before {
   content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 4px; border-radius: 4px;
