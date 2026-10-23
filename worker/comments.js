@@ -1,6 +1,8 @@
 // Cloudflare Worker：注册/登录 + 评论系统（需登录、KV 会话、邮箱验证、找回密码）
 // 经典 Service Worker 格式。KV 绑定 COMMENTS（复用 blog-likes 命名空间）。
-// secret_text 绑定：AUTH_SECRET（历史兼容占位）、RESEND_API_KEY（可选，发信）。
+// secret_text 绑定：AUTH_SECRET（历史兼容占位）、RESEND_API_KEY（可选，发信）、NOTIFY_TOKEN（群发令牌，可选）。
+// 邮件订阅：POST /subscribe 存 KV(sub:) 并发欢迎邮件；GET /unsubscribe 一键退订（返回 HTML 页）；
+//           POST /notify 按新文章群发（需 NOTIFY_TOKEN，同一篇文章去重）。
 //
 // 关键设计：
 //   - 密码 PBKDF2(SHA-256, 10万次) 加盐哈希；评论 POST 需 Bearer 会话，未登录 401。
@@ -24,6 +26,8 @@ const MAX_MEDIA_BYTES = 1572864;      // 单张图片 base64 解码后上限 1.5
 const IMG_RE = /^data:image\/(png|jpeg|gif|webp);base64,([A-Za-z0-9+/=]+)$/;
 const TOKEN_TTL = 24 * 3600; // 验证/重置 token 有效期（秒）
 const PBKDF2_ITERS = 100000;
+const MAX_SUB_PER_HOUR = 5;        // 订阅：每 IP 每小时上限
+const NOTIFY_MAX_RECIPIENTS = 500; // 单次群发收件人上限（防止误伤）
 const SITE_ORIGIN = 'https://my-blog-jingpanlong.pages.dev';
 const FROM_EMAIL = 'onboarding@resend.dev'; // Resend 测试发件人（无需自有域名）
 const AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉', '🐧', '🦄', '🌟', '🍎'];
@@ -80,6 +84,17 @@ function json(obj, status, cors) {
   return new Response(JSON.stringify(obj), {
     status: status,
     headers: Object.assign({ 'Content-Type': 'application/json' }, cors || {})
+  });
+}
+function htmlPage(html, cors) {
+  return new Response(html, {
+    status: 200,
+    headers: Object.assign({ 'Content-Type': 'text/html; charset=utf-8' }, cors || {})
+  });
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
   });
 }
 function clientIp(request) {
@@ -212,6 +227,117 @@ async function sendEmail(to, subject, html) {
 }
 function verifyLink(token) { return SITE_ORIGIN + '/?verify=' + encodeURIComponent(token); }
 function resetLink(token) { return SITE_ORIGIN + '/?reset=' + encodeURIComponent(token); }
+function unsubLink(email, token, origin) {
+  return origin + '/unsubscribe?email=' + encodeURIComponent(email) + '&token=' + encodeURIComponent(token);
+}
+
+// ---------------- 邮件订阅 ----------------
+// KV：sub:<email> = { email, token, ts }（永久，无 TTL）；notified:<path> 标记已群发过的文章。
+// 安全：/subscribe 按 IP 限频；/unsubscribe 需 token 匹配；/notify 需 NOTIFY_TOKEN 才允许群发。
+function emailShell(title, innerHtml) {
+  return '<!doctype html><html><head><meta charset="utf-8">'
+    + '<meta name="viewport" content="width=device-width, initial-scale=1">'
+    + '<title>' + title + '</title></head>'
+    + '<body style="margin:0;padding:0;background:#f4f6fb;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',\'PingFang SC\',\'Microsoft YaHei\',sans-serif;">'
+    + '<div style="max-width:520px;margin:0 auto;padding:28px 16px;">'
+    + '<div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 30px rgba(20,30,80,.08);">'
+    + '<div style="height:4px;background:linear-gradient(90deg,#6d8bff,#9bb4ff);"></div>'
+    + '<div style="padding:26px 26px 22px;">' + innerHtml + '</div>'
+    + '</div>'
+    + '<p style="text-align:center;color:#9aa3bd;font-size:12px;margin:16px 0 0;">本邮件由 <a href="' + SITE_ORIGIN + '" style="color:#6d8bff;text-decoration:none;">' + escapeHtml(SITE_ORIGIN.replace(/^https?:\/\//, '')) + '</a> 订阅者推送</p>'
+    + '</div></body></html>';
+}
+
+async function subscribe(request, cors) {
+  var ip = clientIp(request);
+  if (await rateLimited('sub:', ip, MAX_SUB_PER_HOUR)) return json({ error: '操作太频繁，请稍后再试' }, 429, cors);
+  var body;
+  try { body = await request.json(); } catch (e) { return json({ error: 'invalid json' }, 400, cors); }
+  var email = (body.email || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: '邮箱格式不正确' }, 400, cors);
+
+  if (await getJSON('sub:' + email)) return json({ ok: true, already: true }, 200, cors);
+
+  var token = randToken(18);
+  await putJSON('sub:' + email, { email: email, token: token, ts: Date.now() });
+
+  var origin = new URL(request.url).origin;
+  var unsub = unsubLink(email, token, origin);
+  var html = emailShell('订阅成功', ''
+    + '<h1 style="margin:0 0 12px;font-size:20px;color:#1f2740;">订阅成功 🎉</h1>'
+    + '<p style="margin:0 0 16px;color:#4a5473;font-size:14px;line-height:1.7;">感谢订阅本站，以后有新文章会第一时间邮件通知你。</p>'
+    + '<p style="margin:0 0 22px;"><a href="' + SITE_ORIGIN + '" style="display:inline-block;padding:10px 22px;background:#6d8bff;color:#ffffff;border-radius:999px;text-decoration:none;font-weight:600;">去首页看看</a></p>'
+    + '<p style="margin:0;color:#9aa3bd;font-size:12px;line-height:1.6;">不想再收到邮件？<a href="' + unsub + '" style="color:#6d8bff;">点此退订</a></p>');
+  await sendEmail(email, '订阅成功 · 新文章将邮件通知你', html);
+  return json({ ok: true }, 200, cors);
+}
+
+async function unsubscribePage(url, cors) {
+  var email = (url.searchParams.get('email') || '').trim().toLowerCase();
+  var token = url.searchParams.get('token') || '';
+  var rec = await getJSON('sub:' + email);
+  var ok = !!(rec && rec.token && rec.token === token);
+  if (ok) await COMMENTS.delete('sub:' + email);
+  var inner = ok
+    ? '<h1 style="margin:0 0 12px;font-size:20px;color:#1f2740;">已退订</h1>'
+      + '<p style="margin:0;color:#4a5473;font-size:14px;line-height:1.7;">你已成功取消订阅，不会再收到新文章通知。随时欢迎再来：<a href="' + SITE_ORIGIN + '" style="color:#6d8bff;">回到本站</a></p>'
+    : '<h1 style="margin:0 0 12px;font-size:20px;color:#1f2740;">链接无效</h1>'
+      + '<p style="margin:0;color:#4a5473;font-size:14px;line-height:1.7;">该退订链接无效或已处理过，无需重复操作。</p>';
+  return htmlPage(emailShell(ok ? '已退订' : '链接无效', inner), cors);
+}
+
+async function notifySubscribers(request, url, cors) {
+  // 群发是敏感操作，必须持有 NOTIFY_TOKEN（secret_text 绑定）才能触发
+  if (typeof NOTIFY_TOKEN !== 'string' || NOTIFY_TOKEN.length === 0) {
+    return json({ error: '未配置 NOTIFY_TOKEN，群发未启用' }, 503, cors);
+  }
+  var body;
+  try { body = await request.json(); } catch (e) { return json({ error: 'invalid json' }, 400, cors); }
+  var provided = (request.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '')
+    || url.searchParams.get('token') || body.token || '';
+  if (provided !== NOTIFY_TOKEN) return json({ error: 'unauthorized' }, 401, cors);
+
+  var title = (body.title || '').trim();
+  var postUrl = (body.url || '').trim();
+  var summary = (body.summary || '').trim();
+  var path = (body.path || postUrl).trim();
+  if (!title || !postUrl) return json({ error: '缺少 title / url' }, 400, cors);
+
+  // 去重：同一篇文章只群发一次（因此可安全地挂在每次部署上反复调用）
+  var mark = 'notified:' + path;
+  if (await COMMENTS.get(mark)) return json({ ok: true, skipped: true }, 200, cors);
+
+  var origin = new URL(request.url).origin;
+  var subs = [];
+  var cursor = undefined;
+  do {
+    var page = await COMMENTS.list({ prefix: 'sub:', cursor: cursor, limit: 1000 });
+    for (var i = 0; i < (page.keys || []).length; i++) {
+      var rec = await getJSON(page.keys[i].name);
+      if (rec && rec.email) subs.push(rec);
+      if (subs.length >= NOTIFY_MAX_RECIPIENTS) break;
+    }
+    cursor = (subs.length >= NOTIFY_MAX_RECIPIENTS || page.list_complete) ? undefined : page.cursor;
+  } while (cursor);
+
+  var safeSummary = summary ? escapeHtml(summary) : '';
+  var html = emailShell('新文章 · ' + title, ''
+    + '<h1 style="margin:0 0 6px;font-size:20px;color:#1f2740;">新文章发布</h1>'
+    + '<p style="margin:0 0 16px;color:#9aa3bd;font-size:12px;">' + escapeHtml(SITE_ORIGIN.replace(/^https?:\/\//, '')) + '</p>'
+    + '<h2 style="margin:0 0 10px;font-size:17px;line-height:1.55;color:#1f2740;">' + escapeHtml(title) + '</h2>'
+    + (safeSummary ? '<p style="margin:0 0 18px;color:#4a5473;font-size:14px;line-height:1.75;">' + safeSummary + '</p>' : '')
+    + '<p style="margin:0 0 22px;"><a href="' + escapeHtml(postUrl) + '" style="display:inline-block;padding:11px 24px;background:#6d8bff;color:#ffffff;border-radius:999px;text-decoration:none;font-weight:600;">阅读全文</a></p>'
+    + '<p style="margin:0;color:#9aa3bd;font-size:12px;line-height:1.6;">你收到这封邮件是因为订阅了本站更新，可<a href="__UNSUB__" style="color:#6d8bff;">退订</a>。</p>');
+
+  var sent = 0;
+  for (var j = 0; j < subs.length; j++) {
+    var u = unsubLink(subs[j].email, subs[j].token, origin);
+    await sendEmail(subs[j].email, '新文章 · ' + title, html.replace(/__UNSUB__/g, u));
+    sent++;
+  }
+  await COMMENTS.put(mark, String(Date.now()));
+  return json({ ok: true, sent: sent, total: subs.length }, 200, cors);
+}
 
 // ---------------- 路由 ----------------
 async function handle(request) {
@@ -246,6 +372,9 @@ async function handle(request) {
       if (request.method === 'POST') return await postComment(request, cors);
       if (request.method === 'DELETE') return await deleteComment(request, url, cors);
     }
+    if (p.endsWith('/subscribe') && request.method === 'POST') return await subscribe(request, cors);
+    if (p.endsWith('/unsubscribe') && request.method === 'GET') return await unsubscribePage(url, cors);
+    if (p.endsWith('/notify') && request.method === 'POST') return await notifySubscribers(request, url, cors);
     return json({ error: 'not found' }, 404, cors);
   } catch (e) {
     return json({ error: '服务器开小差了，请稍后重试' }, 500, cors);

@@ -283,31 +283,68 @@
     updateFavBadge();
   })();
 
-  // ---- 侧栏订阅（无后端，走邮件订阅）----
+  // ---- 侧栏订阅（有后端走 /subscribe 真订阅；无后端回退 mailto）----
   (function () {
     var form = document.getElementById('subscribe-form');
     if (!form) return;
     var input = document.getElementById('subscribe-email');
     var hint = form.parentNode.querySelector('.sub-hint');
     var defaultHint = hint ? hint.textContent : '';
+    var btn = form.querySelector('button[type=submit]');
+    var apiMeta = document.querySelector('meta[name="subs-api"]');
+    var api = apiMeta ? apiMeta.content : '';
     var to = form.getAttribute('data-email') || '';
+
+    function setHint(text, isErr) {
+      if (!hint) return;
+      hint.textContent = text;
+      hint.style.color = isErr ? '#ff5c8a' : '';
+    }
+    function resetHint() {
+      setTimeout(function () { if (hint) { hint.textContent = defaultHint; hint.style.color = ''; } }, 6000);
+    }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var v = (input && input.value || '').trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
-        if (hint) { hint.textContent = '请输入正确的邮箱地址'; hint.style.color = '#ff5c8a'; }
+        setHint('请输入正确的邮箱地址', true);
         if (input) input.focus();
         return;
       }
-      var subject = encodeURIComponent('订阅博客 · ' + v);
-      var body = encodeURIComponent('你好，我想订阅你的博客。\n\n我的邮箱：' + v + '\n');
-      window.location.href = 'mailto:' + to + '?subject=' + subject + '&body=' + body;
-      if (hint) { hint.textContent = '已打开邮件客户端，发送后即完成订阅'; hint.style.color = ''; }
-      if (input) input.value = '';
-      setTimeout(function () {
-        if (hint) hint.textContent = defaultHint;
-      }, 6000);
+      if (btn) btn.disabled = true;
+
+      // 未配置订阅后端：退回 mailto 直达站长邮箱
+      if (!api) {
+        window.location.href = 'mailto:' + to + '?subject=' + encodeURIComponent('订阅博客 · ' + v)
+          + '&body=' + encodeURIComponent('你好，我想订阅你的博客。\n\n我的邮箱：' + v + '\n');
+        setHint('已打开邮件客户端，发送后即完成订阅');
+        if (input) input.value = '';
+        if (btn) btn.disabled = false;
+        resetHint();
+        return;
+      }
+
+      setHint('提交中…');
+      fetch(api, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: v })
+      }).then(function (r) {
+        return r.json().then(function (d) { return { s: r.status, d: d }; });
+      }).then(function (res) {
+        if (res.s === 200 && res.d && res.d.ok) {
+          if (input) input.value = '';
+          setHint(res.d.already ? '你已订阅过啦，新文章会继续通知你' : '订阅成功！新文章将邮件通知你，邮件里可随时退订');
+        } else {
+          setHint((res.d && res.d.error) || '订阅失败，请稍后重试', true);
+        }
+      }).catch(function () {
+        setHint('网络错误，请稍后重试', true);
+      }).then(function () {
+        if (btn) btn.disabled = false;
+        resetHint();
+      });
     });
   })();
 

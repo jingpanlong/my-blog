@@ -112,7 +112,7 @@ home:
     title: 订阅更新
     desc: 输入邮箱，获取最新文章和项目动态
     placeholder: 你的邮箱地址
-    hint: 每月最多一封，不会打扰你
+    hint: 有新文章会邮件通知你，邮件里可随时一键退订
   tags:
     title: 常用标签
     more: 更多
@@ -185,3 +185,4 @@ knowledge:
 likeApi: https://like-counter.470918507.workers.dev
 viewApi: https://like-counter.470918507.workers.dev/views
 commentApi: https://comments.470918507.workers.dev/comments
+subsApi: https://comments.470918507.workers.dev/subscribe

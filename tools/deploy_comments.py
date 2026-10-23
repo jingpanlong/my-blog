@@ -32,6 +32,9 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 OWNER_KEY = os.environ.get("OWNER_KEY", "o+h2a2MliUpTzuUTkBh3O5JCw6HVRhUd")
 OWNER_NAME = os.environ.get("OWNER_NAME", "景盼龙")
 OWNER_AVATAR = os.environ.get("OWNER_AVATAR", "🌟")
+# 群发令牌：POST /notify 需带此令牌（Authorization: Bearer <值>）才会向订阅者群发新文章通知。
+# 留空则群发接口返回 503（订阅/退订仍可用）。部署时用环境变量注入一个足够长的随机串。
+NOTIFY_TOKEN = os.environ.get("NOTIFY_TOKEN", "")
 
 CF_TOKEN = os.environ["CF_API_TOKEN"]
 ACCOUNT_ID = os.environ["CF_ACCOUNT_ID"]
@@ -72,6 +75,7 @@ def multipart_upload(script_js):
             {"name": "OWNER_KEY", "type": "secret_text", "text": OWNER_KEY},
             {"name": "OWNER_NAME", "type": "secret_text", "text": OWNER_NAME},
             {"name": "OWNER_AVATAR", "type": "secret_text", "text": OWNER_AVATAR},
+            {"name": "NOTIFY_TOKEN", "type": "secret_text", "text": NOTIFY_TOKEN},
         ],
     }
     parts = []
@@ -159,6 +163,10 @@ def main():
         except Exception:
             pass
         print("(自测产生的注册用户/评论可手动在 KV 中清理：user:selftest@example.com、comment:/__selftest__/:*)")
+
+    print("\n=== 订阅路由自检（不发信、不写库） ===")
+    print("subscribe(空邮箱) :", json.dumps(call("POST", "/subscribe", {}), ensure_ascii=False))
+    print("notify(无 token)   :", json.dumps(call("POST", "/notify", {"title": "t", "url": "u"}), ensure_ascii=False))
 
 
 if __name__ == "__main__":
