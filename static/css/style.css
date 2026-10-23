@@ -533,6 +533,14 @@ img { max-width: 100%; }
 }
 .pcard-status { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--a); white-space: nowrap; }
 .pcard-status::before { content: "✦"; font-size: 9px; }
+.pcard-link {
+  display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+  font-size: 11px; font-weight: 600; color: var(--text-dim); text-decoration: none;
+  padding: 5px 10px; border-radius: 7px; border: 1px solid var(--border);
+  background: var(--chip); transition: color 0.2s, border-color 0.2s, background 0.2s; margin: 2px 0 1px;
+}
+.pcard-link:hover { color: var(--a); border-color: var(--a); }
+.pcard-link.is-gh:hover { color: #fff; background: var(--a); border-color: var(--a); }
 
 /* =========================================================
    知识地图：参考图做底（文字已抹除）+ 代码叠加可编辑文字 + 动效
@@ -859,7 +867,10 @@ img { max-width: 100%; }
   margin: 16px 0; padding: 10px 18px; border-radius: 0 12px 12px 0;
   border-left: 4px solid var(--brand); background: var(--chip); color: var(--text-dim);
 }
-.single-foot { margin-top: 28px; }
+.single-foot { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.pill.gh-link { font-weight: 600; }
+.pill.gh-link.is-gh { border-color: var(--brand); color: var(--brand); background: transparent; }
+.pill.gh-link.is-gh:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
 .pill {
   display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px;
   border-radius: 999px; text-decoration: none; border: 1px solid var(--border);
