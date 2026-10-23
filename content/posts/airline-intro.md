@@ -1,6 +1,7 @@
 ---
 title: 晾图 Airline：把截图晾在屏幕边上
 date: 2026-09-21
+lastmod: 2026-10-23T10:05:00+08:00
 description: 一个 Windows 桌面截图小工具，屏幕顶端一根「晾图绳」，截图像照片一样夹在上面，用时展开、离开即收，纯 WPF 实现。
 tags: ['WPF', 'Windows', '截图', '效率']
 categories: ['工具']

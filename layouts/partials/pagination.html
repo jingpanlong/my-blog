@@ -1,0 +1,36 @@
+{{ $p := .Paginator }}
+{{ if gt $p.TotalPages 1 }}
+{{ $cur := $p.PageNumber }}
+{{ $total := $p.TotalPages }}
+<nav class="pager" aria-label="分页导航">
+  {{ if $p.HasPrev }}
+    <a class="pager-nav" href="{{ $p.First.URL }}" aria-label="首页"><span aria-hidden="true">«</span></a>
+    <a class="pager-nav" href="{{ $p.Prev.URL }}" rel="prev" aria-label="上一页"><span aria-hidden="true">‹</span></a>
+  {{ else }}
+    <span class="pager-nav is-disabled" aria-hidden="true">«</span>
+    <span class="pager-nav is-disabled" aria-hidden="true">‹</span>
+  {{ end }}
+
+  {{ $last := 0 }}
+  {{ range $p.Pagers }}
+    {{ $n := .PageNumber }}
+    {{ if or (eq $n 1) (eq $n $total) (and (ge $n (sub $cur 1)) (le $n (add $cur 1))) }}
+      {{ if gt (sub $n $last) 1 }}<span class="pager-gap" aria-hidden="true">…</span>{{ end }}
+      {{ if eq $n $cur }}
+        <span class="pager-num is-current" aria-current="page">{{ $n }}</span>
+      {{ else }}
+        <a class="pager-num" href="{{ .URL }}">{{ $n }}</a>
+      {{ end }}
+      {{ $last = $n }}
+    {{ end }}
+  {{ end }}
+
+  {{ if $p.HasNext }}
+    <a class="pager-nav" href="{{ $p.Next.URL }}" rel="next" aria-label="下一页"><span aria-hidden="true">›</span></a>
+    <a class="pager-nav" href="{{ $p.Last.URL }}" aria-label="末页"><span aria-hidden="true">»</span></a>
+  {{ else }}
+    <span class="pager-nav is-disabled" aria-hidden="true">›</span>
+    <span class="pager-nav is-disabled" aria-hidden="true">»</span>
+  {{ end }}
+</nav>
+{{ end }}

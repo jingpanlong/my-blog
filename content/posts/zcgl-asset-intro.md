@@ -1,6 +1,7 @@
 ---
 title: 锦纷资产管理系统：内网 IT 资产盘点怎么做
 date: 2026-08-29
+lastmod: 2026-10-23T10:02:00+08:00
 description: 一套面向企业 IT 部门的内网设备资产盘点系统，客户端静默采集、Flask 服务端入库 SQLite、pandas 导出 Excel 台账。
 tags: ['Python', 'Flask', 'IT运维', '资产盘点']
 categories: ['工具']

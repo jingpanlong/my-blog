@@ -1,6 +1,7 @@
 ---
 title: 流转 FlowShift：把「转格式」变成一次拖拽
 date: 2026-10-02
+lastmod: 2026-10-23T10:08:00+08:00
 description: 一款常驻桌面的 Windows 本地格式转换工具，悬浮胶囊 + 格式罗盘 + 资源管理器右键，255 种格式一切在本地完成。
 tags: ['C#', 'Windows', '效率工具', '格式转换']
 categories: ['工具']

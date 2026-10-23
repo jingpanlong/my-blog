@@ -1280,14 +1280,27 @@ img { max-width: 100%; }
 .to-top.show { opacity: 1; pointer-events: auto; }
 
 /* 分页 */
-.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 28px; }
-.pagination a, .pagination span {
-  padding: 8px 14px; border-radius: 10px; text-decoration: none; font-size: 13px;
-  background: var(--chip); border: 1px solid var(--border); color: var(--text-dim);
-  transition: 0.2s;
+.pager { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 34px; flex-wrap: wrap; }
+.pager-nav, .pager-num {
+  min-width: 40px; height: 40px; padding: 0 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--chip); color: var(--text-dim); text-decoration: none;
+  font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1;
+  transition: transform 0.2s, border-color 0.2s, color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-.pagination a:hover { color: var(--text); border-color: var(--brand); }
-.pagination .current { color: #fff; background: var(--brand); border-color: var(--brand); }
+.pager-nav span { font-size: 17px; line-height: 1; }
+.pager-nav:hover, .pager-num:hover { color: var(--text); border-color: var(--brand); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18); }
+.pager-num.is-current {
+  color: #fff; background: var(--brand); border-color: var(--brand);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--brand) 45%, transparent); cursor: default; transform: none;
+}
+.pager-nav.is-disabled { opacity: 0.32; pointer-events: none; }
+.pager-gap { color: var(--text-mute); padding: 0 2px; user-select: none; }
+@media (max-width: 520px) {
+  .pager { gap: 6px; margin-top: 26px; }
+  .pager-nav, .pager-num { min-width: 36px; height: 36px; padding: 0 9px; font-size: 13px; border-radius: 10px; }
+}
 
 /* =========================================================
    响应式

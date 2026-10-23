@@ -1,6 +1,7 @@
 ---
 title: 光标工坊 CursorAtelier：把系统光标换成 54 款原创皮肤
 date: 2026-09-11
+lastmod: 2026-10-23T10:03:00+08:00
 description: Windows 鼠标光标美化工具，54 款原创皮肤、17 个角色、CUR/DIB/ANI 编码，支持尺寸、主题、预览与一键恢复。
 tags: ['C#', 'WinForms', '个性化', '光标']
 categories: ['工具']

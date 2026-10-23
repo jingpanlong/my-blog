@@ -11,6 +11,7 @@
 {{ $secSub := $home.subscribe | default dict }}
 {{ $secTags := $home.tags | default dict }}
 {{ $posts := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+{{ $activity := (where site.RegularPages "Section" "posts").ByLastmod.Reverse }}
 {{ $projects := (where site.RegularPages "Section" "projects").ByDate.Reverse }}
 {{ $tagCount := len site.Taxonomies.tags }}
 {{ $postCount := len $posts }}
@@ -212,7 +213,7 @@
         <a href="/archive/">{{ $secActivity.more | default "全部" }} <span aria-hidden="true">→</span></a>
       </div>
       <ul class="activity">
-        {{ range first 4 $posts }}
+        {{ range first 4 $activity }}
         <li>
           <span class="act-dot" aria-hidden="true"></span>
           <div class="act-body">

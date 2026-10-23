@@ -1,6 +1,7 @@
 ---
 title: 微野 DesktopCritters：把九种小动物养在桌面上
 date: 2026-09-13
+lastmod: 2026-10-23T10:04:00+08:00
 description: Windows 桌面动物生态，九种昆虫与蜗牛混养，最多 24 只，16 段步态、25–600% 缩放、跨物种互动与生活状态。
 tags: ['C#', 'WinForms', '桌面生态', '桌宠']
 categories: ['工具']
