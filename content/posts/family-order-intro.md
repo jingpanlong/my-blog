@@ -1,59 +1,119 @@
 ---
-title: 一家一菜谱：一家人聚餐前，先在小程序里点好菜
+title: 一家一菜谱：让每顿饭都有温度
 date: 2026-05-13
-description: 微信小程序「一家一菜谱」，让一家人聚餐前在手机上一起点菜、自动去重、实时统计预算，技术栈基于微信云开发。
-tags: ['微信小程序', '全栈', '云开发', '家庭']
+description: 一个为家庭厨房打造的工具——从菜谱到菜单，从点菜到记录，把一家人吃饭这件事变得简单又温暖。
+tags: ['微信小程序', '家庭', '菜谱', '云开发']
 categories: ['产品']
 kicker: '微信小程序'
-cover: '/img/projects/family-order/04-banner.png'
+cover: '/img/projects/family-order/01-home.jpg'
 ---
 
-> 注意：这个微信小程序正式名称为 **「一家一菜谱」**（不是「家庭点菜助手」），下文中统一使用正确名称。
+「一家一菜谱」是一个为**家庭厨房**打造的小程序。它想解决的问题很朴素：一家人吃饭，从「想吃什么」到「谁来买菜」再到「今天做了什么好吃的」，能不能都在一个地方、简简单单地完成。
 
-一家人聚餐，最怕两件事：点了一堆重复的菜，以及结账时才发现超预算。**一家一菜谱** 就是一个面向家庭聚餐场景的微信小程序，把「点菜」这件事提前到手机上一起完成。
-
-<figure>
-  <img src="/img/projects/family-order/04-banner.png" alt="一家一菜谱 banner">
-  <figcaption>小程序 banner：家庭聚餐前的点菜与预算协同。</figcaption>
-</figure>
-
-## 它解决什么
-
-- **多人同时点菜容易重复**：聚餐前各点各的，到店才发现三份红烧肉；
-- **预算不透明**：结账时才知道花了多少，容易超支。
-
-一家一菜谱让家庭成员共享一个菜单，点菜实时同步、自动去重，并按人数与菜品自动估算预算。
-
-## 三个核心页面
-
-小程序主要有三个入口：**首页**负责点菜与菜单总览，**分类**按菜品类型浏览，**我的**管理家庭成员与偏好。
+打开小程序，首页就是「我们的厨房」：今日菜单、营养概览、今日推荐一目了然。
 
 <figure>
-  <img src="/img/projects/family-order/01-home.png" alt="首页">
-  <figcaption>首页：当前菜单、成员点菜入口与预算概览。</figcaption>
+  <img src="/img/projects/family-order/01-home.jpg" alt="一家一菜谱首页">
+  <figcaption>首页「我们的厨房」：今日三餐菜单、总热量与营养概览，底部是今日推荐，点「+」即可加入菜单。</figcaption>
 </figure>
+
+## 1 · 菜谱库：把拿手菜写进手机
+
+家里那些做了几十年的拿手菜，以前只存在老妈的脑子里。现在可以把它们一道道写进手机：食材清单、详细步骤、烹饪时间、难度等级，还能配上成品照片。家庭成员都能看到，谁想做点什么，翻一翻就有了。
 
 <figure>
-  <img src="/img/projects/family-order/02-category.png" alt="分类页">
-  <figcaption>分类页：按菜品类型浏览，便于快速找到想点的菜。</figcaption>
+  <img src="/img/projects/family-order/02-recipes.jpg" alt="菜谱库与添加菜谱">
+  <figcaption>左：菜谱库按家常菜 / 肉类 / 蔬菜 / 汤类 / 主食分类，支持搜索；右：添加菜谱时填菜名、上传成品图、设分类与难度、录入所需食材和制作步骤。</figcaption>
 </figure>
+
+点开一道菜，就是一份清晰的「做菜卡片」：成品大图、热量与三大营养素、所需食材、分步做法，还能给这道菜打分。
 
 <figure>
-  <img src="/img/projects/family-order/03-profile.png" alt="我的页">
-  <figcaption>我的：家庭成员、偏好与设置。</figcaption>
+  <img src="/img/projects/family-order/03-recipe-detail.jpg" alt="菜谱详情">
+  <figcaption>菜谱详情（以红烧排骨为例）：450 kcal、25g 蛋白质、所需食材精确到克，制作步骤分步编号，新手也能照着做。</figcaption>
 </figure>
 
-## 技术实现
+## 2 · 食记：家庭自己的美食朋友圈
 
-技术栈基于**微信云开发（wx.cloud）**：
-
-- 前端使用原生小程序框架；
-- 云存储按 `recipes / food-records / avatars / backgrounds` 四类路径组织；
-- 跨成员敏感操作通过云函数（如 `manageData`）统一鉴权，绕过数据库权限规则的安全边界。
+这是「一家一菜谱」里最特别的功能。你发的食记动态，**所有家庭**的用户都能看到；别人发的，你也能刷到。就像一个专门用来分享真实餐桌的社区——没有广告，没有算法推荐，只有普通人家的饭菜。
 
 <figure>
-  <img src="/img/projects/family-order/05-banner2.png" alt="第二张 banner">
-  <figcaption>另一张运营 banner，用于节日聚餐等场景推广。</figcaption>
+  <img src="/img/projects/family-order/04-diary.jpg" alt="食记动态与发布">
+  <figcaption>左：食记信息流，可以给动态点赞、评论、收藏；右：发布日记只需「写几句话 + 最多 9 张图」，发布前会做内容安全审核。</figcaption>
 </figure>
 
-> 一家一菜谱目前已上线，是家庭聚餐前「先点菜、再赴约」的小帮手。完整能力见项目卡片 [一家一菜谱](/projects/family-order/)。
+在这里刷到的不是网红探店，而是隔壁老王今晚炖了排骨、楼上张姐给孩子烤了饼干。这种烟火气，比什么短视频都治愈。你发布的动态也能在「我的日记」里回看，分成「我的发布」和「我的收藏」。
+
+<figure>
+  <img src="/img/projects/family-order/05-my-diary.jpg" alt="我的日记">
+  <figcaption>「我的日记」：左侧是自己的发布记录，右侧是收藏的别人的好菜，点赞、评论、收藏都沉淀在这里。</figcaption>
+</figure>
+
+## 3 · 投票点菜：今天吃什么，投票决定
+
+「今天吃什么？」——这个问题每天都在重复上演。有了投票点菜，做饭的人提前发起一个投票，列出几个备选菜，每个家人各投一票，票数最高的就安排做。小孩特别喜欢参与——因为他们终于能对晚餐发表意见了。
+
+<figure>
+  <img src="/img/projects/family-order/06-vote.jpg" alt="投票点菜">
+  <figcaption>左：每位成员可选择 1–3 道想吃的菜，「今日热门」自动统计最受欢迎的菜；右：点菜弹窗里勾选想吃的菜，确认后即计入投票。</figcaption>
+</figure>
+
+## 4 · 每日菜单 & 提醒
+
+提前规划好今天吃什么，不用到饭点再犯愁。早上出门前把今天的菜单定好，到了饭点会弹窗提醒该做饭了；上班时顺手加几个菜，下班路上就能去超市买材料。确认菜单后还会通知家人查看，避免「做了没人知道」。
+
+<figure>
+  <img src="/img/projects/family-order/07-confirm-remind.jpg" alt="确认菜单与提醒">
+  <figcaption>左：确认菜单后当日菜单锁定，同时通知家庭成员查看；右：服务通知里的「日程提醒」，谁确认了菜单第一时间知道。</figcaption>
+</figure>
+
+## 5 · 购物清单：买什么，一目了然
+
+根据今日菜单自动整理出要买的食材，也可以手动添加。买完一样划掉一样，顶部还有采购进度，清清楚楚不会漏买。更方便的是**多人协作**——你在公司想起家里缺酱油，加进清单；另一半在超市看一眼就知道还要买什么。
+
+<figure>
+  <img src="/img/projects/family-order/08-shopping.jpg" alt="采购清单">
+  <figcaption>左：采购清单按菜单自动生成，标注每样食材用于哪道菜，勾选即完成；右：可手动添加采购项，填名称、用量与单位。</figcaption>
+</figure>
+
+## 6 · 更多贴心细节
+
+除了上面五件事，还有不少让日常更顺滑的小功能：
+
+- **美食记录**：外出就餐也能存档，建立个人美食地图；
+- **家庭管理**：创建家庭、邀请码加入、成员管理，一家人共用一个空间；
+- **消息通知**：有人给你点赞、评论，第一时间知道；
+- **主题切换**：多种主题色可选，换个颜色换种心情。
+
+<figure>
+  <img src="/img/projects/family-order/09-more.jpg" alt="美食记录、家庭成员与消息通知">
+  <figcaption>左：美食记录可按菜打标签、看喜爱排行；中：家庭成员与邀请码；右：消息通知汇总点赞、评论、菜单变动。</figcaption>
+</figure>
+
+「我的」页面则集中了家庭成员管理、今日菜单管理、历史菜单、采购清单、主题设置、菜单提醒开关等入口。
+
+<figure>
+  <img src="/img/projects/family-order/10-profile.jpg" alt="我的页面">
+  <figcaption>「我的」：家庭信息与成员、18 道菜谱 / 2 条菜单记录等统计，以及菜单提醒开关与数据管理入口。</figcaption>
+</figure>
+
+## 怎么开始
+
+不需要注册，微信里搜索「一家一菜谱」就能用——免费、无广告、不收集多余信息。
+
+<figure>
+  <img src="/img/projects/family-order/11-family.jpg" alt="创建或加入家庭">
+  <figcaption>左：创建家庭，给家起个名字、选自己的角色；右：输入 6 位邀请码即可加入家人的厨房。</figcaption>
+</figure>
+
+1. 微信搜索「一家一菜谱」，打开小程序；
+2. 点击「创建家庭」，给你的小家起个名字；
+3. 把生成的邀请码发给家人，让他们加入进来；
+4. 开始添加菜谱、发食记、投票点菜……享受一起吃饭的乐趣。
+
+<figure>
+  <img src="/img/projects/family-order/12-qrcode.jpg" alt="一家一菜谱小程序码">
+  <figcaption>扫码直接进入「一家一菜谱」小程序。</figcaption>
+</figure>
+
+> 完整功能与更多截图见项目卡片 [一家一菜谱](/projects/family-order/)。
