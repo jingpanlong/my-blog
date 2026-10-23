@@ -4,6 +4,8 @@
 // 邮件订阅：POST /subscribe 存 KV(sub:) 并发欢迎邮件；GET /unsubscribe 一键退订（返回 HTML 页）；
 //           POST /notify 按新文章群发（需 NOTIFY_TOKEN，同一篇文章去重）；
 //           scheduled 定时任务每小时自动拉取站点最新文章并群发（近期 14 天内且未通知过才发）。
+//           注册/登录即自动订阅（sub: 记录标记 source=account，验证邮件中说明并可退订）；
+//           本功能上线前已注册的存量用户，由定时任务回填一次（KV 标记 subs-backfilled 防重复）。
 //
 // 关键设计：
 //   - 密码 PBKDF2(SHA-256, 10万次) 加盐哈希；评论 POST 需 Bearer 会话，未登录 401。
@@ -269,7 +271,7 @@ async function subscribe(request, cors) {
   if (await getJSON('sub:' + email)) return json({ ok: true, already: true }, 200, cors);
 
   var token = randToken(18);
-  await putJSON('sub:' + email, { email: email, token: token, ts: Date.now() });
+  await putJSON('sub:' + email, { email: email, token: token, ts: Date.now(), source: 'form' });
 
   var origin = WORKER_ORIGIN;
   var unsub = unsubLink(email, token, origin);
@@ -280,6 +282,42 @@ async function subscribe(request, cors) {
     + '<p style="margin:0;color:#9aa3bd;font-size:12px;line-height:1.6;">不想再收到邮件？<a href="' + unsub + '" style="color:#6d8bff;">点此退订</a></p>');
   var mailed = await sendEmail(email, '订阅成功 · 新文章将邮件通知你', html);
   return json({ ok: true, mailSent: mailed }, 200, cors);
+}
+
+// 幂等地把某个邮箱加入订阅列表（注册/登录自动订阅用）。
+// 已订阅则保留原 token 不覆盖（避免历史退订链接失效），返回 false；新建返回 true。
+async function ensureSubscribed(email) {
+  var e = String(email || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return false;
+  var existing = await getJSON('sub:' + e);
+  if (existing && existing.token) return false;
+  var token = randToken(18);
+  await putJSON('sub:' + e, { email: e, token: token, ts: Date.now(), source: 'account' });
+  return true;
+}
+
+// 回填：把「订阅功能上线前」已注册的存量用户补成订阅者。
+// KV 标记 subs-backfilled 保证只跑一次（由定时任务触发，安全可反复调用）。
+async function backfillSubsFromUsers() {
+  if (await COMMENTS.get('subs-backfilled')) return { added: 0, total: 0 };
+  var emails = [];
+  var cursor = undefined;
+  do {
+    var page = await COMMENTS.list({ prefix: 'user:', cursor: cursor, limit: 1000 });
+    for (var i = 0; i < (page.keys || []).length; i++) {
+      var k = page.keys[i].name;
+      if (k.indexOf('userByName:') === 0) continue; // 昵称索引不是账号记录
+      var rec = await getJSON(k);
+      if (rec && rec.email) emails.push(rec.email);
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+  var added = 0;
+  for (var j = 0; j < emails.length; j++) {
+    if (await ensureSubscribed(emails[j])) added++;
+  }
+  await COMMENTS.put('subs-backfilled', String(Date.now()));
+  return { added: added, total: emails.length };
 }
 
 async function unsubscribePage(url, cors) {
@@ -353,9 +391,10 @@ async function broadcastNewPost(title, summary, postUrl, path) {
   return { sent: sent, total: subs.length };
 }
 
-// 定时任务：拉站点 search-index.json 取最新文章；近期且未通知过才群发
+// 定时任务：先回填存量用户订阅（只跑一次），再拉站点 search-index.json 取最新文章；近期且未通知过才群发
 async function scheduledNotify() {
   try {
+    await backfillSubsFromUsers();
     var r = await fetch(SITE_ORIGIN + '/search-index.json', { headers: { 'Accept': 'application/json' } });
     if (!r.ok) return;
     var posts = await r.json();
@@ -448,13 +487,24 @@ async function register(request, cors) {
   await putJSON('user:' + email, user);
   await COMMENTS.put('userByName:' + name.toLowerCase(), email);
   await COMMENTS.put('verify:' + vt, email, { expirationTtl: TOKEN_TTL });
+  // 注册即订阅：自动加入邮件订阅列表（幂等；已通过表单订阅过的保留原 token）
+  await ensureSubscribed(email);
 
   var sid = await createSession(user);
   var devLinks = [];
   if (typeof RESEND_API_KEY !== 'string' || RESEND_API_KEY.length === 0) {
     devLinks.push({ type: 'verify', email: email, link: verifyLink(vt) });
   } else {
-    await sendEmail(email, '验证你的邮箱', '<p>欢迎注册！请点击以下链接验证邮箱：</p><p><a href="' + verifyLink(vt) + '">' + verifyLink(vt) + '</a></p>');
+    var subRec = await getJSON('sub:' + email);
+    var unsub = (subRec && subRec.token) ? unsubLink(email, subRec.token, WORKER_ORIGIN) : '';
+    var vlink = verifyLink(vt);
+    var vhtml = emailShell('验证你的邮箱', ''
+      + '<h1 style="margin:0 0 12px;font-size:20px;color:#1f2740;">欢迎注册 👋</h1>'
+      + '<p style="margin:0 0 18px;color:#4a5473;font-size:14px;line-height:1.7;">请点击下面按钮验证邮箱，之后就可以评论了。验证链接 24 小时内有效。</p>'
+      + '<p style="margin:0 0 22px;"><a href="' + vlink + '" style="display:inline-block;padding:11px 24px;background:#6d8bff;color:#ffffff;border-radius:999px;text-decoration:none;font-weight:600;">验证邮箱</a></p>'
+      + '<p style="margin:0 0 8px;color:#4a5473;font-size:13px;line-height:1.7;">📬 注册即自动订阅本站更新，以后有新文章会邮件通知你。</p>'
+      + (unsub ? '<p style="margin:0;color:#9aa3bd;font-size:12px;line-height:1.6;">不想再收到通知？<a href="' + unsub + '" style="color:#6d8bff;">点此退订</a></p>' : ''));
+    await sendEmail(email, '验证你的邮箱', vhtml);
   }
   return json({
     ok: true, token: sid,
@@ -482,6 +532,8 @@ async function login(request, cors) {
   if (!ok) return json({ error: '账号或密码错误' }, 401, cors);
 
   var sid = await createSession(user);
+  // 兜底：订阅功能上线前注册的老用户，首次登录时自动补建订阅记录
+  try { await ensureSubscribed(user.email); } catch (e) { /* 不影响登录 */ }
   return json({
     ok: true, token: sid,
     user: { uid: user.uid, name: user.name, email: user.email, avatar: user.avatar, verified: !!user.verified }

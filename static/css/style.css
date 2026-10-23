@@ -1153,6 +1153,12 @@ img { max-width: 100%; }
 .auth-reset-field { display: flex; flex-direction: column; gap: 10px; }
 .auth-reset-field[hidden] { display: none; }
 .auth-msg { min-height: 18px; font-size: 12.5px; }
+.auth-sub-hint {
+  margin: -2px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 12.5px; line-height: 1.6;
+  color: var(--text-mute); background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+}
+.auth-sub-hint[hidden] { display: none; }
 .auth-devlinks {
   display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;
   background: rgba(245, 158, 11, .10); border: 1px solid rgba(245, 158, 11, .35);

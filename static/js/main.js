@@ -439,6 +439,7 @@
     var resetField = document.getElementById('auth-reset-field');
     var resetPw = document.getElementById('auth-reset-pw');
     var resetPw2 = document.getElementById('auth-reset-pw2');
+    var subHint = document.getElementById('auth-sub-hint');
     var devBox = document.getElementById('auth-devlinks');
 
     var mode = 'login';
@@ -493,6 +494,7 @@
       if (pwInput) pwInput.hidden = (m === 'forgot' || m === 'reset');
       if (pw2Field) pw2Field.hidden = (m !== 'register');
       if (resetField) resetField.hidden = (m !== 'reset');
+      if (subHint) subHint.hidden = (m !== 'register');
       if (toForgotEl) toForgotEl.style.display = (m === 'login') ? '' : 'none';
       if (toLoginEl) toLoginEl.hidden = !(m === 'forgot' || m === 'reset');
       if (submitEl) submitEl.textContent = m === 'register' ? '注册' : (m === 'forgot' ? '发送重置链接' : (m === 'reset' ? '重置密码' : '登录'));
