@@ -33,7 +33,8 @@ OWNER_KEY = os.environ.get("OWNER_KEY", "o+h2a2MliUpTzuUTkBh3O5JCw6HVRhUd")
 OWNER_NAME = os.environ.get("OWNER_NAME", "景盼龙")
 OWNER_AVATAR = os.environ.get("OWNER_AVATAR", "🌟")
 # 群发令牌：POST /notify 需带此令牌（Authorization: Bearer <值>）才会向订阅者群发新文章通知。
-# 留空则群发接口返回 503（订阅/退订仍可用）。部署时用环境变量注入一个足够长的随机串。
+# 留空则手动群发接口返回 503；但 Worker 内置的定时任务（每小时自动通知）不受影响，仍可正常工作。
+# 部署时用环境变量注入一个足够长的随机串。
 NOTIFY_TOKEN = os.environ.get("NOTIFY_TOKEN", "")
 
 CF_TOKEN = os.environ["CF_API_TOKEN"]
@@ -126,6 +127,11 @@ def main():
     st, resp = api("POST", f"/accounts/{ACCOUNT_ID}/workers/scripts/{SCRIPT}/subdomain",
                    body={"enabled": True})
     print(f"[subdomain] POST 状态 {st} | success={resp.get('success')}")
+
+    # 定时任务：每小时拉取站点最新文章，有新文章就群发通知订阅者（无需 NOTIFY_TOKEN）
+    st, resp = api("PUT", f"/accounts/{ACCOUNT_ID}/workers/scripts/{SCRIPT}/schedules",
+                   body=[{"cron": "0 * * * *"}])
+    print(f"[cron] PUT 状态 {st} | success={resp.get('success')}")
 
     base = f"https://{SCRIPT}.470918507.workers.dev"
     import urllib.request as u

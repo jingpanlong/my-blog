@@ -2,7 +2,8 @@
 // 经典 Service Worker 格式。KV 绑定 COMMENTS（复用 blog-likes 命名空间）。
 // secret_text 绑定：AUTH_SECRET（历史兼容占位）、RESEND_API_KEY（可选，发信）、NOTIFY_TOKEN（群发令牌，可选）。
 // 邮件订阅：POST /subscribe 存 KV(sub:) 并发欢迎邮件；GET /unsubscribe 一键退订（返回 HTML 页）；
-//           POST /notify 按新文章群发（需 NOTIFY_TOKEN，同一篇文章去重）。
+//           POST /notify 按新文章群发（需 NOTIFY_TOKEN，同一篇文章去重）；
+//           scheduled 定时任务每小时自动拉取站点最新文章并群发（近期 14 天内且未通知过才发）。
 //
 // 关键设计：
 //   - 密码 PBKDF2(SHA-256, 10万次) 加盐哈希；评论 POST 需 Bearer 会话，未登录 401。
@@ -13,6 +14,11 @@
 
 addEventListener('fetch', function (event) {
   event.respondWith(handle(event.request));
+});
+
+// 定时任务（Cron Trigger，默认每小时）：拉取站点最新文章，有新文章就群发通知订阅者
+addEventListener('scheduled', function (event) {
+  event.waitUntil(scheduledNotify());
 });
 
 const MAX_CMT_PER_HOUR = 30;
@@ -29,6 +35,7 @@ const PBKDF2_ITERS = 100000;
 const MAX_SUB_PER_HOUR = 5;        // 订阅：每 IP 每小时上限
 const NOTIFY_MAX_RECIPIENTS = 500; // 单次群发收件人上限（防止误伤）
 const SITE_ORIGIN = 'https://my-blog-jingpanlong.pages.dev';
+const WORKER_ORIGIN = 'https://comments.470918507.workers.dev'; // 本 Worker 公网地址（退订链接用）
 const FROM_EMAIL = 'onboarding@resend.dev'; // Resend 测试发件人（无需自有域名）
 const AVATARS = ['🦊', '🐱', '🐶', '🐼', '🦁', '🐯', '🐸', '🦉', '🐧', '🦄', '🌟', '🍎'];
 
@@ -261,7 +268,7 @@ async function subscribe(request, cors) {
   var token = randToken(18);
   await putJSON('sub:' + email, { email: email, token: token, ts: Date.now() });
 
-  var origin = new URL(request.url).origin;
+  var origin = WORKER_ORIGIN;
   var unsub = unsubLink(email, token, origin);
   var html = emailShell('订阅成功', ''
     + '<h1 style="margin:0 0 12px;font-size:20px;color:#1f2740;">订阅成功 🎉</h1>'
@@ -307,7 +314,12 @@ async function notifySubscribers(request, url, cors) {
   var mark = 'notified:' + path;
   if (await COMMENTS.get(mark)) return json({ ok: true, skipped: true }, 200, cors);
 
-  var origin = new URL(request.url).origin;
+  var res = await broadcastNewPost(title, summary, postUrl, path);
+  return json({ ok: true, sent: res.sent, total: res.total }, 200, cors);
+}
+
+// 群发一篇新文章给所有订阅者（/notify 与定时任务共用）；同一 path 只群发一次
+async function broadcastNewPost(title, summary, postUrl, path) {
   var subs = [];
   var cursor = undefined;
   do {
@@ -331,12 +343,34 @@ async function notifySubscribers(request, url, cors) {
 
   var sent = 0;
   for (var j = 0; j < subs.length; j++) {
-    var u = unsubLink(subs[j].email, subs[j].token, origin);
+    var u = unsubLink(subs[j].email, subs[j].token, WORKER_ORIGIN);
     await sendEmail(subs[j].email, '新文章 · ' + title, html.replace(/__UNSUB__/g, u));
     sent++;
   }
-  await COMMENTS.put(mark, String(Date.now()));
-  return json({ ok: true, sent: sent, total: subs.length }, 200, cors);
+  await COMMENTS.put('notified:' + path, String(Date.now()));
+  return { sent: sent, total: subs.length };
+}
+
+// 定时任务：拉站点 search-index.json 取最新文章；近期且未通知过才群发
+async function scheduledNotify() {
+  try {
+    var r = await fetch(SITE_ORIGIN + '/search-index.json', { headers: { 'Accept': 'application/json' } });
+    if (!r.ok) return;
+    var posts = await r.json();
+    if (!Array.isArray(posts)) return;
+    var latest = null;
+    for (var i = 0; i < posts.length; i++) {
+      var p = posts[i];
+      if (!p || !p.url || !p.title) continue;
+      if (!latest || String(p.date || '') > String(latest.date || '')) latest = p;
+    }
+    if (!latest) return;
+    // 只通知近期发布的文章，避免首次运行时把历史文章群发一遍
+    var t = Date.parse(latest.date || '');
+    if (!t || (Date.now() - t) > 14 * 24 * 3600 * 1000) return;
+    if (await COMMENTS.get('notified:' + latest.url)) return;
+    await broadcastNewPost(latest.title, latest.summary || '', SITE_ORIGIN + latest.url, latest.url);
+  } catch (e) { /* 定时任务失败静默，下一小时再试 */ }
 }
 
 // ---------------- 路由 ----------------
