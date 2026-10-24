@@ -17,7 +17,8 @@ summaryLength = 60
   baseName = 'search-index'
 
 [pagination]
-  pagerSize = 9
+  # 12 可被 3/2/1 列整除：列表页任意缩放宽度下每页都刚好铺满，不出现空白格
+  pagerSize = 12
 
 [taxonomies]
   tag = 'tags'
