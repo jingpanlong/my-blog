@@ -6,7 +6,7 @@ description: Windows 桌面动物生态，九种昆虫与蜗牛混养，最多 2
 tags: ['C#', 'WinForms', '桌面生态', '桌宠']
 categories: ['工具']
 kicker: '桌面生态'
-cover: '/img/projects/desktop-critters/01-preview.png'
+cover: /img/posts/desktop-critters-intro/cover-ai.jpg
 ---
 
 如果在桌面上养一窝会爬的小动物会怎样？**微野 3.1** 就是这个问题的答案——把甲虫、瓢虫、蚂蚁、蜜蜂、蝴蝶、蜘蛛、螳螂、蜗牛、毛毛虫九种小动物放到你的桌面上，让它们爬行、觅食、互动。

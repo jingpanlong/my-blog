@@ -6,7 +6,7 @@ description: "“我1米6，110斤算不算胖？”“每天跳操体重没降�
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/cover.jpg'
+cover: /img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/cover-ai.jpg
 source: 'https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ'
 ---
 

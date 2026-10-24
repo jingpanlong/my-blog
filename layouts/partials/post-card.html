@@ -1,15 +1,35 @@
+{{ $title := .Title }}
+{{ $badge := "" }}
+{{ with .Params.kicker }}{{ $badge = . }}{{ else }}{{ with .Params.tags }}{{ $badge = index . 0 }}{{ end }}{{ end }}
+{{ $views := 0 }}{{ $likes := 0 }}
+{{ with index (index hugo.Data "post-stats" | default dict) .RelPermalink }}{{ $views = int (.views | default 0) }}{{ $likes = int (.likes | default 0) }}{{ end }}
 <article class="post-card glass">
-  <div class="post-card-top">
-    <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
-    {{ with .Params.tags }}<span class="tags">{{ range first 3 . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
-  </div>
-  <h3 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-  <p class="post-summary">{{ .Summary | plainify | truncate 90 }}</p>
-  <div class="post-card-foot">
-    <span class="read-time">{{ .ReadingTime }} {{ hugo.Data.site.ui.readTime | default "分钟阅读" }}</span>
-    <span class="pc-views" data-view-path="{{ .RelPermalink }}" title="浏览量">
-      <svg class="ic-eye" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-      <span class="view-n">—</span>
-    </span>
+  <a class="post-card-media" href="{{ .RelPermalink }}" aria-label="{{ $title }}">
+    {{ with .Params.cover }}
+      <img src="{{ . }}" alt="{{ $title }}" loading="lazy">
+    {{ else }}
+      <span class="post-card-fb" aria-hidden="true">{{ $badge }}</span>
+    {{ end }}
+    {{ with $badge }}<span class="acard-badge">{{ . }}</span>{{ end }}
+  </a>
+
+  <div class="post-card-body">
+    <div class="post-card-top">
+      <time class="post-date" datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006-01-02" }}</time>
+      {{ with .Params.tags }}<span class="tags">{{ range first 2 . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
+    </div>
+    <h3 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    <p class="post-summary">{{ with .Params.description }}{{ . | plainify | truncate 88 }}{{ else }}{{ .Summary | plainify | truncate 88 }}{{ end }}</p>
+    <div class="post-card-foot">
+      <span class="read-time">{{ .ReadingTime }} {{ hugo.Data.site.ui.readTime | default "分钟阅读" }}</span>
+      <span class="pc-likes" title="点赞">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5l-1.5-1.4C5.4 14.6 2.5 11.9 2.5 8.7 2.5 6.1 4.5 4.2 7 4.2c1.6 0 3.1.8 4 2 .9-1.2 2.4-2 4-2 2.5 0 4.5 1.9 4.5 4.5 0 3.2-2.9 5.9-8 10.4z"/></svg>
+        <span class="like-n">{{ $likes }}</span>
+      </span>
+      <span class="pc-views" data-view-path="{{ .RelPermalink }}" data-static="{{ $views }}" title="浏览量">
+        <svg class="ic-eye" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="view-n">{{ $views }}</span>
+      </span>
+    </div>
   </div>
 </article>

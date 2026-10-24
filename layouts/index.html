@@ -11,7 +11,18 @@
 {{ $secSub := $home.subscribe | default dict }}
 {{ $secTags := $home.tags | default dict }}
 {{ $posts := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
-{{ $activity := (where site.RegularPages "Section" "posts").ByLastmod.Reverse }}
+{{ $activity := (where site.RegularPages "Section" "posts").ByDate.Reverse }}
+{{ $stats := index hugo.Data "post-stats" | default dict }}
+{{/* 精选文章排序：浏览量 + 点赞量×3 加权降序；同分时按发布日期倒序（最新优先） */}}
+{{ $scored := slice }}
+{{ range $posts }}
+  {{ $v := 0 }}{{ $l := 0 }}
+  {{ with index $stats .RelPermalink }}{{ $v = int (.views | default 0) }}{{ $l = int (.likes | default 0) }}{{ end }}
+  {{ $score := add $v (mul $l 3) }}
+  {{ $scored = $scored | append (dict "p" . "k" (printf "%08d-%s" $score (.Date.Format "2006-01-02-150405"))) }}
+{{ end }}
+{{ $featured := slice }}
+{{ range first 4 (sort $scored "k" "desc") }}{{ $featured = $featured | append .p }}{{ end }}
 {{ $projects := (where site.RegularPages "Section" "projects").ByDate.Reverse }}
 {{ $tagCount := len site.Taxonomies.tags }}
 {{ $postCount := len $posts }}
@@ -91,8 +102,9 @@
       </div>
 
       <div class="acards">
-        {{ range first 4 $posts }}
+        {{ range $featured }}
         {{ $ptitle := .Title }}
+        {{ $pv := 0 }}{{ $pl := 0 }}{{ with index $stats .RelPermalink }}{{ $pv = int (.views | default 0) }}{{ $pl = int (.likes | default 0) }}{{ end }}
         <article class="acard">
           <a class="acard-media" href="{{ .RelPermalink }}" aria-label="{{ $ptitle }}">
             {{ with .Params.cover }}<img src="{{ . }}" alt="{{ $ptitle }}" loading="lazy">{{ end }}
@@ -109,9 +121,13 @@
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
               {{ .ReadingTime }} {{ $ui.readTime | default "分钟阅读" }}
             </span>
-            <span class="mi pc-views" data-view-path="{{ .RelPermalink }}" title="浏览量">
+            <span class="mi pc-likes" title="点赞">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5l-1.5-1.4C5.4 14.6 2.5 11.9 2.5 8.7 2.5 6.1 4.5 4.2 7 4.2c1.6 0 3.1.8 4 2 .9-1.2 2.4-2 4-2 2.5 0 4.5 1.9 4.5 4.5 0 3.2-2.9 5.9-8 10.4z"/></svg>
+              <span class="like-n">{{ $pl }}</span>
+            </span>
+            <span class="mi pc-views" data-view-path="{{ .RelPermalink }}" data-static="{{ $pv }}" title="浏览量">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span class="view-n">—</span>
+              <span class="view-n">{{ $pv }}</span>
             </span>
           </div>
         </article>

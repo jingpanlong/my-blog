@@ -6,7 +6,7 @@ description: "全网首发！这款基于 Python 开发的「安全账号管家 
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/02.jpg'
+cover: /img/posts/拒绝-忘记密码-我用Python撸了一个高颜值的-本地加密-账号管家-真香-2759b4/cover-ai.jpg
 source: 'https://mp.weixin.qq.com/s/sp5Dse3K7OzKx_e1daSKMQ'
 ---
 

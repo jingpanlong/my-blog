@@ -6,7 +6,7 @@ description: 一个为家庭厨房打造的工具——从菜谱到菜单，从�
 tags: ['微信小程序', '家庭', '菜谱', '云开发']
 categories: ['产品']
 kicker: '微信小程序'
-cover: '/img/projects/family-order/01-home.jpg'
+cover: /img/posts/family-order-intro/cover-ai.jpg
 ---
 
 「一家一菜谱」是一个为**家庭厨房**打造的小程序。它想解决的问题很朴素：一家人吃饭，从「想吃什么」到「谁来买菜」再到「今天做了什么好吃的」，能不能都在一个地方、简简单单地完成。

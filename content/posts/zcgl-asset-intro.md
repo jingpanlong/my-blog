@@ -6,7 +6,7 @@ description: 一套面向企业 IT 部门的内网设备资产盘点系统，客
 tags: ['Python', 'Flask', 'IT运维', '资产盘点']
 categories: ['工具']
 kicker: '内网工具'
-cover: '/img/projects/zcgl-asset/architecture.svg'
+cover: /img/posts/zcgl-asset-intro/cover-ai.jpg
 ---
 
 企业里「设备多、台账散、盘点靠人工」几乎是 IT 部门的通病。**锦纷资产管理系统**就是为解决这个问题而生的一套**内网**设备资产盘点工具——数据不出企业网络，适合设备登记、定期盘点与审计。

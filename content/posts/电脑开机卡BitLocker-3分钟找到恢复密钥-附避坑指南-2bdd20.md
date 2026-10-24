@@ -6,7 +6,7 @@ description: "宝子们有没有过这种崩溃时刻：赶方案的早上，电
 tags: ['随笔', '微信']
 categories: ['随笔']
 kicker: '随笔'
-cover: '/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/cover.jpg'
+cover: /img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/cover-ai.jpg
 source: 'https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA'
 ---
 

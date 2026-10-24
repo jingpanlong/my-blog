@@ -6,7 +6,7 @@ description: 一款常驻桌面的 Windows 本地格式转换工具，悬浮胶�
 tags: ['C#', 'Windows', '效率工具', '格式转换']
 categories: ['工具']
 kicker: '桌面工具'
-cover: '/img/projects/flowshift/01-expanded.png'
+cover: /img/posts/flowshift-intro/cover-ai.jpg
 ---
 
 「转个格式」这种事，本不该打开一个庞大的网站、等待上传、再等下载。**FlowShift** 想做的，是把这件事压缩成「拖进来 → 点一下 → 完成」。
