@@ -6,18 +6,14 @@ description: "你还在用那种千篇一律的黑白二维码吗？最近挖到
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/发现一款宝藏免费神器-生成的二维码颜值爆表-功能还超全-d63ecd/01.jpg'
+cover: '/img/posts/发现一款宝藏免费神器-生成的二维码颜值爆表-功能还超全-d63ecd/cover.jpg'
 source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 ---
 
 > **导语：** 你还在用那种千篇一律的黑白二维码吗？最近挖到一个宝藏工具——高级二维码生成器，完全免费却能做出堪比专业设计的二维码
 
-<figure><img src="/img/posts/发现一款宝藏免费神器-生成的二维码颜值爆表-功能还超全-d63ecd/01.jpg" alt=""></figure>
-
 你还在用那种千篇一律的黑白二维码吗？
 最近挖到一个宝藏工具——**高级二维码生成器**，完全免费却能做出堪比专业设计的二维码，无论是加 Logo、改颜色还是调整样式，都能轻松搞定，小白也能秒变设计大神！
-
-
 
 **用它做的二维码，颜值和实用性双在线**
 
@@ -26,8 +22,6 @@ source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 ✅ 颜色随心换
 
 支持任意调整前景色和背景色，输入色值精准定位，再也不用被默认的黑白配色限制。做品牌二维码时，直接用品牌色，识别度瞬间提升！
-
-
 
 ✅ 尺寸自由控
 
@@ -39,8 +33,6 @@ source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 
 4 种纠错级别可选（7%-30%），即使二维码被遮挡一小部分也能正常扫描。做活动物料时再也不怕磨损影响使用！
 
-
-
 ✅ 个性样式加持
 
 * 圆形二维码：告别呆板的方角，瞬间变得柔和精致。
@@ -48,8 +40,6 @@ source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 * 自定义边框：0 - 20px 边框大小可调，留白更有设计感。
 
 * Logo 植入：支持添加品牌 Logo，还能调整大小比例，品牌识别度拉满。
-
-
 
 <figure><img src="/img/posts/发现一款宝藏免费神器-生成的二维码颜值爆表-功能还超全-d63ecd/07.jpg" alt=""></figure>
 
@@ -60,8 +50,6 @@ source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 2. 调整样式：颜色、尺寸、边框一键设置。
 
 3. 下载使用：支持 PNG/JPG/SVG/PDF 多种格式，印刷选矢量格式(SVG/PDF)超清晰。
-
-
 
 **这些场景用它，效果绝了！**
 
@@ -107,11 +95,6 @@ source: 'https://mp.weixin.qq.com/s/o6d1GWRchNOHuZa2XvM1CA'
 ****
 
 觉得好用的话，别忘了分享给需要的朋友哦～ 让每个人都能轻松做出高颜值二维码！
-
-
-
-<figure><img src="/img/posts/发现一款宝藏免费神器-生成的二维码颜值爆表-功能还超全-d63ecd/10.jpg" alt=""></figure>
-
 
 ---
 

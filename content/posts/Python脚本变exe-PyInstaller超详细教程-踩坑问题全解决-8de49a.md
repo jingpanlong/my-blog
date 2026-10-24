@@ -6,13 +6,11 @@ description: "你是不是也遇到过这种情况：花 3 小时写好的 Pytho
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/Python脚本变exe-PyInstaller超详细教程-踩坑问题全解决-8de49a/01.jpg'
+cover: '/img/posts/Python脚本变exe-PyInstaller超详细教程-踩坑问题全解决-8de49a/cover.jpg'
 source: 'https://mp.weixin.qq.com/s/4Kgt0nSWv5o0JCdAtvb1LQ'
 ---
 
 > **导语：** 你是不是也遇到过这种情况：花 3 小时写好的 Python 工具（比如数据处理脚本、GUI 小工具），发给朋友用，对方一句 “我电脑没装 Python，打不开啊” 直接给你整 emo 了？
-
-<figure><img src="/img/posts/Python脚本变exe-PyInstaller超详细教程-踩坑问题全解决-8de49a/01.jpg" alt=""></figure>
 
 🐍 为什么非要用 PyInstaller？
 
@@ -160,11 +158,6 @@ source: 'https://mp.weixin.qq.com/s/4Kgt0nSWv5o0JCdAtvb1LQ'
 * 遇到报错先看命令行输出的 “error” 信息，大概率是缺模块或文件路径问题，对照前面的踩坑指南找答案。
 
 如果还有其他打包问题，欢迎在评论区留言～ 祝大家都能轻松把 Python 脚本变成 “人人能用” 的 exe！🚀
-
-
-
-
-
 
 ---
 

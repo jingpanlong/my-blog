@@ -6,19 +6,15 @@ description: "“我1米6，110斤算不算胖？”“每天跳操体重没降�
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/01.jpg'
+cover: '/img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/cover.jpg'
 source: 'https://mp.weixin.qq.com/s/Blhd2OQ3ACaBgyGf7blybQ'
 ---
 
 > **导语：** “我1米6，110斤算不算胖？”“每天跳操体重没降，反而更累了是怎么回事？”“爸妈总说‘胖点才健康’，真的是这样吗？”
 
-<figure><img src="/img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/01.jpg" alt=""></figure>
-
 “我1米6，110斤算不算胖？”“每天跳操体重没降，反而更累了是怎么回事？”“爸妈总说‘胖点才健康’，真的是这样吗？”
 
 打开后台消息，这类关于体重的疑问几乎每天都能收到。其实判断体重是否健康，不用纠结数字大小，更不用跟风减肥，一个国际通用的科学指标就能给出答案——**BMI（身体质量指数）**。今天就来教你用对这个“健康指南针”，文末还准备了专属福利工具哦！
-
-
 
 **👩‍🔬为什么医生都在看BMI？**
 
@@ -29,8 +25,6 @@ BMI可不是随便发明的数字游戏。它通过体重与身高的比例，�
 **计算公式：BMI = 体重（千克）÷ 身高（米）²**
 
 比如1.7米的人重65千克，BMI=65÷(1.7×1.7)≈22.5，属于标准范围。
-
-
 
 但手动计算总容易出错？别急，我们开发了**专属BMI计算器**，输入年龄、性别、身高体重，3秒就能出结果，连老人都能轻松操作。
 
@@ -86,10 +80,6 @@ BMI可不是随便发明的数字游戏。它通过体重与身高的比例，�
 
 现在就去测算吧，把结果分享给家人朋友，一起做对健康选择题～ 也欢迎在评论区留下你的BMI数值，聊聊你保持体重的小妙招呀！
 
-
-
-
-
 ](https://mp.weixin.qq.com/s?__biz=MzkzODkyNTk1Nw==&mid=2247483956&idx=1&sn=e56c46e5be481ae42122f771a2c764af&scene=21#wechat_redirect)
 
 ](https://mp.weixin.qq.com/s?__biz=MzkzODkyNTk1Nw==&mid=2247483952&idx=1&sn=41652bc9a5e5a4cdd581bc15c24b1508&scene=21#wechat_redirect)
@@ -97,9 +87,6 @@ BMI可不是随便发明的数字游戏。它通过体重与身高的比例，�
 ](https://mp.weixin.qq.com/s?__biz=MzkzODkyNTk1Nw==&mid=2247483935&idx=1&sn=0f7f9c11e2c1ee36b71b0c69407e0c56&scene=21#wechat_redirect)
 
 ](https://mp.weixin.qq.com/s?__biz=MzkzODkyNTk1Nw==&mid=2247483830&idx=1&sn=9ec14f19196d2dfbe4a5668702c3f10c&scene=21#wechat_redirect)
-
-<figure><img src="/img/posts/体重超标竟藏这么多隐患-免费工具一键测出你的健康密码-bd46fc/07.jpg" alt=""></figure>
-
 
 ---
 

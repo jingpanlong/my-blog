@@ -6,13 +6,11 @@ description: "这是一款“开箱即用”的投票软件。你不需要买服
 tags: ['文章', '微信']
 categories: ['文章']
 kicker: '文章'
-cover: '/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/01.jpg'
+cover: '/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/cover.jpg'
 source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 ---
 
 > **导语：** 这是一款“开箱即用”的投票软件。你不需要买服务器，也不需要连接互联网。只要你的电脑和大家的手机在同一个WiFi（局域网）下，软件会自动生成一个二维码。📱大家掏出手机扫一扫，就能进入投票界面；大屏幕上，票数实时滚动，特效拉满！
-
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/01.jpg" alt=""></figure>
 
 大家好，我是**景同志**。👋
 
@@ -22,8 +20,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 于是，我熬了两个通宵，用 **Python **搓出了这款【局域网实时投票系统】。不管是公司年会、班级评选，还是沙龙活动，只要有一台电脑、一个WiFi，就能立马搭建一套**专业级**的投票现场！🚀废话不多说，直接看东西！👇
 
-
-
 **系统用途**
 
 简单说，这是一款“开箱即用”的投票软件。
@@ -31,8 +27,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 你不需要买服务器，也不需要连接互联网。只要你的电脑和大家的手机在同一个WiFi（局域网）下，软件会自动生成一个二维码。📱
 
 大家掏出手机**扫一扫**，就能进入投票界面；大屏幕上，票数**实时滚动**，特效拉满！
-
-
 
 **核心功能亮点**
 
@@ -50,8 +44,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 <figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/04.jpg" alt=""></figure>
 
-
-
 **2️⃣ 极简的手机端体验 📱**
 
 为了照顾所有年龄段的用户，手机端界面我做得非常简洁。
@@ -61,8 +53,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 * 清晰展示参选作品/人员的封面图、名称和介绍。
 
 * 状态同步：未开始时不能投，结束后自动锁定，一切听指挥。
-
-
 
 **3️⃣ Excel批量导入/导出（打工人救星） 📊**
 
@@ -74,8 +64,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 
 *** 结果导出：**活动结束，老板要数据？点一下“导出Excel”，精准的排名报表直接生成，汇报无压力。
 
-
-
 **4️⃣ 完全自定义的“控制台” ⚙️**
 
 软件内置了强大的设置面板：
@@ -85,8 +73,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 *** 氛围组：**支持上传自定义的背景图片和背景音乐（BGM），音乐还带波形律动哦~ 🎵
 
 *** 自动托管：**怕忘记关通道？设置好“开始时间”和“结束时间”，系统到点自动开关，精准控制流程。
-
-
 
 **5️⃣ 安全稳定，不怕断电 🛡️**
 
@@ -101,8 +87,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 **使用教程（保姆级）**
 
 1. 下载软件：获取我打包好的 .exe 文件（文末获取）。
-
-
 
 **2. 双击运行：**你会看到一个控制窗口。
 
@@ -127,11 +111,6 @@ source: 'https://mp.weixin.qq.com/s/6WQI--4HQJoHtU9n4s3XjQ'
 关注本公众号 **【景同志】，**后台回复关键词**【投票】，**即可获取最新版EXE下载链接！
 
 *(喜欢的话，记得点个****赞****和****在看****哦，这对我真的很重要！❤️)*
-
-
-
-<figure><img src="/img/posts/年会神器-我用Python写了一款实时投票系统-大屏互动嗨翻全场-faaa3d/13.jpg" alt=""></figure>
-
 
 ---
 

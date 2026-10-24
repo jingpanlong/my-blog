@@ -6,13 +6,11 @@ description: "宝子们有没有过这种崩溃时刻：赶方案的早上，电
 tags: ['随笔', '微信']
 categories: ['随笔']
 kicker: '随笔'
-cover: '/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/01.jpg'
+cover: '/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/cover.jpg'
 source: 'https://mp.weixin.qq.com/s/GKdJn0LuzgO9fRB5_MA1mA'
 ---
 
 > **导语：** 宝子们有没有过这种崩溃时刻：赶方案的早上，电脑一开机突然弹出「需要 BitLocker 恢复密钥」，键盘停在半空，脑子瞬间空白 —— 这串 “解锁密码” 到底存在哪儿了？别慌！今天就把 4 个找密钥的实用方法、3 个避坑提醒全教给你。
-
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/01.jpg" alt=""></figure>
 
 **🔥 先搞懂：BitLocker 为啥突然 “要密钥”？**
 
@@ -26,8 +24,6 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 其实密钥早就在你开启BitLocker时，让你备份过！只是大概率被忘在某个角落了…
 
-
-
 **📌4个找密钥的方法（按成功率排序）**
 
 **1️⃣首选：微软账户「云端调取」（90%用户适用）☁️**
@@ -36,15 +32,11 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 
 ①用手机 / 另一台电脑打开【微软账户官网】（🔗 [account.microsoft.com]）
 
-
-
 ②登录和电脑绑定的微软账户
 
 <figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/04.jpg" alt=""></figure>
 
 ③ 找到左侧【设备】→ 点击需要解锁的电脑名称
-
-
 
 ④ 下拉找到【BitLocker恢复密钥】，复制那串24位数字
 ⑤ 回到卡住的电脑，输入密钥就能解锁！💻
@@ -54,8 +46,6 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 开启BitLocker时，系统会提醒你 “保存到文件” 或 “复制到U 盘”，找找这些地方：
 
 * 电脑本地：默认路径可能在「文档」文件夹里，文件名类似「BitLocker恢复密钥XXX.txt」（XXX是电脑ID）
-
-
 
 * U 盘：插在电脑上，打开后看看有没有同名TXT文件
 * 移动硬盘 / 云盘：比如之前存过到百度云、OneDrive的 “备份文件夹”
@@ -91,11 +81,6 @@ BitLocker是Windows自带的「硬盘保镖」（像给硬盘上了把锁），�
 **💬最后说句大实话**
 
 BitLocker虽然偶尔 “添堵”，但能防硬盘丢失后数据泄露，还是很有用的～ 要是试过以上方法还没找到，评论区留 “密钥求助”，我帮你分析可能的原因！
-
-<figure><img src="/img/posts/电脑开机卡BitLocker-3分钟找到恢复密钥-附避坑指南-2bdd20/07.jpg" alt=""></figure>
-
-
-
 
 ---
 
