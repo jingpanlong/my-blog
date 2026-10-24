@@ -19,7 +19,7 @@
       {{ with .Params.tags }}<span class="tags">{{ range first 2 . }}<a class="tag-chip" href="/tags/{{ . | urlize }}/">{{ . }}</a>{{ end }}</span>{{ end }}
     </div>
     <h3 class="post-title"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-    <p class="post-summary">{{ with .Params.description }}{{ . | plainify | truncate 88 }}{{ else }}{{ .Summary | plainify | truncate 88 }}{{ end }}</p>
+    <p class="post-summary">{{ with .Params.description }}{{ . | plainify | truncate 60 }}{{ else }}{{ .Summary | plainify | truncate 60 }}{{ end }}</p>
     <div class="post-card-foot">
       <span class="read-time">{{ .ReadingTime }} {{ hugo.Data.site.ui.readTime | default "分钟阅读" }}</span>
       <span class="pc-likes" title="点赞">
