@@ -550,6 +550,10 @@ img { max-width: 100%; }
 .km {
   position: relative;
   width: 100%;
+  /* 全屏时主列可达约 1020px，地图会显得过大：限制宽度并居中，
+     同时用视口高度兜底，矮窗口下也不会撑满一屏 */
+  max-width: min(100%, 840px, 100vh);
+  margin-inline: auto;
   aspect-ratio: 1672 / 940;
   overflow: hidden;
   isolation: isolate;
