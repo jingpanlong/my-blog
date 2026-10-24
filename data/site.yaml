@@ -49,8 +49,6 @@ footer:
       url: /archive/
     - label: 关于我
       url: /about/
-    - label: 数据
-      url: /dashboard/
   tagline: Stay Curious · Keep Building
   builtBy: Hugo
   hostedOn: Cloudflare Pages
